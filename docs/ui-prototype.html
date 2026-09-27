@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mẫu giao diện — Hệ thống quản lý hội nghị</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F7F8F7; --surface:#FFFFFF; --surface-2:#EEF1F1; --ink:#17232B; --muted:#5E6E75;
+  --line:#D8DEDF; --primary:#0E5A62; --primary-ink:#FFFFFF; --primary-soft:#E3F0F1;
+  --warn:#B26B00; --warn-soft:#FDF2DF; --danger:#B3261E; --danger-soft:#FCE9E7;
+  --ok:#2E6B45; --ok-soft:#E4F1E9;
+  --t1:#1F6F8B; --t1s:#E2EEF3; --t2:#7A4E9E; --t2s:#EFE7F6; --t3:#A25A2A; --t3s:#F7EAE0;
+  --t4:#2F7050; --t4s:#E4F0EA; --t5:#8C3B54; --t5s:#F6E6EB;
+  --shadow:0 1px 2px rgba(20,35,43,.07), 0 4px 14px rgba(20,35,43,.05);
+  --r:10px;
+}
+:root[data-theme="dark"]{
+  --bg:#14181A; --surface:#1D2326; --surface-2:#252C30; --ink:#E6EAEB; --muted:#9AA8AD;
+  --line:#333C40; --primary:#4FB3BF; --primary-ink:#06262A; --primary-soft:#1B3A3E;
+  --warn:#E0A33D; --warn-soft:#3A2E18; --danger:#F2887F; --danger-soft:#3D2220;
+  --ok:#68B98A; --ok-soft:#1D3527;
+  --t1:#6FB6D0; --t1s:#1E323B; --t2:#B492D8; --t2s:#2C2338; --t3:#D69A6B; --t3s:#382A20;
+  --t4:#6FB894; --t4s:#1C3329; --t5:#D08AA0; --t5s:#38222A;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 4px 14px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+html,body{margin:0; padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:15px; line-height:1.55;
+  font-variant-numeric:tabular-nums;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  transition:background .18s ease, color .18s ease;
+}
+.page{max-width:1180px; margin:0 auto; padding:20px 18px 70px}
+.bar{
+  display:flex; gap:12px; align-items:center; flex-wrap:wrap;
+  padding:12px 16px; background:var(--surface); border:1px solid var(--line);
+  border-radius:var(--r); margin-bottom:22px; box-shadow:var(--shadow);
+}
+.brand{font-weight:700; letter-spacing:-.01em; margin-right:auto; display:flex; align-items:center; gap:9px}
+.dot{width:11px; height:11px; border-radius:3px; background:var(--primary)}
+.seg{display:inline-flex; border:1px solid var(--line); border-radius:8px; overflow:hidden}
+.seg button{
+  background:var(--surface); color:var(--muted); border:0; padding:6px 13px;
+  font:inherit; font-size:13.5px; font-weight:500; cursor:pointer;
+}
+.seg button[aria-pressed="true"]{background:var(--primary); color:var(--primary-ink)}
+.seg button:focus-visible{outline:2px solid var(--primary); outline-offset:-2px}
+
+h2{font-size:1.02rem; margin:30px 0 4px; letter-spacing:-.01em}
+.sub{color:var(--muted); font-size:13.5px; margin:0 0 12px}
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow); overflow:hidden}
+.cardhead{padding:13px 16px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.cardhead strong{font-size:.95rem}
+.spacer{margin-left:auto}
+.btn{background:var(--primary); color:var(--primary-ink); border:0; border-radius:7px; padding:7px 14px; font:inherit; font-size:13.5px; font-weight:600; cursor:pointer}
+.btn.ghost{background:transparent; color:var(--primary); border:1px solid var(--line)}
+.chip{display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:600; padding:3px 9px; border-radius:20px}
+.chip.ok{background:var(--ok-soft); color:var(--ok)}
+.chip.warn{background:var(--warn-soft); color:var(--warn)}
+.chip.bad{background:var(--danger-soft); color:var(--danger)}
+
+/* ---- scheduling grid ---- */
+.gridwrap{overflow-x:auto}
+table.grid{border-collapse:collapse; width:100%; min-width:680px}
+table.grid th, table.grid td{border:1px solid var(--line); vertical-align:top}
+table.grid thead th{background:var(--surface-2); font-size:12.5px; font-weight:600; padding:9px 10px; text-align:left; color:var(--muted)}
+.timecell{width:74px; background:var(--surface-2); font-size:12.5px; color:var(--muted); padding:9px 10px; font-weight:600; white-space:nowrap}
+td.slot{padding:6px; height:76px}
+.sess{border-radius:7px; padding:7px 9px; height:100%; border-left:3px solid; font-size:12.5px; line-height:1.35}
+.sess .t{font-weight:600; display:block; margin-bottom:2px}
+.sess .m{color:var(--muted); font-size:11.5px}
+.k1{background:var(--t1s); border-color:var(--t1)} .k2{background:var(--t2s); border-color:var(--t2)}
+.k3{background:var(--t3s); border-color:var(--t3)} .k4{background:var(--t4s); border-color:var(--t4)}
+.k5{background:var(--t5s); border-color:var(--t5)}
+.sess.conflict{outline:2px solid var(--danger); outline-offset:-1px}
+.empty{color:var(--muted); font-size:12px; display:flex; align-items:center; justify-content:center; height:100%; border:1px dashed var(--line); border-radius:7px}
+
+.stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); gap:12px; margin:14px 0 0}
+.stat{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:13px 15px}
+.stat .n{font-size:1.5rem; font-weight:700; letter-spacing:-.02em; display:block; line-height:1.2}
+.stat .l{font-size:12.5px; color:var(--muted)}
+.stat.good .n{color:var(--ok)} .stat.bad .n{color:var(--danger)}
+
+.two{display:grid; grid-template-columns:1fr 1fr; gap:18px}
+@media(max-width:860px){ .two{grid-template-columns:1fr} }
+
+table.list{border-collapse:collapse; width:100%; font-size:13.5px}
+table.list th{text-align:left; font-size:12px; color:var(--muted); font-weight:600; padding:9px 14px; border-bottom:1px solid var(--line)}
+table.list td{padding:9px 14px; border-bottom:1px solid var(--line)}
+table.list tr:last-child td{border-bottom:0}
+.num{text-align:right}
+
+.phone{max-width:330px; margin:0 auto; border:1px solid var(--line); border-radius:22px; background:var(--surface); box-shadow:var(--shadow); overflow:hidden}
+.phead{padding:13px 16px; background:var(--primary); color:var(--primary-ink); font-weight:600; font-size:14px}
+.pbody{padding:14px 16px}
+.qa{border:1px solid var(--line); border-radius:9px; padding:10px 12px; margin-bottom:9px; background:var(--surface-2)}
+.qa .cnt{font-size:11.5px; font-weight:700; color:var(--primary); display:block; margin-bottom:3px}
+.qa p{margin:0; font-size:13px}
+.scan{border:2px dashed var(--primary); border-radius:12px; padding:26px 12px; text-align:center; color:var(--primary); font-weight:600; font-size:13.5px; background:var(--primary-soft)}
+.vch{display:flex; align-items:center; gap:11px; padding:11px 12px; border:1px solid var(--line); border-radius:9px; margin-top:10px}
+.vch .qr{width:40px; height:40px; border-radius:6px; background:var(--ink); flex:none; opacity:.85}
+.legend{display:flex; gap:14px; flex-wrap:wrap; font-size:12px; color:var(--muted); padding:11px 16px; border-top:1px solid var(--line)}
+.legend span{display:inline-flex; align-items:center; gap:6px}
+.sw{width:11px; height:11px; border-radius:3px; display:inline-block}
+.note{font-size:12.5px; color:var(--muted); padding:11px 16px; border-top:1px solid var(--line); background:var(--surface-2)}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="bar">
+    <span class="brand"><span class="dot"></span><span data-i="brand">ConfHub</span></span>
+    <div class="seg" role="group">
+      <button id="lv" aria-pressed="true" onclick="setLang('vi')">Tiếng Việt</button>
+      <button id="le" aria-pressed="false" onclick="setLang('en')">English</button>
+    </div>
+    <div class="seg" role="group">
+      <button id="tl" aria-pressed="true" onclick="setTheme('light')" data-i="light">Nền sáng</button>
+      <button id="td" aria-pressed="false" onclick="setTheme('dark')" data-i="dark">Nền tối</button>
+    </div>
+  </div>
+
+  <h2 data-i="s1">1. Lưới xếp lịch — màn hình chính của ban tổ chức</h2>
+  <p class="sub" data-i="s1d">Trục dọc là khung giờ, trục ngang là phòng. Mỗi màu là một track chủ đề. Kéo thả để chỉnh; ô viền đỏ là vi phạm ràng buộc.</p>
+  <div class="card">
+    <div class="cardhead">
+      <strong data-i="conf">Công nghệ Xanh 2026 — Ngày 1</strong>
+      <span class="chip warn" data-i="draft">Bản nháp</span>
+      <span class="spacer"></span>
+      <button class="btn ghost" data-i="rerun">Chạy lại</button>
+      <button class="btn" data-i="publish">Công bố</button>
+    </div>
+    <div class="gridwrap">
+      <table class="grid">
+        <thead><tr>
+          <th data-i="time">Giờ</th><th>P101 · 100</th><th>P102 · 60</th><th>P103 · 40</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td class="timecell">09:00</td>
+            <td class="slot"><div class="sess k1"><span class="t" data-i="a1">AI trong nông nghiệp</span><span class="m">Long · 42/100</span></div></td>
+            <td class="slot"><div class="sess k2"><span class="t" data-i="a2">Kinh tế tuần hoàn</span><span class="m">Hoa · 39/60</span></div></td>
+            <td class="slot"><div class="empty" data-i="free">Trống</div></td>
+          </tr>
+          <tr>
+            <td class="timecell">10:00</td>
+            <td class="slot"><div class="sess k3"><span class="t" data-i="a3">Startup xanh</span><span class="m">Tùng · 21/100</span></div></td>
+            <td class="slot"><div class="sess k1"><span class="t" data-i="a4">Blockchain carbon</span><span class="m">Long · 14/60</span></div></td>
+            <td class="slot"><div class="sess k4"><span class="t" data-i="a5">Vật liệu tái chế</span><span class="m">Mai · 33/40</span></div></td>
+          </tr>
+          <tr>
+            <td class="timecell">11:00</td>
+            <td class="slot"><div class="sess k5 conflict"><span class="t" data-i="a6">Chính sách năng lượng</span><span class="m" data-i="cf">Trùng lịch diễn giả</span></div></td>
+            <td class="slot"><div class="sess k2"><span class="t" data-i="a7">Tài chính xanh</span><span class="m">Hoa · 28/60</span></div></td>
+            <td class="slot"><div class="empty" data-i="free2">Trống</div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--t1)"></i><span data-i="tr1">Công nghệ</span></span>
+      <span><i class="sw" style="background:var(--t2)"></i><span data-i="tr2">Kinh tế</span></span>
+      <span><i class="sw" style="background:var(--t3)"></i><span data-i="tr3">Khởi nghiệp</span></span>
+      <span><i class="sw" style="background:var(--t4)"></i><span data-i="tr4">Vật liệu</span></span>
+      <span><i class="sw" style="background:var(--t5)"></i><span data-i="tr5">Chính sách</span></span>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat good"><span class="n">5</span><span class="l" data-i="m1">Lượt xung đột nguyện vọng</span></div>
+    <div class="stat"><span class="n">0</span><span class="l" data-i="m2">Vi phạm ràng buộc cứng</span></div>
+    <div class="stat"><span class="n">11/12</span><span class="l" data-i="m3">Phiên đã xếp</span></div>
+    <div class="stat"><span class="n">78%</span><span class="l" data-i="m4">Tỷ lệ lấp đầy phòng</span></div>
+    <div class="stat"><span class="n">1,8s</span><span class="l" data-i="m5">Thời gian chạy</span></div>
+  </div>
+
+  <h2 data-i="s2">2. Tổng hợp nhu cầu dịch vụ</h2>
+  <p class="sub" data-i="s2d">Số lượng tính tự động từ chương trình đã xếp và dữ liệu đăng ký, không nhập tay.</p>
+  <div class="two">
+    <div class="card">
+      <div class="cardhead"><strong data-i="food">Suất ăn — trưa ngày 1</strong><span class="spacer"></span><span class="chip ok" data-i="sent">Đã gửi NCC</span></div>
+      <table class="list">
+        <thead><tr><th data-i="kind">Loại</th><th class="num" data-i="qty">Số lượng</th><th class="num" data-i="cost">Thành tiền</th></tr></thead>
+        <tbody>
+          <tr><td data-i="f1">Suất mặn</td><td class="num">234</td><td class="num">19.890.000</td></tr>
+          <tr><td data-i="f2">Suất mặn — không hải sản</td><td class="num">12</td><td class="num">1.020.000</td></tr>
+          <tr><td data-i="f3">Suất chay</td><td class="num">41</td><td class="num">3.075.000</td></tr>
+        </tbody>
+      </table>
+      <div class="note" data-i="n1">Tính từ 287 người đã đăng ký và khai báo chế độ ăn.</div>
+    </div>
+    <div class="card">
+      <div class="cardhead"><strong data-i="equip">Thiết bị — ngày 1</strong><span class="spacer"></span><span class="chip warn" data-i="wait">Chờ xác nhận</span></div>
+      <table class="list">
+        <thead><tr><th data-i="kind2">Loại</th><th class="num" data-i="need">Cần thuê</th><th class="num" data-i="have">Có sẵn</th></tr></thead>
+        <tbody>
+          <tr><td data-i="e1">Máy chiếu</td><td class="num">1</td><td class="num">2</td></tr>
+          <tr><td data-i="e2">Micro không dây</td><td class="num">6</td><td class="num">0</td></tr>
+          <tr><td data-i="e3">Màn LED</td><td class="num">0</td><td class="num">1</td></tr>
+        </tbody>
+      </table>
+      <div class="note" data-i="n2">Tính theo số phòng chạy song song nhiều nhất, trừ thiết bị sẵn có tại phòng.</div>
+    </div>
+  </div>
+
+  <h2 data-i="s3">3. Màn hình điện thoại</h2>
+  <p class="sub" data-i="s3d">Người tham dự và nhân viên vận hành dùng trong lúc sự kiện diễn ra.</p>
+  <div class="two">
+    <div class="phone">
+      <div class="phead" data-i="p1">Hỏi đáp — AI trong nông nghiệp</div>
+      <div class="pbody">
+        <div class="qa"><span class="cnt" data-i="q1c">18 người cùng hỏi</span><p data-i="q1">Chi phí triển khai thực tế khoảng bao nhiêu?</p></div>
+        <div class="qa"><span class="cnt" data-i="q2c">7 người cùng hỏi</span><p data-i="q2">Mô hình áp dụng được cho cây trồng nào?</p></div>
+        <div class="qa"><span class="cnt" data-i="q3c">3 người cùng hỏi</span><p data-i="q3">Dữ liệu huấn luyện lấy từ đâu?</p></div>
+      </div>
+    </div>
+    <div class="phone">
+      <div class="phead" data-i="p2">Quét voucher — Trưa ngày 1</div>
+      <div class="pbody">
+        <div class="scan" data-i="scan">Đưa mã QR vào khung</div>
+        <div class="vch"><span class="qr"></span><div><strong style="font-size:13.5px">Nguyễn Văn Minh</strong><br><span class="chip ok" data-i="veg">Suất chay</span></div></div>
+        <div class="vch"><span class="qr"></span><div><strong style="font-size:13.5px">Trần Thu Hà</strong><br><span class="chip bad" data-i="used">Đã sử dụng 11:42</span></div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const D={
+ en:{brand:"ConfHub",light:"Light",dark:"Dark",
+ s1:"1. Scheduling grid — the organiser's main screen",
+ s1d:"Rows are time slots, columns are rooms. Each colour is a topic track. Drag to adjust; a red outline marks a constraint violation.",
+ conf:"Green Technology 2026 — Day 1",draft:"Draft",rerun:"Re-run",publish:"Publish",time:"Time",
+ a1:"AI in agriculture",a2:"Circular economy",a3:"Green startups",a4:"Carbon blockchain",
+ a5:"Recycled materials",a6:"Energy policy",a7:"Green finance",cf:"Speaker double-booked",
+ free:"Empty",free2:"Empty",
+ tr1:"Technology",tr2:"Economics",tr3:"Startups",tr4:"Materials",tr5:"Policy",
+ m1:"Preference clashes",m2:"Hard-constraint violations",m3:"Sessions placed",m4:"Room fill rate",m5:"Run time",
+ s2:"2. Service demand roll-up",
+ s2d:"Quantities are derived from the published programme and registration data, not typed in by hand.",
+ food:"Meals — Day 1 lunch",sent:"Order sent",kind:"Type",qty:"Quantity",cost:"Amount",
+ f1:"Standard meal",f2:"Standard — no seafood",f3:"Vegetarian meal",
+ n1:"Derived from 287 registrations and their dietary declarations.",
+ equip:"Equipment — Day 1",wait:"Awaiting confirmation",kind2:"Type",need:"To rent",have:"On site",
+ e1:"Projector",e2:"Wireless microphone",e3:"LED screen",
+ n2:"Based on the peak number of parallel rooms, minus equipment already in the room.",
+ s3:"3. Phone screens",s3d:"Used by attendees and on-site staff while the event is running.",
+ p1:"Q&A — AI in agriculture",
+ q1c:"18 people asked this",q1:"What does it actually cost to deploy?",
+ q2c:"7 people asked this",q2:"Which crops does the model work for?",
+ q3c:"3 people asked this",q3:"Where does the training data come from?",
+ p2:"Scan voucher — Day 1 lunch",scan:"Point the QR code at the frame",
+ veg:"Vegetarian",used:"Redeemed 11:42"}
+};
+let O={};
+document.querySelectorAll('[data-i]').forEach(e=>O[e.dataset.i]=e.textContent);
+function setLang(l){
+  const m = l==='en'?D.en:O;
+  document.querySelectorAll('[data-i]').forEach(e=>{ if(m[e.dataset.i]) e.textContent=m[e.dataset.i]; });
+  document.documentElement.lang=l;
+  lv.setAttribute('aria-pressed', l==='vi'); le.setAttribute('aria-pressed', l==='en');
+}
+function setTheme(t){
+  document.documentElement.dataset.theme=t;
+  tl.setAttribute('aria-pressed', t==='light'); td.setAttribute('aria-pressed', t==='dark');
+  try{ localStorage.setItem('theme',t) }catch(e){}
+}
+try{ const s=localStorage.getItem('theme'); if(s) setTheme(s);
+  else if(matchMedia('(prefers-color-scheme:dark)').matches) setTheme('dark'); }catch(e){}
+</script>
+</body>
+</html>
