@@ -6,4 +6,7 @@
     <Project Path="src/ConfHub.Infrastructure/ConfHub.Infrastructure.csproj" />
     <Project Path="src/ConfHub.Scheduling/ConfHub.Scheduling.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ConfHub.Api.IntegrationTests/ConfHub.Api.IntegrationTests.csproj" />
+  </Folder>
 </Solution>
