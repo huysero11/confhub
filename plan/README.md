@@ -6,8 +6,9 @@
 ## 0. Đang ở đâu
 
 - **Vừa xong:** T0.1 (Git), T0.2 (khung solution backend) — 2026-09-27
-- **Tiếp theo:** T0.5 (mẫu nền tảng backend) · song song có thể làm tài liệu D1, D2, D5, D7
-- **Nhánh đang mở:** không
+- **Đang làm:** T0.5 — Codex đang làm trên `task/T0.5-be-foundation` (đặc tả đã duyệt)
+- **Còn lại của G0:** T0.4 (sau T0.5), T0.3 (độc lập)
+- **Nhánh đang mở:** `task/T0.5-be-foundation`
 
 ## 1. Quy trình một task
 
@@ -124,14 +125,14 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 | T0.2 | Khung solution backend                  | T0.1      | done       |
 | T0.3 | Khung frontend                          | T0.1      | todo       |
 | T0.4 | Hạ tầng sự kiện (RabbitMQ, MassTransit) | T0.5      | todo       |
-| T0.5 | Mẫu nền tảng backend                    | T0.2      | todo       |
+| T0.5 | Mẫu nền tảng backend                    | T0.2      | codex      |
 
 **Chi tiết:**
 - **T0.1** — `.gitattributes`, `.gitignore`, repo GitHub. Huy làm tay. `docker-compose.yml` + Seq đã dời sang T0.5 (khung chưa ghi log; máy Huy chưa có Docker).
 - **T0.2** — Huy làm tay **phần khung**: `ConfHub.slnx`, 4 lớp Domain/Application/Infrastructure/Api + `ConfHub.Scheduling`, project reference, `global.json` (SDK 10), `Directory.Build.props` (Nullable, TreatWarningsAsErrors, StyleCop + Roslynator), `.editorconfig`, endpoint `/health` + `tests/ConfHub.Api.IntegrationTests`. Các mẫu code tách sang T0.5.
 - **T0.3** — Vite React TS, antd v5 token sáng/tối, i18n vi/en, 3 shell A/B/C + router rỗng.
-- **T0.4** — Thêm RabbitMQ + smtp4dev vào compose; MassTransit 8.x + EF Transactional Outbox/Inbox + consumer gửi email.
-- **T0.5** — Mẫu giữ lại từ khung base (`docs/design/base-reference.md`): BaseEntity, Specification/Repository, MediatR 12.x + ValidationBehavior, ExceptionMiddleware → ProblemDetails, Serilog → Seq, OpenAPI; **Docker Compose + Seq** (máy Huy cần cài Docker Desktop). Quy trình chuẩn Codex → Huy gõ lại.
+- **T0.4** — Thêm RabbitMQ + smtp4dev vào compose; **EF Core + DbContext + kết nối SQL Server** (nhận từ T0.5); MassTransit 8.x + EF Transactional Outbox/Inbox + consumer gửi email.
+- **T0.5** — Đặc tả: `plan/tasks/T0.5.md`. BaseEntity + domain event, MediatR 12.x + ValidationBehavior, exception → ProblemDetails, Serilog → Seq, OpenAPI + Scalar; **Docker Compose + Seq**. Không có CSDL: DbContext sang T0.4, Repository/Specification sang T1.1. Quy trình chuẩn Codex → Huy gõ lại.
 
 #### G1 — Tài khoản (P1: UC01, UC02)
 
@@ -141,7 +142,7 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 | T1.2 | FE: đăng ký / đăng nhập        | T1.1, T0.3               | todo       |
 
 **Chi tiết:**
-- **T1.1** — Đăng ký, xác thực email, đăng nhập, JWT + refresh token; Role + Permissions (seed 5 vai trò), kiểm tra quyền theo permission.
+- **T1.1** — Đăng ký, xác thực email, đăng nhập, JWT + refresh token; Role + Permissions (seed 5 vai trò), kiểm tra quyền theo permission. Nhận từ T0.5: IRepository/IReadRepository + Specification, SaveChangesInterceptor (audit), sinh Guid tuần tự.
 - **T1.2** — Đăng ký / đăng nhập / đăng xuất, chặn route theo quyền.
 
 #### G2 — Thuật toán bản console (làm sớm, độc lập)
@@ -309,3 +310,5 @@ Chỉ chia task khi P1–P4 xong.
 - T0.1 done: merge `task/T0.1-git` (--no-ff).
 - T0.2 (phần khung) done: merge `task/T0.2-be-skeleton`. `dotnet build` pass, `dotnet test` 1/1 pass. Sửa 2 lỗi StyleCop từ code template (SA1512 comment + dòng trống, SA1518 thiếu newline cuối file).
 - Tách mẫu nền tảng backend (BaseEntity, Specification, MediatR, ExceptionMiddleware, Serilog→Seq, OpenAPI) + Docker Compose/Seq thành **T0.5** (quy trình Codex chuẩn). T0.4 và T1.1 chuyển phụ thuộc sang T0.5. Đổi định dạng file này cho dễ đọc (bảng ngắn + chi tiết).
+- T0.5 → `spec`: viết `plan/tasks/T0.5.md`. Chia phần CSDL: DbContext/SQL Server sang T0.4 (Outbox là thứ đầu tiên cần), Repository/Specification/audit/Guid tuần tự sang T1.1 (aggregate đầu tiên) — đúng nguyên tắc không làm trước.
+- Huy duyệt đặc tả T0.5 → `codex`. Huy sẽ tự gõ lại theo mục 9 (chia nhóm file + thứ tự); Docker giải thích từng bước khi test tay. T0.3 để sau.
