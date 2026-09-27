@@ -95,7 +95,7 @@ Mỗi task thiết kế nhóm tạo: `docs/specs/<nhóm>.md` (đặc tả UC) ·
 **G0 — Nền tảng**
 | ID | Nội dung | Phụ thuộc | Trạng thái |
 |---|---|---|---|
-| T0.1 | Git + .gitignore + .gitattributes. ~~`docker-compose.yml` + Seq~~ → dời sang task đầu tiên dùng Serilog→Seq (khung chưa ghi log ra Seq; máy Huy chưa có Docker) | – | retype (Huy làm tay, không qua Codex/ref) |
+| T0.1 | Git + .gitignore + .gitattributes. ~~`docker-compose.yml` + Seq~~ → dời sang task đầu tiên dùng Serilog→Seq (khung chưa ghi log ra Seq; máy Huy chưa có Docker) | – | done |
 | T0.2 | Khung .NET 10 Clean Architecture 4 lớp + `ConfHub.Scheduling` + các mẫu giữ lại từ khung base (BaseEntity, Specification/Repository, MediatR + ValidationBehavior, ExceptionMiddleware→ProblemDetails, Serilog→Seq, analyzer) + project test | T0.1 | retype (Huy làm tay **phần khung**: solution, project, reference, analyzer, `/health` + integration test; các mẫu code chờ quyết định tách task) |
 | T0.3 | Khung FE: Vite React TS, antd v5 token sáng/tối, i18n vi/en, 3 shell A/B/C + router rỗng | T0.1 | todo |
 | T0.4 | Hạ tầng sự kiện: thêm RabbitMQ + smtp4dev vào compose; MassTransit 8.x + EF Transactional Outbox/Inbox + consumer gửi email | T0.2 | todo |
@@ -211,3 +211,4 @@ Mỗi task thiết kế nhóm tạo: `docs/specs/<nhóm>.md` (đặc tả UC) ·
 | 2026-09-25 | Nguyên tắc làm tăng dần theo nhóm: tài liệu + giao diện + bảng/cột + hạ tầng chỉ làm tới nhóm đang làm. Thêm D7–D14 (thiết kế từng nhóm), D3/D4 dropped. Task code đầu mỗi nhóm phụ thuộc task thiết kế nhóm. |
 | 2026-09-27 | Bắt đầu G0 phần backend: Huy làm tay T0.1 + khung T0.2 (không Codex, không tag ref; Claude review diff trước khi merge). Khung đã chạy thử với SDK 10.0.112. T0.3 để sau. |
 | 2026-09-27 | Dời `docker-compose.yml` + Seq khỏi T0.1 sang task đầu tiên dùng Serilog→Seq (đúng nguyên tắc hạ tầng thêm ở task dùng đến). Máy Huy cần cài .NET 10 SDK (đang có 8, 9). |
+| 2026-09-27 | T0.1 done: merge `task/T0.1-git` vào main (--no-ff). Bắt đầu khung T0.2 trên `task/T0.2-be-skeleton`. |
