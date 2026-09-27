@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ConfHub.Api/ConfHub.Api.csproj" />
+    <Project Path="src/ConfHub.Application/ConfHub.Application.csproj" />
+    <Project Path="src/ConfHub.Domain/ConfHub.Domain.csproj" />
+    <Project Path="src/ConfHub.Infrastructure/ConfHub.Infrastructure.csproj" />
+    <Project Path="src/ConfHub.Scheduling/ConfHub.Scheduling.csproj" />
+  </Folder>
+</Solution>
