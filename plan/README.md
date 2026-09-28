@@ -6,7 +6,7 @@
 ## 0. Đang ở đâu
 
 - **Vừa xong:** T0.1, T0.2, T0.5 (mẫu nền tảng backend) — 2026-09-28
-- **Đang làm:** T0.4 — đặc tả đã duyệt, đang code trên `task/T0.4-event-infra`
+- **Đang làm:** T0.4 — bản tham khảo xong (tag `ref/T0.4`), Huy test tay theo mục 7 rồi gõ lại theo mục 9
 - **Còn lại của G0:** T0.4 (sau T0.5), T0.3 (độc lập)
 - **Nhánh đang mở:** `task/T0.4-event-infra`
 
@@ -125,7 +125,7 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 | T0.1 | Git                                     | –         | done       |
 | T0.2 | Khung solution backend                  | T0.1      | done       |
 | T0.3 | Khung frontend                          | T0.1      | todo       |
-| T0.4 | Hạ tầng sự kiện (RabbitMQ, MassTransit) | T0.5      | codex      |
+| T0.4 | Hạ tầng sự kiện (RabbitMQ, MassTransit) | T0.5      | ui-test    |
 | T0.5 | Mẫu nền tảng backend                    | T0.2      | done       |
 
 **Chi tiết:**
@@ -143,7 +143,7 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 | T1.2 | FE: đăng ký / đăng nhập        | T1.1, T0.3               | todo       |
 
 **Chi tiết:**
-- **T1.1** — Đăng ký, xác thực email, đăng nhập, JWT + refresh token; Role + Permissions (seed 5 vai trò), kiểm tra quyền theo permission. Nhận từ T0.5: IRepository/IReadRepository + Specification, SaveChangesInterceptor (audit), sinh Guid tuần tự. **Nhận từ T0.4 (phương án B):** thêm smtp4dev vào compose + MailKit + consumer gửi email (mail xác thực là nơi đầu tiên dùng); cơ chế domain event → publish qua outbox trước `SaveChanges`.
+- **T1.1** — Đăng ký, xác thực email, đăng nhập, JWT + refresh token; Role + Permissions (seed 5 vai trò), kiểm tra quyền theo permission. Nhận từ T0.5: IRepository/IReadRepository + Specification, SaveChangesInterceptor (audit), sinh Guid tuần tự. **Nhận từ T0.4 (phương án B):** thêm smtp4dev vào compose + MailKit + consumer gửi email (mail xác thực là nơi đầu tiên dùng); cơ chế domain event → publish qua outbox trước `SaveChanges`. Kiểm tra lại: tắt RabbitMQ thì `/health` phải báo `Unhealthy` (T0.4 chưa kiểm được vì chưa có consumer).
 - **T1.2** — Đăng ký / đăng nhập / đăng xuất, chặn route theo quyền.
 
 #### G2 — Thuật toán bản console (làm sớm, độc lập)
@@ -322,3 +322,6 @@ Chỉ chia task khi P1–P4 xong.
 - Merge T0.5 vào main (78b38b3), đẩy tag `ref/T0.5`. Sự cố: file Codex tạo trong sandbox không xóa được → cấp quyền `Admin:(OI)(CI)F` cho cả repo; ghi vào CLAUDE.md mục Môi trường.
 - T0.4 chọn phương án B: T0.4 chỉ làm đường ống sự kiện (EF Core/SQL Server + MassTransit Outbox/Inbox + RabbitMQ); smtp4dev + consumer gửi mail chuyển sang T1.1, nơi đầu tiên dùng tới (ghi vào chi tiết T1.1 để không quên). MassTransit ghim 8.5.10 (Apache-2.0, hỗ trợ net10/EF Core 10).
 - Huy duyệt đặc tả T0.4 → `codex`. Tên migration không được có dấu `.` → `T0_4_MassTransitOutbox` (ghi quy ước vào AGENTS.md).
+- T0.4 code xong: build 0 warning, test 19/19 (Infrastructure 3 test với SQL Server thật, chạy lại 2 lần ổn định). Sửa: luật `const` PascalCase, `Migrations` là code tự sinh, test chờ tin nhắn bằng vòng kiểm tra. Tag `ref/T0.4` → `ui-test`.
+- T0.4 test tay: tắt RabbitMQ `/health` vẫn `Healthy` — health check MassTransit chỉ theo dõi hàng đợi của consumer, T0.4 chưa có consumer. Bỏ bước này khỏi mục 7, chuyển kiểm tra sang T1.1.
+- T0.4: cấu hình RabbitMQ đổi sang Options pattern (`RabbitMqOptions`, kiểm tra khi khởi động) theo đề xuất của Huy; chuỗi kết nối giữ `GetConnectionString`. Thêm 3 test cấu hình → 22/22 pass. Quy ước mới: dùng pattern thì comment tên + mục đích (CLAUDE.md, AGENTS.md).
