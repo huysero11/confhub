@@ -26,7 +26,7 @@ Một đoạn: sau task này hệ thống làm được gì, người dùng th�
 
 ## 4. Danh sách file dự kiến
 | File | Vai trò |
-|---|---|
+|------|---------|
 
 ## 5. Test phải viết
 - 
@@ -48,10 +48,10 @@ Một đoạn: sau task này hệ thống làm được gì, người dùng th�
 
 Gõ theo thứ tự dưới đây (từ trong ra ngoài: Domain → Application → Infrastructure → Api → Test; FE: types → api → hook → component → page → route). Sau mỗi **điểm dừng** chạy lệnh kiểm tra để chắc phần vừa gõ đúng rồi mới đi tiếp.
 
-| # | File | Vai trò | Điểm chính cần hiểu | Gõ / Đọc |
-|---|---|---|---|---|
-| 1 | `be/src/ConfHub.Domain/...` | | | Gõ |
-| … | | | | |
+| #   | File                        | Vai trò | Điểm chính cần hiểu | Gõ / Đọc |
+|-----|-----------------------------|---------|---------------------|----------|
+| 1   | `be/src/ConfHub.Domain/...` |         |                     | Gõ       |
+| …   |                             |         |                     |          |
 
 **Điểm dừng:**
 - Sau bước …: `dotnet build` pass
