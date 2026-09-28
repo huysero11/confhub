@@ -6,11 +6,15 @@
 
 ## Git
 - Làm trên nhánh `task/<ID>-<slug>` tạo từ `main` (file task ghi tên nhánh). Không commit thẳng vào `main`.
-- Commit message: `codex(<ID>): <mô tả ngắn>`.
+- **Không commit.** Để mọi thay đổi trong working tree (Huy cần thấy file màu xanh/vàng). Claude tự gắn tag bản tham khảo sau khi review.
 - Không force-push, không xóa nhánh/tag.
 
-## Code phải dễ đọc để người dùng gõ lại và học
-- File nhỏ, một trách nhiệm. Tên rõ nghĩa, tiếng Anh.
+## Code phải đơn giản, dễ đọc để người dùng gõ lại và học
+- **Đơn giản nhưng không kém chất lượng**: đơn giản ở cách viết, KHÔNG cắt bớt logic, xử lý lỗi/trường hợp biên, best practice (Clean Architecture, DI, async/await đúng, validate, bảo mật) hay test.
+- Cách viết thẳng, dễ hiểu hơn cách viết ngắn/"hay". `if`/`foreach` rõ ràng thay vì chuỗi LINQ dài; không lồng quá sâu.
+- Không thêm lớp trừu tượng, generic, reflection, source generator, pattern khi file task không yêu cầu.
+- Analyzer ép cách viết phức tạp (chủ yếu luật tối ưu hiệu năng nhỏ) → **dừng lại, ghi vào báo cáo** cho Claude quyết định; không tự làm code rối để né luật.
+- File nhỏ, một trách nhiệm. Tên rõ nghĩa, tiếng Anh; tên hàm nói đúng việc nó làm (`MapExceptionToProblem`, `BuildProblem`). Không dùng overload (cùng tên, khác tham số) cho hai việc khác nhau.
 - Comment tiếng Việt ngắn ở chỗ có logic không hiển nhiên (thuật toán, ràng buộc, lý do thiết kế). Không comment thừa.
 - Không thêm thư viện ngoài danh sách trong PROJECT.md mục 8 trừ khi file task cho phép.
 
@@ -51,4 +55,4 @@
 2. Lệnh đã chạy + kết quả (dán phần tóm tắt pass/fail).
 3. Cách chạy và test thủ công trên giao diện/API.
 4. Ghi chú cho Claude: giả định đã đặt, việc chưa làm, rủi ro.
-5. **Thứ tự gõ lại (bản nháp):** liệt kê MỌI file đã tạo/sửa theo thứ tự phụ thuộc (file được dùng đứng trước file dùng nó: Domain → Application → Infrastructure → Api → Test; FE: types → api → hook → component → page → route). Mỗi file 1 dòng: đường dẫn · vai trò · điểm chính cần hiểu. Đánh dấu điểm dừng có thể build/test giữa chừng.
+5. **Thứ tự gõ lại (bản nháp), chia nhóm theo lớp/chức năng:** liệt kê MỌI file đã tạo/sửa theo thứ tự phụ thuộc (file được dùng đứng trước file dùng nó: Domain → Application → Infrastructure → Api → Test; FE: types → api → hook → component → page → route). Mỗi file 1 dòng: đường dẫn · vai trò · điểm chính cần hiểu. Đánh dấu điểm dừng có thể build/test giữa chừng.

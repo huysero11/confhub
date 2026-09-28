@@ -8,5 +8,6 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/ConfHub.Api.IntegrationTests/ConfHub.Api.IntegrationTests.csproj" />
+    <Project Path="tests/ConfHub.Application.Tests/ConfHub.Application.Tests.csproj" />
   </Folder>
 </Solution>

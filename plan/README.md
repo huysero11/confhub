@@ -5,10 +5,10 @@
 
 ## 0. Đang ở đâu
 
-- **Vừa xong:** T0.1 (Git), T0.2 (khung solution backend) — 2026-09-27
-- **Đang làm:** T0.5 — Codex đang làm trên `task/T0.5-be-foundation` (đặc tả đã duyệt)
+- **Vừa xong:** T0.1, T0.2, T0.5 (mẫu nền tảng backend) — 2026-09-28
+- **Tiếp theo:** T0.4 (RabbitMQ + MassTransit + EF Core/SQL Server) — Claude viết đặc tả
 - **Còn lại của G0:** T0.4 (sau T0.5), T0.3 (độc lập)
-- **Nhánh đang mở:** `task/T0.5-be-foundation`
+- **Nhánh đang mở:** không
 
 ## 1. Quy trình một task
 
@@ -17,9 +17,9 @@ Claude viết plan/tasks/<ID>.md
    → Codex code + test trên nhánh task/<ID>-<slug>
    → Claude review diff + chạy lại test (lặp tới khi đạt)
    → Claude viết mục 9 "Hướng dẫn gõ lại" (thứ tự file + vai trò + điểm dừng)
-   → tag ref/<ID>  (bản tham khảo đã kiểm)
+   → tag ref/<ID>  (bản tham khảo đã kiểm) rồi bỏ commit: code để nguyên, chưa commit
    → Huy test trên giao diện
-   → Huy tự gõ lại từng file theo mục 9 (cùng nhánh)
+   → Huy chọn file muốn gõ lại, tự copy ra chỗ khác rồi gõ lại tại chỗ (thứ tự gợi ý: mục 9), gõ xong mới commit
    → Claude so bản gõ lại với ref/<ID> + chạy test, giải thích khi được hỏi
    → merge vào main, cập nhật bảng trạng thái
 ```
@@ -44,8 +44,9 @@ Task nhỏ thuần cấu hình (như G0) có thể **làm tay**: Claude hướng
 
 - **`main`** — chỉ chứa code Huy đã gõ lại và test pass. Luôn chạy được.
 - **Nhánh task** — `task/<ID>-<slug>`, ví dụ `task/T1.1-jwt-auth`. Tạo từ `main` mới nhất.
-- **Commit** — Codex: `codex(<ID>): ...` · Huy: `<ID>: ...`
-- **Tag `ref/<ID>`** — commit Codex cuối đã được Claude duyệt = bản tham khảo vĩnh viễn.
+- **Commit** — Codex **không commit**. Chỉ Huy commit (`<ID>: ...`) sau khi gõ lại.
+- **Tag `ref/<ID>`** — bản đáp án Claude dùng để kiểm tra bản gõ lại (Huy không cần dùng). Tạo mà không để lại commit (code vẫn hiện màu trong VS Code):
+  `git add -A` → `git commit -m "ref(<ID>): ban tham khao"` → `git tag ref/<ID>` → `git reset --mixed HEAD~1`
 - **Merge** — `git merge --no-ff --no-edit task/<...>`: luôn có commit merge, lịch sử thấy rõ từng task.
 
 **Xem bản tham khảo khi gõ lại** (không cần copy file ra ngoài):
@@ -125,7 +126,7 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 | T0.2 | Khung solution backend                  | T0.1      | done       |
 | T0.3 | Khung frontend                          | T0.1      | todo       |
 | T0.4 | Hạ tầng sự kiện (RabbitMQ, MassTransit) | T0.5      | todo       |
-| T0.5 | Mẫu nền tảng backend                    | T0.2      | codex      |
+| T0.5 | Mẫu nền tảng backend                    | T0.2      | done       |
 
 **Chi tiết:**
 - **T0.1** — `.gitattributes`, `.gitignore`, repo GitHub. Huy làm tay. `docker-compose.yml` + Seq đã dời sang T0.5 (khung chưa ghi log; máy Huy chưa có Docker).
@@ -312,3 +313,9 @@ Chỉ chia task khi P1–P4 xong.
 - Tách mẫu nền tảng backend (BaseEntity, Specification, MediatR, ExceptionMiddleware, Serilog→Seq, OpenAPI) + Docker Compose/Seq thành **T0.5** (quy trình Codex chuẩn). T0.4 và T1.1 chuyển phụ thuộc sang T0.5. Đổi định dạng file này cho dễ đọc (bảng ngắn + chi tiết).
 - T0.5 → `spec`: viết `plan/tasks/T0.5.md`. Chia phần CSDL: DbContext/SQL Server sang T0.4 (Outbox là thứ đầu tiên cần), Repository/Specification/audit/Guid tuần tự sang T1.1 (aggregate đầu tiên) — đúng nguyên tắc không làm trước.
 - Huy duyệt đặc tả T0.5 → `codex`. Huy sẽ tự gõ lại theo mục 9 (chia nhóm file + thứ tự); Docker giải thích từng bước khi test tay. T0.3 để sau.
+- T0.5: Codex bị ngắt kết nối sau 60 giây/lượt nên không chạy được lượt dài → Claude viết code, Codex chỉ chạy build/test/git (commit tiền tố `claude(T0.5)`). Build 0 warning; test 14/14 pass. Tắt RCS1194 (exception không cần đủ 3 constructor chuẩn). Viết mục 9, tag `ref/T0.5` → `ui-test`.
+- Quy ước mới (ghi vào CLAUDE.md, AGENTS.md): task sau **không để lại commit** — tag `ref/<ID>` rồi `reset --mixed` để code hiện màu trong VS Code; **code đơn giản, dễ hiểu** là ưu tiên số 1. T0.5 đã commit trước quy ước này.
+- T0.5 đơn giản hóa (ValidationBehavior, ApiExceptionHandler dùng `foreach`; tắt CA1848, dùng `logger.LogError`), build 0 warning, test 14/14. Gắn lại tag `ref/T0.5` (85eb4dc) rồi `reset --mixed` về `fd8b07d`: code T0.5 để chưa commit. Căn thẳng bảng trong mọi file markdown; thêm quy tắc markdown vào CLAUDE.md.
+- Gõ lại: không giấu code; Huy tự chọn file, tự copy ra chỗ khác rồi gõ lại tại chỗ. Tag `ref/<ID>` chỉ để Claude kiểm tra.
+- 2026-09-28: T0.5 đổi xử lý lỗi sang `ExceptionHandlingMiddleware` tự viết (`try/catch`, tự ghi JSON), bỏ `IExceptionHandler`/`AddProblemDetails`. Build 0 warning, test 16/16. Ghi nguyên tắc "tự viết hay dùng thư viện" vào PROJECT.md mục 8.
+- T0.5 done: Huy test tay (Docker + Seq + Scalar) đạt, gõ lại xong; bản gõ khớp `ref/T0.5` (so từng file, bỏ qua kiểu xuống dòng), build 0 warning, test 16/16. Merge `task/T0.5-be-foundation` vào main.

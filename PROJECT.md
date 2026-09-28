@@ -20,11 +20,11 @@
 
 **Khảo sát hiện trạng (đã kiểm chứng, phải viết đúng trong báo cáo):**
 
-| Nhóm | Đại diện | Mức hỗ trợ |
-|---|---|---|
-| Nền tảng quản lý hội nghị | Whova, Sched, Sessionboard | Chỉ **cảnh báo** xung đột, người dùng tự sửa |
-| Công cụ xếp lịch chuyên biệt | **PragmaPlanner** | **Đã có** tự sinh lịch bằng bộ giải ràng buộc, có cả tính năng khóa phiên rồi sắp lại phần còn lại |
-| Giám sát sức chứa | EventPilot, EventHex | Ước lượng nguy cơ quá tải; tài liệu EventPilot ghi rõ đây là *ước lượng, không phải dự đoán* |
+| Nhóm                         | Đại diện                   | Mức hỗ trợ                                                                                         |
+|------------------------------|----------------------------|----------------------------------------------------------------------------------------------------|
+| Nền tảng quản lý hội nghị    | Whova, Sched, Sessionboard | Chỉ **cảnh báo** xung đột, người dùng tự sửa                                                       |
+| Công cụ xếp lịch chuyên biệt | **PragmaPlanner**          | **Đã có** tự sinh lịch bằng bộ giải ràng buộc, có cả tính năng khóa phiên rồi sắp lại phần còn lại |
+| Giám sát sức chứa            | EventPilot, EventHex       | Ước lượng nguy cơ quá tải; tài liệu EventPilot ghi rõ đây là *ước lượng, không phải dự đoán*       |
 
 > **CẢNH BÁO KHI VIẾT BÁO CÁO:** KHÔNG được viết "chưa có nền tảng nào tự động xếp lịch" — sai, PragmaPlanner đã làm. Cách phát biểu đúng: các nền tảng quản lý hội nghị *tích hợp* chỉ dừng ở phát hiện xung đột; việc tự sinh lịch nằm ở công cụ chuyên biệt tách rời. Đóng góp là **tích hợp vào một hệ thống hoàn chỉnh**, không phải phát minh ra việc xếp lịch tự động.
 
@@ -74,14 +74,14 @@ Dùng kịch bản này làm chuẩn khi thiết kế màn hình và viết báo
 
 ### Hai loại hàng hóa — quy tắc tính khác nhau (dễ làm sai)
 
-| | **Hàng tiêu hao** (suất ăn, tiệc trà) | **Hàng cho thuê** (máy chiếu, micro, màn LED) |
-|---|---|---|
-| Đơn vị | Suất / người | Bộ / ngày |
-| Gắn với | Khung giờ ăn của cả hội nghị | Từng phòng, từng khung giờ |
-| Vòng đời | Giao → dùng hết, không thu hồi | Giao → lắp → dùng lại nhiều phiên → **thu hồi** |
-| Nguồn nhu cầu | Người tham dự chọn khi đăng ký | Diễn giả yêu cầu + phòng thiếu sẵn |
-| Đặc thù | Phân loại chay/mặn/dị ứng | Lắp đặt, bàn giao, kiểm kê khi trả |
-| **Cách tính** | **Phép cộng**: 287 người → 287 suất | **Đỉnh đồng thời**: 3 phòng song song → 3 máy chiếu (KHÔNG phải 3×6 phiên = 18) |
+|               | **Hàng tiêu hao** (suất ăn, tiệc trà) | **Hàng cho thuê** (máy chiếu, micro, màn LED)                                   |
+|---------------|---------------------------------------|---------------------------------------------------------------------------------|
+| Đơn vị        | Suất / người                          | Bộ / ngày                                                                       |
+| Gắn với       | Khung giờ ăn của cả hội nghị          | Từng phòng, từng khung giờ                                                      |
+| Vòng đời      | Giao → dùng hết, không thu hồi        | Giao → lắp → dùng lại nhiều phiên → **thu hồi**                                 |
+| Nguồn nhu cầu | Người tham dự chọn khi đăng ký        | Diễn giả yêu cầu + phòng thiếu sẵn                                              |
+| Đặc thù       | Phân loại chay/mặn/dị ứng             | Lắp đặt, bàn giao, kiểm kê khi trả                                              |
+| **Cách tính** | **Phép cộng**: 287 người → 287 suất   | **Đỉnh đồng thời**: 3 phòng song song → 3 máy chiếu (KHÔNG phải 3×6 phiên = 18) |
 
 Với hàng cho thuê còn phải **trừ thiết bị sẵn có tại phòng** (khai ở UC ban tổ chức số 2) — chỉ thuê phần thiếu.
 
@@ -189,12 +189,12 @@ Quan tâm     danh sách cặp (NgườiId, PhiênId)  — lưu thưa
 
 2 khung giờ (9h, 10h); P101 100 chỗ, P102 40 chỗ; 4 phiên: A và D của Long, B của Hoa, C của Tùng; Long chỉ rảnh 9h–11h. `W[A][C]=35`, `W[A][B]=5`, còn lại 0. Quy mô: A=42, B=39, C=21, D=14 *(A cần ≥42 nên chỉ vừa P101)*. Độ ràng buộc: Long 2 mốc/2 phiên → 0 (chặt nhất). Thứ tự xếp: **A, D, B, C**.
 
-| Bước | Phiên | Xét mốc | Chọn |
-|---|---|---|---|
-| 1 | A | 9h: f=0 · 10h: f=0 → hòa, ưu tiên cân bằng tải | 9h, P101 |
-| 2 | D | 9h: Long bận (H1) · 10h: f=0 | 10h, P102 |
-| 3 | B | 9h: chồng A → +5 · 10h: chồng D → +0 | 10h, P101 |
-| 4 | C | 9h: chồng A → **+35** · 10h: hết phòng (H2) | 9h, P102 |
+| Bước | Phiên | Xét mốc                                        | Chọn      |
+|------|-------|------------------------------------------------|-----------|
+| 1    | A     | 9h: f=0 · 10h: f=0 → hòa, ưu tiên cân bằng tải | 9h, P101  |
+| 2    | D     | 9h: Long bận (H1) · 10h: f=0                   | 10h, P102 |
+| 3    | B     | 9h: chồng A → +5 · 10h: chồng D → +0           | 10h, P101 |
+| 4    | C     | 9h: chồng A → **+35** · 10h: hết phòng (H2)    | 9h, P102  |
 
 → **f = 35.** Điểm yếu tham lam lộ ra: bước 3 chọn 10h vì lúc đó rẻ hơn, nhưng chiếm mất chỗ khiến C buộc đứng cạnh A.
 
@@ -206,12 +206,12 @@ Giai đoạn 2: đóng góp A=35, C=35, B=0, D=0 → chỉ thử A và C. Dời 
 
 **Dữ liệu:** sinh mô phỏng 3 quy mô (30 / 60 / 100 phiên); ma trận quan tâm sinh theo phân phối **có cụm chủ đề** để phản ánh thực tế. *Nêu rõ hạn chế: dữ liệu mô phỏng, chỉ có giá trị so sánh tương đối.*
 
-| | Phương pháp |
-|---|---|
+|        | Phương pháp                                                         |
+|--------|---------------------------------------------------------------------|
 | **M1** | Xếp thủ công mô phỏng: theo thứ tự nhập, gán vào mốc trống đầu tiên |
-| **M2** | Chỉ đảm bảo ràng buộc cứng, không dùng dữ liệu nguyện vọng |
-| **M3** | Giai đoạn 1 + cải thiện cục bộ |
-| **M4** | M3 + mô phỏng luyện kim |
+| **M2** | Chỉ đảm bảo ràng buộc cứng, không dùng dữ liệu nguyện vọng          |
+| **M3** | Giai đoạn 1 + cải thiện cục bộ                                      |
+| **M4** | M3 + mô phỏng luyện kim                                             |
 
 **11 chỉ số:** (1) số lượt xung đột nguyện vọng *(chính)*; (2) tỷ lệ người không mất phiên nào quan tâm; (3) vi phạm ràng buộc cứng còn sót *(kỳ vọng 0)*; (4) tỷ lệ phiên xếp thành công; (5) độ lệch tải; (6) tỷ lệ lấp đầy phòng; (7) thời gian chạy; (8) số phiên xáo trộn khi xếp lại; (9) sai số ước lượng quy mô phiên so với check-in thực tế; (10) lãng phí sức chứa Hungarian vs tham lam; (11) tương quan giữa tương đồng chủ đề và ma trận quan tâm thực tế *(kiểm chứng giả định cold start)*.
 
@@ -230,15 +230,15 @@ ASP.NET Core Web API · **Clean Architecture 4 lớp** (Domain / Application / I
 
 **Xác thực & phân quyền:** JWT (access + refresh token); **phân quyền theo permission** — mỗi UC gắn một quyền cụ thể (`Conference.Create`, `Schedule.Run`, `Service.Order`…), vai trò là tập hợp quyền, kiểm tra qua Authorization Handler tùy biến. Với 6 tác nhân phạm vi rất khác nhau, cơ chế này cần thiết hơn phân quyền theo vai trò đơn thuần.
 
-| Thành phần | Vai trò | Ghi chú |
-|---|---|---|
-| **SignalR** | Q&A/poll thời gian thực theo từng phiên (**mỗi phiên là một group riêng**); theo dõi check-in; thông báo điều phối | Group tên theo SessionId — người phòng 101 không thấy câu hỏi phòng 102 |
-| **Hangfire** | Chạy thuật toán xếp lịch nền; tổng hợp nhu cầu dịch vụ; nhắc lịch; xuất báo cáo lớn | Việc **theo lịch / tốn thời gian** |
-| **RabbitMQ** | Sự kiện `RegistrationApproved`, `ScheduleChanged` → Email / Notification / Analytics xử lý độc lập | Việc **phản ứng theo sự kiện**; email lỗi không làm hỏng giao dịch chính |
-| **Redis** | Cache chương trình đã công bố, danh mục dịch vụ; **backplane cho SignalR** khi chạy nhiều instance | |
-| **MinIO** | Slide, tài liệu, ảnh, tệp báo cáo | DB chỉ lưu đường dẫn |
-| **Serilog + Seq** | Log có cấu trúc tập trung từ API, job nền, consumer | |
-| **Docker Compose** | Dựng SQL Server, Redis, RabbitMQ, MinIO, Seq bằng một lệnh | Làm ngay tuần 1 |
+| Thành phần         | Vai trò                                                                                                            | Ghi chú                                                                  |
+|--------------------|--------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------|
+| **SignalR**        | Q&A/poll thời gian thực theo từng phiên (**mỗi phiên là một group riêng**); theo dõi check-in; thông báo điều phối | Group tên theo SessionId — người phòng 101 không thấy câu hỏi phòng 102  |
+| **Hangfire**       | Chạy thuật toán xếp lịch nền; tổng hợp nhu cầu dịch vụ; nhắc lịch; xuất báo cáo lớn                                | Việc **theo lịch / tốn thời gian**                                       |
+| **RabbitMQ**       | Sự kiện `RegistrationApproved`, `ScheduleChanged` → Email / Notification / Analytics xử lý độc lập                 | Việc **phản ứng theo sự kiện**; email lỗi không làm hỏng giao dịch chính |
+| **Redis**          | Cache chương trình đã công bố, danh mục dịch vụ; **backplane cho SignalR** khi chạy nhiều instance                 |                                                                          |
+| **MinIO**          | Slide, tài liệu, ảnh, tệp báo cáo                                                                                  | DB chỉ lưu đường dẫn                                                     |
+| **Serilog + Seq**  | Log có cấu trúc tập trung từ API, job nền, consumer                                                                |                                                                          |
+| **Docker Compose** | Dựng SQL Server, Redis, RabbitMQ, MinIO, Seq bằng một lệnh                                                         | Làm ngay tuần 1                                                          |
 
 > **Câu hỏi chắc chắn bị hỏi khi bảo vệ:** "Vì sao cần cả Hangfire lẫn RabbitMQ?" → Hangfire cho việc **theo lịch/định kỳ**; RabbitMQ cho việc **phản ứng theo sự kiện**, phát tán tới nhiều consumer độc lập. Hai mục đích khác nhau.
 
@@ -246,6 +246,11 @@ ASP.NET Core Web API · **Clean Architecture 4 lớp** (Domain / Application / I
 - **DDD nhẹ**: aggregate + phương thức nghiệp vụ cho lõi (`ScheduleVersion`, `Registration`, `ServiceOrder`, `Conference`); value object `TimeRange` (kiểm tra chồng lấn — lõi của H1, H3, H5); domain event cho thay đổi có ý nghĩa nghiệp vụ. Phần CRUD danh mục giữ entity đơn giản. Không tuyên bố DDD đầy đủ (không bounded context).
 - **Event-driven cho hiệu ứng phụ**: `RegistrationApproved`, `ScheduleChanged` → MassTransit 8.x + RabbitMQ + **EF Core Transactional Outbox/Inbox của MassTransit** (thay bảng OutboxMessage tự viết). Luồng chính vẫn request/response + CQRS. Không phải event sourcing.
 - **Nền tảng**: .NET 10 LTS (.NET 8 hết hỗ trợ 10/11/2026). Mẫu mã tham khảo từ khung TD.Microservice.ServiceBase — giữ/bỏ gì và quy tắc chất lượng: `docs/design/base-reference.md`.
+
+**Tự viết hay dùng thư viện (chốt 2026-09-28):** mục tiêu là hiểu sâu để tự gõ lại và giải thích khi bảo vệ.
+- **Tự viết** khi code ngắn và giúp hiểu cơ chế: xử lý lỗi (middleware `try/catch` → ProblemDetails), validation pipeline, phân quyền theo permission, thuật toán xếp lịch.
+- **Dùng thư viện** khi tự viết vừa dài vừa dễ sai/thiếu an toàn: ký/xác thực JWT, băm mật khẩu, EF Core, MassTransit/RabbitMQ, SignalR, Serilog.
+- Tính năng có sẵn của framework nhưng che mất cơ chế (vd `IExceptionHandler`) → ưu tiên tự viết nếu ngắn tương đương.
 
 **Kiểm thử:** unit test tầng Application (Handler) · **test riêng cho thuật toán xếp lịch** (xác minh không vi phạm ràng buộc cứng trên nhiều bộ dữ liệu) · integration test cho API chính.
 
@@ -260,11 +265,11 @@ React + TypeScript + **Ant Design v5** + TanStack Query + SignalR client + Recha
 
 ### Ba shell — KHÔNG dùng chung một layout
 
-| Shell | Cho ai | Hình dạng |
-|---|---|---|
-| **A — Bảng điều khiển** | Ban tổ chức, Quản trị viên, Nhà cung cấp | Sidebar trái (thu gọn được) + header + `<Outlet/>`. Màn nhỏ: sidebar thành Drawer |
-| **B — Công khai / người tham dự** | Khách, Người tham dự | Header ngang (logo, tìm kiếm, đăng nhập). Điện thoại: thêm tab bar dưới đáy (Chương trình · Lịch của tôi · Vé · Tài khoản) |
-| **C — Vận hành tại chỗ** | Nhân viên vận hành | Tối giản, gần như không điều hướng. Camera quét chiếm gần hết màn hình, vài nút to ở dưới |
+| Shell                             | Cho ai                                   | Hình dạng                                                                                                                  |
+|-----------------------------------|------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|
+| **A — Bảng điều khiển**           | Ban tổ chức, Quản trị viên, Nhà cung cấp | Sidebar trái (thu gọn được) + header + `<Outlet/>`. Màn nhỏ: sidebar thành Drawer                                          |
+| **B — Công khai / người tham dự** | Khách, Người tham dự                     | Header ngang (logo, tìm kiếm, đăng nhập). Điện thoại: thêm tab bar dưới đáy (Chương trình · Lịch của tôi · Vé · Tài khoản) |
+| **C — Vận hành tại chỗ**          | Nhân viên vận hành                       | Tối giản, gần như không điều hướng. Camera quét chiếm gần hết màn hình, vài nút to ở dưới                                  |
 
 ```
 /                  → ShellB   (trang chủ, danh sách hội nghị)
@@ -280,17 +285,17 @@ React + TypeScript + **Ant Design v5** + TanStack Query + SignalR client + Recha
 
 **Màu chính: xanh dầu (petrol) `#0E5A62`.** Lý do: không dùng xanh dương SaaS mặc định; màn hình lưới lịch đã có 5 màu track rực rỡ nên màu thương hiệu phải trầm để không đánh nhau.
 
-| Vai trò | Sáng | Tối |
-|---|---|---|
-| Màu chính | `#0E5A62` | `#4FB3BF` |
-| Nền | `#F7F8F7` | `#14181A` |
-| Bề mặt | `#FFFFFF` | `#1D2326` |
-| Chữ | `#17232B` | `#E6EAEB` |
-| Chữ phụ | `#5E6E75` | `#9AA8AD` |
-| Đường kẻ | `#D8DEDF` | `#333C40` |
+| Vai trò      | Sáng      | Tối       |
+|--------------|-----------|-----------|
+| Màu chính    | `#0E5A62` | `#4FB3BF` |
+| Nền          | `#F7F8F7` | `#14181A` |
+| Bề mặt       | `#FFFFFF` | `#1D2326` |
+| Chữ          | `#17232B` | `#E6EAEB` |
+| Chữ phụ      | `#5E6E75` | `#9AA8AD` |
+| Đường kẻ     | `#D8DEDF` | `#333C40` |
 | Cảnh báo/chờ | `#B26B00` | `#E0A33D` |
 | Lỗi/xung đột | `#B3261E` | `#F2887F` |
-| Thành công | `#2E6B45` | `#68B98A` |
+| Thành công   | `#2E6B45` | `#68B98A` |
 
 **Màu track** (lưới lịch), chọn để phân biệt được cả khi in đen trắng và với người mù màu — sáng/tối: `#1F6F8B`/`#6FB6D0`, `#7A4E9E`/`#B492D8`, `#A25A2A`/`#D69A6B`, `#2F7050`/`#6FB894`, `#8C3B54`/`#D08AA0`.
 
@@ -336,20 +341,20 @@ Bản mẫu giao diện đã dựng (có nút đổi nền tối và ngôn ngữ
 
 > **Đã thay thế (2026-09-25):** 15 tuần hiện tại là môn Dự án công nghệ (nộp tài liệu + slide); code để giai đoạn khóa luận. Kế hoạch hiện hành: `plan/README.md` mục 3. Bảng dưới giữ để tham khảo.
 
-| Tuần | Nội dung |
-|---|---|
-| 1 | Chốt phạm vi, đặc tả UC, **vẽ ERD**, dựng solution + Docker Compose. Vẽ màn hình xương sống. Viết chương 1–2 báo cáo |
-| 2–3 | Auth + phân quyền + quản lý người dùng (đủ 6 actor). **Song song: bản nháp thuật toán chạy console để thăm dò rủi ro** |
-| 4–5 | Quản lý hội nghị / phòng / phiên / diễn giả — biểu đồ → giao diện → code. Xong là viết luôn báo cáo phần này |
-| 6–7 | Thuật toán xếp lịch bản chính: hai giai đoạn, Hungarian, chạy nền, lưới lịch kéo thả |
-| 8 | Đăng ký, thu thập nguyện vọng, vé QR, check-in, kiến trúc hướng sự kiện |
-| 9 | Phân hệ dịch vụ + nhà cung cấp |
-| 10 | Phân hệ nhân viên vận hành (Shell C, quét mã) |
-| 11 | Q&A/poll thời gian thực + gom nhóm câu hỏi (AI-2) |
-| 12 | Trợ lý hỏi đáp theo phiên (AI-1) + tóm tắt phản hồi (AI-3) |
-| 13 | Xếp lịch lại hạn chế xáo trộn + thống kê, dashboard, báo cáo |
-| 14 | **Thực nghiệm đánh giá** (M1–M4, phân tích độ nhạy) + kiểm thử tổng thể |
-| 15 | Hoàn thiện báo cáo, rà biểu đồ, chuẩn bị bảo vệ |
+| Tuần | Nội dung                                                                                                               |
+|------|------------------------------------------------------------------------------------------------------------------------|
+| 1    | Chốt phạm vi, đặc tả UC, **vẽ ERD**, dựng solution + Docker Compose. Vẽ màn hình xương sống. Viết chương 1–2 báo cáo   |
+| 2–3  | Auth + phân quyền + quản lý người dùng (đủ 6 actor). **Song song: bản nháp thuật toán chạy console để thăm dò rủi ro** |
+| 4–5  | Quản lý hội nghị / phòng / phiên / diễn giả — biểu đồ → giao diện → code. Xong là viết luôn báo cáo phần này           |
+| 6–7  | Thuật toán xếp lịch bản chính: hai giai đoạn, Hungarian, chạy nền, lưới lịch kéo thả                                   |
+| 8    | Đăng ký, thu thập nguyện vọng, vé QR, check-in, kiến trúc hướng sự kiện                                                |
+| 9    | Phân hệ dịch vụ + nhà cung cấp                                                                                         |
+| 10   | Phân hệ nhân viên vận hành (Shell C, quét mã)                                                                          |
+| 11   | Q&A/poll thời gian thực + gom nhóm câu hỏi (AI-2)                                                                      |
+| 12   | Trợ lý hỏi đáp theo phiên (AI-1) + tóm tắt phản hồi (AI-3)                                                             |
+| 13   | Xếp lịch lại hạn chế xáo trộn + thống kê, dashboard, báo cáo                                                           |
+| 14   | **Thực nghiệm đánh giá** (M1–M4, phân tích độ nhạy) + kiểm thử tổng thể                                                |
+| 15   | Hoàn thiện báo cáo, rà biểu đồ, chuẩn bị bảo vệ                                                                        |
 
 **Nguyên tắc:** mỗi cụm chức năng đi qua 3 bước liền nhau — **vẽ biểu đồ → vẽ giao diện → code**. Xong cụm nào thì phần báo cáo cụm đó xong luôn. **Không dồn báo cáo tới cuối** — các biểu đồ chính là tài liệu thiết kế, phải nghĩ ra trước khi code, không phải vẽ lại sau.
 
@@ -363,13 +368,13 @@ Làm đến nhóm chức năng nào thì tài liệu (đặc tả, biểu đồ)
 
 ## 11. Công cụ đã chốt
 
-| Việc | Công cụ | Trạng thái |
-|---|---|---|
-| Biểu đồ UML, ERD | **PlantUML** (đã test, tiếng Việt hiển thị đúng) | Sinh file `.puml` → xuất PNG/SVG chèn báo cáo |
-| Báo cáo | **Overleaf** (LaTeX) | Tài khoản đã kết nối; tạo project mới được |
-| Code | **Codex MCP** | Giao phần triển khai đáng kể cho Codex |
-| Giao diện | Thiết kế từng nhóm bằng mockup HTML `docs/ui/<nhóm>.html` (cùng token màu/chữ với antd), rồi mới code React | Figma MCP chỉ đọc được thiết kế, không vẽ hộ |
-| CSDL | SQL Server local `127.0.0.1,1433` | |
+| Việc             | Công cụ                                                                                                     | Trạng thái                                    |
+|------------------|-------------------------------------------------------------------------------------------------------------|-----------------------------------------------|
+| Biểu đồ UML, ERD | **PlantUML** (đã test, tiếng Việt hiển thị đúng)                                                            | Sinh file `.puml` → xuất PNG/SVG chèn báo cáo |
+| Báo cáo          | **Overleaf** (LaTeX)                                                                                        | Tài khoản đã kết nối; tạo project mới được    |
+| Code             | **Codex MCP**                                                                                               | Giao phần triển khai đáng kể cho Codex        |
+| Giao diện        | Thiết kế từng nhóm bằng mockup HTML `docs/ui/<nhóm>.html` (cùng token màu/chữ với antd), rồi mới code React | Figma MCP chỉ đọc được thiết kế, không vẽ hộ  |
+| CSDL             | SQL Server local `127.0.0.1,1433`                                                                           |                                               |
 
 **Hình thức báo cáo** (theo 3 khóa luận khóa trước cùng GVHD): Times New Roman, hình đánh số dạng "Hình 3.36", chú thích in nghiêng **dưới** hình, sau mỗi hình có đoạn diễn giải. Độ dài tham chiếu: 82–107 trang.
 
