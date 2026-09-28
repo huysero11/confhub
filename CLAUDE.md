@@ -49,7 +49,7 @@
 
 - Repo trên máy Windows: `D:\Code\my-projects\confhub`. Codex chạy trên Windows (có dotnet/node).
 - Shell `device_bash` của Claude là VM Linux, **không có dotnet** → build/test .NET phải giao Codex chạy.
-- SQL Server local: `127.0.0.1,1433`.
+- SQL Server local: `127.0.0.1,1433` — SQL Server 2022 (16.0), đăng nhập **Windows Authentication** (tài khoản `ADMIN-PC\Admin`), mã hóa bắt buộc → chuỗi kết nối: `Server=127.0.0.1,1433;Database=ConfHub;Trusted_Connection=True;TrustServerCertificate=True` (không có mật khẩu, để trong appsettings.Development.json được). Lưu ý: Codex trong sandbox chạy bằng tài khoản khác → test cần SQL Server phải chạy với `danger-full-access`.
 - **Codex MCP bị ngắt sau ~60 giây/lượt gọi** (kết nối tới máy Huy): lượt dài (viết cả task) sẽ chết giữa chừng. Cách làm đã chạy được: Claude viết code (qua `device_bash`), Codex chỉ chạy lệnh ngắn (`dotnet build/test`, git) và trả kết quả. Lượt timeout vẫn có thể chạy xong phía sau → kiểm tra lại trạng thái trước khi gọi lại.
 - Codex sandbox `workspace-write`: cần `config {"sandbox_workspace_write": {"network_access": true}}` để restore NuGet; **không ghi được `.git`** → lệnh git (commit, tag, reset) chạy với `danger-full-access`, chỉ đúng lệnh cần.
 - File Codex tạo trong sandbox thuộc tài khoản `CodexSandbox*` → Huy (tài khoản `Admin`, không nâng quyền) không xóa được (lỗi `Unlink of file ... failed` khi `git switch`). Đã sửa 2026-09-28: `icacls D:\Code\my-projects\confhub /grant Admin:(OI)(CI)F /T` (chạy Administrator) → mọi file mới tự thừa hưởng quyền của Admin. Gặp lại thì chạy lại lệnh này.

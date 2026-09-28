@@ -6,9 +6,9 @@
 ## 0. Đang ở đâu
 
 - **Vừa xong:** T0.1, T0.2, T0.5 (mẫu nền tảng backend) — 2026-09-28
-- **Tiếp theo:** T0.4 (RabbitMQ + MassTransit + EF Core/SQL Server) — Claude viết đặc tả
+- **Đang làm:** T0.4 — đặc tả đã duyệt, đang code trên `task/T0.4-event-infra`
 - **Còn lại của G0:** T0.4 (sau T0.5), T0.3 (độc lập)
-- **Nhánh đang mở:** không
+- **Nhánh đang mở:** `task/T0.4-event-infra`
 
 ## 1. Quy trình một task
 
@@ -125,14 +125,14 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 | T0.1 | Git                                     | –         | done       |
 | T0.2 | Khung solution backend                  | T0.1      | done       |
 | T0.3 | Khung frontend                          | T0.1      | todo       |
-| T0.4 | Hạ tầng sự kiện (RabbitMQ, MassTransit) | T0.5      | todo       |
+| T0.4 | Hạ tầng sự kiện (RabbitMQ, MassTransit) | T0.5      | codex      |
 | T0.5 | Mẫu nền tảng backend                    | T0.2      | done       |
 
 **Chi tiết:**
 - **T0.1** — `.gitattributes`, `.gitignore`, repo GitHub. Huy làm tay. `docker-compose.yml` + Seq đã dời sang T0.5 (khung chưa ghi log; máy Huy chưa có Docker).
 - **T0.2** — Huy làm tay **phần khung**: `ConfHub.slnx`, 4 lớp Domain/Application/Infrastructure/Api + `ConfHub.Scheduling`, project reference, `global.json` (SDK 10), `Directory.Build.props` (Nullable, TreatWarningsAsErrors, StyleCop + Roslynator), `.editorconfig`, endpoint `/health` + `tests/ConfHub.Api.IntegrationTests`. Các mẫu code tách sang T0.5.
 - **T0.3** — Vite React TS, antd v5 token sáng/tối, i18n vi/en, 3 shell A/B/C + router rỗng.
-- **T0.4** — Thêm RabbitMQ + smtp4dev vào compose; **EF Core + DbContext + kết nối SQL Server** (nhận từ T0.5); MassTransit 8.x + EF Transactional Outbox/Inbox + consumer gửi email.
+- **T0.4** — Đặc tả: `plan/tasks/T0.4.md`. RabbitMQ vào compose; EF Core + DbContext + SQL Server + migration đầu tiên (chỉ bảng kỹ thuật của MassTransit); MassTransit 8.x + EF Transactional Outbox/Inbox + retry; test chứng minh đường ống. **Không** có gửi mail (sang T1.1).
 - **T0.5** — Đặc tả: `plan/tasks/T0.5.md`. BaseEntity + domain event, MediatR 12.x + ValidationBehavior, exception → ProblemDetails, Serilog → Seq, OpenAPI + Scalar; **Docker Compose + Seq**. Không có CSDL: DbContext sang T0.4, Repository/Specification sang T1.1. Quy trình chuẩn Codex → Huy gõ lại.
 
 #### G1 — Tài khoản (P1: UC01, UC02)
@@ -143,7 +143,7 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 | T1.2 | FE: đăng ký / đăng nhập        | T1.1, T0.3               | todo       |
 
 **Chi tiết:**
-- **T1.1** — Đăng ký, xác thực email, đăng nhập, JWT + refresh token; Role + Permissions (seed 5 vai trò), kiểm tra quyền theo permission. Nhận từ T0.5: IRepository/IReadRepository + Specification, SaveChangesInterceptor (audit), sinh Guid tuần tự.
+- **T1.1** — Đăng ký, xác thực email, đăng nhập, JWT + refresh token; Role + Permissions (seed 5 vai trò), kiểm tra quyền theo permission. Nhận từ T0.5: IRepository/IReadRepository + Specification, SaveChangesInterceptor (audit), sinh Guid tuần tự. **Nhận từ T0.4 (phương án B):** thêm smtp4dev vào compose + MailKit + consumer gửi email (mail xác thực là nơi đầu tiên dùng); cơ chế domain event → publish qua outbox trước `SaveChanges`.
 - **T1.2** — Đăng ký / đăng nhập / đăng xuất, chặn route theo quyền.
 
 #### G2 — Thuật toán bản console (làm sớm, độc lập)
@@ -320,3 +320,5 @@ Chỉ chia task khi P1–P4 xong.
 - 2026-09-28: T0.5 đổi xử lý lỗi sang `ExceptionHandlingMiddleware` tự viết (`try/catch`, tự ghi JSON), bỏ `IExceptionHandler`/`AddProblemDetails`. Build 0 warning, test 16/16. Ghi nguyên tắc "tự viết hay dùng thư viện" vào PROJECT.md mục 8.
 - T0.5 done: Huy test tay (Docker + Seq + Scalar) đạt, gõ lại xong; bản gõ khớp `ref/T0.5` (so từng file, bỏ qua kiểu xuống dòng), build 0 warning, test 16/16. Merge `task/T0.5-be-foundation` vào main.
 - Merge T0.5 vào main (78b38b3), đẩy tag `ref/T0.5`. Sự cố: file Codex tạo trong sandbox không xóa được → cấp quyền `Admin:(OI)(CI)F` cho cả repo; ghi vào CLAUDE.md mục Môi trường.
+- T0.4 chọn phương án B: T0.4 chỉ làm đường ống sự kiện (EF Core/SQL Server + MassTransit Outbox/Inbox + RabbitMQ); smtp4dev + consumer gửi mail chuyển sang T1.1, nơi đầu tiên dùng tới (ghi vào chi tiết T1.1 để không quên). MassTransit ghim 8.5.10 (Apache-2.0, hỗ trợ net10/EF Core 10).
+- Huy duyệt đặc tả T0.4 → `codex`. Tên migration không được có dấu `.` → `T0_4_MassTransitOutbox` (ghi quy ước vào AGENTS.md).

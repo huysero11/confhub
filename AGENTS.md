@@ -41,7 +41,7 @@
 - Gọi API qua TanStack Query.
 
 ## Làm tăng dần — không làm trước cho task sau
-- Chỉ tạo bảng/cột mà file task liệt kê. Thêm bảng/cột = migration mới tên `<ID>_<MoTa>`; không sửa migration đã có.
+- Chỉ tạo bảng/cột mà file task liệt kê. Thêm bảng/cột = migration mới tên `<ID>_<MoTa>`, dấu `.` trong mã task đổi thành `_` (vd `T1_1_Users`); không sửa migration đã có.
 - Chỉ đăng ký service DI / cấu hình / container docker-compose khi task này dùng đến. Không thêm package, cấu hình, thư mục "để sẵn".
 - FE chỉ tạo route/màn hình của task; không dựng khung màn hình rỗng cho nhóm sau.
 
