@@ -319,3 +319,4 @@ Chỉ chia task khi P1–P4 xong.
 - Gõ lại: không giấu code; Huy tự chọn file, tự copy ra chỗ khác rồi gõ lại tại chỗ. Tag `ref/<ID>` chỉ để Claude kiểm tra.
 - 2026-09-28: T0.5 đổi xử lý lỗi sang `ExceptionHandlingMiddleware` tự viết (`try/catch`, tự ghi JSON), bỏ `IExceptionHandler`/`AddProblemDetails`. Build 0 warning, test 16/16. Ghi nguyên tắc "tự viết hay dùng thư viện" vào PROJECT.md mục 8.
 - T0.5 done: Huy test tay (Docker + Seq + Scalar) đạt, gõ lại xong; bản gõ khớp `ref/T0.5` (so từng file, bỏ qua kiểu xuống dòng), build 0 warning, test 16/16. Merge `task/T0.5-be-foundation` vào main.
+- Merge T0.5 vào main (78b38b3), đẩy tag `ref/T0.5`. Sự cố: file Codex tạo trong sandbox không xóa được → cấp quyền `Admin:(OI)(CI)F` cho cả repo; ghi vào CLAUDE.md mục Môi trường.
