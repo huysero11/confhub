@@ -53,6 +53,14 @@ dotnet_diagnostic.SA1010.severity = none
 dotnet_diagnostic.SA1313.severity = none
 dotnet_diagnostic.SA1516.severity = none
 
+# RCS1194: không bắt đủ 3 constructor chuẩn cho exception — exception nghiệp vụ của repo
+# luôn cần tham số riêng (vd Code), constructor rỗng sẽ cho phép ném lỗi thiếu mã.
+dotnet_diagnostic.RCS1194.severity = none
+
+# CA1848: không bắt dùng [LoggerMessage] (source generator) thay cho logger.LogXxx —
+# chỉ tối ưu hiệu năng rất nhỏ, đổi lại code khó đọc. Ưu tiên code đơn giản.
+dotnet_diagnostic.CA1848.severity = none
+
 # Roslynator: ASP.NET Core không cần ConfigureAwait(false)
 roslynator_configure_await = false
 dotnet_diagnostic.RCS1090.severity = none
