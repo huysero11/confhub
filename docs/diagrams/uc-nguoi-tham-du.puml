@@ -1,0 +1,52 @@
+@startuml uc-nguoi-tham-du
+' Phân rã UC theo tác nhân: Người tham dự (12 UC)
+!include _style.iuml
+left to right direction
+
+actor "Người tham dự" as NguoiThamDu
+actor "Người dùng" as NguoiDung
+NguoiThamDu -up-|> NguoiDung
+
+rectangle "Đăng ký tham dự" {
+  usecase "UC10. Tìm kiếm và xem danh sách hội nghị" as UC10
+  usecase "UC11. Xem chương trình và chi tiết phiên" as UC11
+  usecase "UC12. Đăng ký tham dự" as UC12
+  usecase "UC13. Đánh dấu phiên quan tâm" as UC13
+  usecase "UC42. Hủy đăng ký tham dự" as UC42
+}
+rectangle "Xếp lịch" {
+  usecase "UC18. Xem lịch trình cá nhân, cảnh báo trùng giờ" as UC18
+}
+rectangle "Dịch vụ đi kèm" {
+  usecase "UC22. Chọn dịch vụ đi kèm và chế độ ăn" as UC22
+}
+rectangle "Vận hành tại chỗ" {
+  usecase "UC29. Xem vé điện tử và voucher QR" as UC29
+}
+rectangle "Hỏi đáp, AI, đánh giá" {
+  usecase "UC35. Đặt câu hỏi và bình chọn câu hỏi" as UC35
+  usecase "UC38. Hỏi đáp với trợ lý AI" as UC38
+  usecase "UC39. Đánh giá sau phiên và sau hội nghị" as UC39
+  usecase "UC48. Tham gia bình chọn trực tiếp" as UC48 <<P5>>
+}
+NguoiThamDu --> UC10
+NguoiThamDu --> UC11
+NguoiThamDu --> UC12
+NguoiThamDu --> UC13
+NguoiThamDu --> UC18
+NguoiThamDu --> UC22
+NguoiThamDu --> UC29
+NguoiThamDu --> UC35
+NguoiThamDu --> UC38
+NguoiThamDu --> UC39
+NguoiThamDu --> UC42
+NguoiThamDu --> UC48
+UC13 .> UC12 : <<extend>>
+UC22 .> UC12 : <<extend>>
+UC11 .> UC10 : <<extend>>
+legend right
+  Viền nét đứt, nền xám: UC mức P5 (mở rộng, cắt đầu tiên nếu thiếu thời gian)
+  Mọi UC trừ UC01, UC10, UC11 yêu cầu đã đăng nhập
+endlegend
+
+@enduml

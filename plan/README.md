@@ -6,7 +6,8 @@
 ## 0. Đang ở đâu
 
 - **Vừa xong:** G0 hoàn tất (T0.1, T0.2, T0.5, T0.4; T0.3 chuyển sang T1.3) — 2026-09-29
-- **Tiếp theo:** G1 — trước T1.1 cần D1 (ERD, đang `review`) + D7 (thiết kế G1)
+- **Đang làm:** T1.1 `spec` — `plan/tasks/T1.1.md` chờ Huy duyệt
+- **Tiếp theo:** giao Codex T1.1 trên nhánh `task/T1.1-register`
 - **Nhánh đang mở:** không
 
 ## 1. Quy trình một task
@@ -86,17 +87,17 @@ Mỗi nhóm chức năng đi đủ 4 lớp **cùng lúc**, chỉ trong phạm vi
 
 ### Giai đoạn A — Tài liệu (Claude + Huy, không giao Codex)
 
-Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt đầu khi task thiết kế nhóm `done`. *Chưa rõ 4 tài liệu môn yêu cầu gì → khi có đề bài/mẫu thì ánh xạ lại.*
+Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt đầu khi task thiết kế nhóm `done`. **Biểu đồ** (`.puml`) vẫn vẽ ngay khi làm nhóm nào, nhưng Huy **kiểm sau** (15 tuần môn học chưa phải nộp biểu đồ) — không chặn code; task thiết kế `done` khi đặc tả + giao diện đủ để code. *Chưa rõ 4 tài liệu môn yêu cầu gì → khi có đề bài/mẫu thì ánh xạ lại.*
 
 | ID  | Việc                                   | Phụ thuộc  | Trạng thái |
 |-----|----------------------------------------|------------|------------|
-| D1  | ERD tổng                               | –          | review     |
-| D2  | Biểu đồ UC                             | –          | todo       |
+| D1  | ERD tổng                               | –          | done       |
+| D2  | Biểu đồ UC                             | –          | done       |
 | D3  | ~~Đặc tả UC P1–P3 một lượt~~           | –          | dropped    |
 | D4  | ~~Biểu đồ hoạt động/tuần tự một lượt~~ | –          | dropped    |
 | D5  | Kiến trúc hệ thống                     | D1         | todo       |
 | D6  | Slide trình bày                        | D1, D2, D5 | todo       |
-| D7  | Thiết kế G1 Tài khoản                  | D1, D2     | todo       |
+| D7  | Thiết kế G1 Tài khoản                  | D1, D2     | done       |
 | D8  | Thiết kế G3 Hội nghị, phiên            | D7         | todo       |
 | D9  | Thiết kế G4 Đăng ký                    | D8         | todo       |
 | D10 | Thiết kế G5 Xếp lịch                   | D9         | todo       |
@@ -106,8 +107,8 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 | D14 | Thiết kế G9 Hỗ trợ                     | D12, D13   | todo       |
 
 **Chi tiết:**
-- **D1** — ERD tổng (bản đồ): bảng + cột (`erd.md`) → vẽ PlantUML `docs/diagrams/erd.puml`.
-- **D2** — Biểu đồ UC tổng quát + phân rã theo 7 tác nhân (57 UC).
+- **D1** — ERD tổng (bản đồ): bảng + cột (`erd.md`) → vẽ PlantUML `docs/diagrams/erd.puml` (đã vẽ 2026-09-29, chờ duyệt).
+- **D2** — Biểu đồ UC tổng quát + phân rã theo 7 tác nhân (57 UC): `docs/diagrams/uc-*.puml`, kiểu chung `_style.iuml`.
 - **D3, D4** — dropped: thay bằng thiết kế theo nhóm D7–D14.
 - **D5** — Sơ đồ thành phần, luồng sự kiện, triển khai + khung 3 shell giao diện.
 - **D6** — Phụ thuộc thêm các task thiết kế nhóm đã làm.
@@ -136,15 +137,17 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 
 #### G1 — Tài khoản (P1: UC01, UC02)
 
-| ID   | Việc                           | Phụ thuộc                | Trạng thái |
-|------|--------------------------------|--------------------------|------------|
-| T1.1 | BE: tài khoản, JWT, phân quyền | D7, T0.2, T0.4, T0.5, D1 | todo       |
-| T1.2 | FE: đăng ký / đăng nhập        | T1.1, T1.3               | todo       |
-| T1.3 | FE: khung frontend             | T0.1                     | todo       |
+| ID   | Việc                               | Phụ thuộc                | Trạng thái |
+|------|------------------------------------|--------------------------|------------|
+| T1.1 | BE: đăng ký, xác thực email        | D7, T0.2, T0.4, T0.5, D1 | spec       |
+| T1.2 | FE: đăng ký / đăng nhập            | T1.3, T1.4               | todo       |
+| T1.3 | FE: khung frontend                 | T0.1                     | todo       |
+| T1.4 | BE: đăng nhập, JWT, phân quyền     | T1.1                     | todo       |
 
 **Chi tiết:**
-- **T1.1** — Đăng ký, xác thực email, đăng nhập, JWT + refresh token; Role + Permissions (seed 5 vai trò), kiểm tra quyền theo permission. Nhận từ T0.5: IRepository/IReadRepository + Specification, SaveChangesInterceptor (audit), sinh Guid tuần tự. **Nhận từ T0.4 (phương án B):** thêm smtp4dev vào compose + MailKit + consumer gửi email (mail xác thực là nơi đầu tiên dùng); cơ chế domain event → publish qua outbox trước `SaveChanges`. Kiểm tra lại: tắt RabbitMQ thì `/health` phải báo `Unhealthy` (T0.4 chưa kiểm được vì chưa có consumer).
-- **T1.2** — Đăng ký / đăng nhập / đăng xuất, chặn route theo quyền.
+- **T1.1** — Tách 2026-09-29 (phần đăng nhập sang T1.4). Nền persistence nhận từ T0.5: IRepository/IReadRepository + Specification, SaveChangesInterceptor (audit), Guid tuần tự. User/Role/UserToken + migration + seed 5 vai trò, danh mục quyền là hằng số. Đăng ký (chọn Người tham dự / BTC / NCC), băm mật khẩu `PasswordHasher<T>`, xác thực email (token băm, hạn 24 giờ, gửi lại có giới hạn), quên mật khẩu. **Nhận từ T0.4 (phương án B):** smtp4dev vào compose + MailKit + consumer gửi email; domain event → publish qua outbox trước `SaveChanges`. Kiểm tra lại: tắt RabbitMQ thì `/health` phải báo `Unhealthy`. Rate limit cho endpoint đăng ký / gửi lại mail.
+- **T1.4** — Đăng nhập (chặn `Unverified` / `PendingApproval` / `Locked`), access token JWT 15 phút + refresh token 7 ngày trong cookie `HttpOnly` (xoay vòng, lưu băm trong UserToken), làm mới, đăng xuất (thu hồi). Phân quyền theo permission tự viết: `[MustHavePermission]` + PolicyProvider + AuthorizationHandler, quyền trong claim JWT. Rate limit đăng nhập. Seed tài khoản mẫu cho 5 vai trò (dev) để dùng tới khi có UC20.
+- **T1.2** — Đăng ký / xác thực email / đăng nhập / đăng xuất / quên mật khẩu, interceptor tự làm mới token, chặn route theo quyền.
 - **T1.3** — Khung frontend (chuyển từ T0.3): Vite React TS, antd v5 token sáng/tối, i18n vi/en, 3 shell A/B/C + router rỗng. Làm trước T1.2.
 
 #### G2 — Thuật toán bản console (làm sớm, độc lập)
@@ -166,7 +169,7 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 
 | ID   | Việc                             | Phụ thuộc  | Trạng thái |
 |------|----------------------------------|------------|------------|
-| T3.1 | BE: hội nghị, ngày, phòng, track | D8, T1.1   | todo       |
+| T3.1 | BE: hội nghị, ngày, phòng, track | D8, T1.4   | todo       |
 | T3.2 | BE: phiên, diễn giả, giờ rảnh    | T3.1       | todo       |
 | T3.3 | FE Shell A (BTC)                 | T3.2, T1.2 | todo       |
 | T3.4 | FE diễn giả                      | T3.2, T1.2 | todo       |
@@ -328,3 +331,10 @@ Chỉ chia task khi P1–P4 xong.
 - T0.4: cấu hình RabbitMQ đổi sang Options pattern (`RabbitMqOptions`, kiểm tra khi khởi động) theo đề xuất của Huy; chuỗi kết nối giữ `GetConnectionString`. Thêm 3 test cấu hình → 22/22 pass. Quy ước mới: dùng pattern thì comment tên + mục đích (CLAUDE.md, AGENTS.md).
 - 2026-09-29 T0.4 done: Huy gõ lại; lần kiểm tra đầu phát hiện 2 lỗi (tên chuỗi kết nối `DefaultConnection` ≠ `ConfHub`; `ConfHubDbContext` thiếu constructor nhận `DbContextOptions`) → 7 test lỗi. Huy sửa, kiểm lại: khác bản đáp án chỉ ở comment/tên biến + thêm `ApplyConfigurationsFromAssembly` (giữ, dùng từ T1.1); build 0 warning, test 22/22. Merge vào main.
 - T0.4 merge vào main (827ba62), đẩy tag `ref/T0.4`. T0.3 → `dropped`, chuyển thành T1.3 (khung FE) trong G1 vì G0 không dùng frontend; T1.2 phụ thuộc T1.3. **G0 hoàn tất.**
+- G1 bắt đầu. Huy chốt 6 quyết định (ghi PROJECT.md mục 8): tự đăng ký 3 vai trò (BTC/NCC chờ QT duyệt); chặn đăng nhập khi chưa xác thực email; quên mật khẩu làm ở G1; refresh token cookie `HttpOnly`, access token trong bộ nhớ; rate limit thay khóa tài khoản; **tách T1.1** → T1.1 (đăng ký, xác thực email) + **T1.4** (đăng nhập, JWT, phân quyền). T1.2 phụ thuộc T1.4; T3.1 chuyển phụ thuộc sang T1.4.
+- D1: vẽ `docs/diagrams/erd.puml` (27 bảng P1–P3, gom 7 gói). D2: `uc-tong-quat.puml` (57 UC, 8 gói phân hệ) + 7 biểu đồ theo tác nhân; UC P5 nét đứt nền xám. Kiểu chung `docs/diagrams/_style.iuml`. Đã render thử bằng PlantUML 1.2025.4, không lỗi.
+- D7: `docs/specs/g1-account.md` (15 quy tắc BR01–BR15, đặc tả UC01/UC02, API 9 endpoint, mã lỗi, sự kiện email) + 6 biểu đồ `g1-*.puml` (trạng thái, 3 hoạt động, 2 tuần tự) + mockup `docs/ui/g1-account.html` (8 màn hình, sáng/tối, vi/en). Quyết định kỹ thuật: token email do consumer sinh (sự kiện chỉ mang UserId → token gốc không vào CSDL/outbox); refresh token đã dùng bị gửi lại → thu hồi hết. `User.Organization` cho phép null (bắt buộc với BTC/NCC). D1, D2, D7 → `review` chờ Huy duyệt.
+- Huy đồng ý 4/5 điểm cần xem ở D7 (refresh token dùng lại → thu hồi hết; đăng ký báo email đã dùng; quên MK khi chưa xác thực → gửi lại mail xác thực; QT từ chối → `Locked`). Điểm còn lại Huy giao Claude chọn: **giữ phương án consumer sinh token** (so với handler sinh token gửi kèm message: token sẽ nằm trong outbox/RabbitMQ/hàng đợi `_error`). Bổ sung vào `g1-account.md` mục 7: lý do, 4 bước của consumer, cách xử lý khi gửi mail lỗi; ghi PROJECT.md mục 8. T1.1 phải có test chứng minh consumer rollback token khi gửi mail lỗi.
+- Quy ước mới (Huy): biểu đồ vẫn vẽ theo nhóm đang làm nhưng Huy kiểm sau, không chặn code. D1, D2, D7 → `done` (biểu đồ chờ Huy kiểm).
+- T1.1 → `spec`: viết `plan/tasks/T1.1.md`. Chốt kỹ thuật: Repository Ardalis + publish domain event trong `EfRepository.SaveChangesAsync` (không dùng interceptor vì vòng phụ thuộc DbContext ↔ IPublishEndpoint) → quy ước **ghi dữ liệu nghiệp vụ luôn qua repository**; Guid tuần tự dùng sẵn của EF Core SQL Server; `CreatedAt` qua `AuditInterceptor` + `TimeProvider`; `UserToken` là aggregate riêng; consumer gọi MediatR command (logic ở Application).
+- Sửa `g1-account.md` cho khớp code T0.5: mã lỗi PascalCase (`EmailTaken`, `TokenInvalid`…); token sai trả 422 (`DomainException`); bỏ `ResendTooSoon` — gửi lại trong 60 giây thì consumer bỏ qua im lặng (báo lỗi sẽ lộ email có tài khoản); message đổi tên `SendVerificationEmailMessage` / `SendPasswordResetEmailMessage`; email gồm cả vi + en. Cập nhật theo: `g1-hd-dang-ky.puml`, `g1-td-dang-ky.puml`, `g1-td-dang-nhap.puml`, mockup.

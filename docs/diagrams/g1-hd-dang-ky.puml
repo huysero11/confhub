@@ -1,0 +1,57 @@
+@startuml g1-hd-dang-ky
+' Biểu đồ hoạt động UC01: đăng ký, xác thực email, gửi lại email
+' Đặc tả: docs/specs/g1-account.md mục 4
+!include _style.iuml
+
+|Người dùng|
+start
+:Mở trang đăng ký;
+repeat
+  |Người dùng|
+  :Chọn vai trò, nhập họ tên, email,
+  mật khẩu (và đơn vị nếu là BTC / NCC);
+  :Bấm "Đăng ký";
+  |Hệ thống|
+  :Kiểm tra dữ liệu (BR01–BR05)
+  và email chưa tồn tại;
+  backward :Báo lỗi dưới từng ô
+  hoặc "Email đã được sử dụng";
+repeat while (Hợp lệ?) is (không) not (có)
+:Băm mật khẩu, tạo tài khoản **Unverified**;
+:Ghi sự kiện gửi email xác thực
+vào outbox (cùng giao dịch);
+:Hiện trang "Kiểm tra email";
+:Sinh token, lưu bản băm,
+gửi email chứa liên kết xác thực;
+|Người dùng|
+while (Đã nhận email?) is (chưa)
+  :Bấm "Gửi lại email";
+  |Hệ thống|
+  if (Đã quá 60 giây từ lần gửi trước?) then (có)
+    :Gửi email xác thực mới
+    (token cũ hết hiệu lực);
+  else (không)
+    :Bỏ qua, không gửi;
+  endif
+  :Luôn báo "Nếu email chưa xác thực,
+  chúng tôi đã gửi lại liên kết";
+  |Người dùng|
+endwhile (rồi)
+:Bấm liên kết trong email;
+|Hệ thống|
+if (Token đúng mục đích, chưa dùng, chưa hết hạn?) then (có)
+  :Đánh dấu token đã dùng;
+  if (Vai trò?) then (Người tham dự)
+    :Chuyển **Active**;
+    :Báo "Xác thực thành công",
+    hiện nút Đăng nhập;
+  else (BTC / NCC)
+    :Chuyển **PendingApproval**;
+    :Báo "Đang chờ quản trị viên duyệt";
+  endif
+else (không)
+  :Báo "Liên kết không còn hiệu lực",
+  cho nhập email để gửi lại;
+endif
+stop
+@enduml

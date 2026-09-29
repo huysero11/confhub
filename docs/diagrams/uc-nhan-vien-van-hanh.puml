@@ -1,0 +1,32 @@
+@startuml uc-nhan-vien-van-hanh
+' Phân rã UC theo tác nhân: Nhân viên vận hành (6 UC)
+!include _style.iuml
+left to right direction
+
+actor "Nhân viên vận hành" as NhanVien
+actor "Người dùng" as NguoiDung
+NhanVien -up-|> NguoiDung
+
+rectangle "Vận hành tại chỗ" {
+  usecase "UC30. Quét mã check-in" as UC30
+  usecase "UC31. Quét voucher dịch vụ" as UC31
+  usecase "UC32. Theo dõi check-in và sức chứa phòng" as UC32
+  usecase "UC47. Nhận hàng và bàn giao thiết bị" as UC47
+  usecase "UC54. Ghi nhận sự cố tại chỗ" as UC54 <<P5>>
+  usecase "UC55. Xem nhiệm vụ theo ca" as UC55 <<P5>>
+}
+NhanVien --> UC30
+NhanVien --> UC31
+NhanVien --> UC32
+NhanVien --> UC47
+NhanVien --> UC54
+NhanVien --> UC55
+note bottom of UC32
+  Dùng chung với Ban tổ chức
+end note
+legend right
+  Viền nét đứt, nền xám: UC mức P5 (mở rộng, cắt đầu tiên nếu thiếu thời gian)
+  Mọi UC trừ UC01, UC10, UC11 yêu cầu đã đăng nhập
+endlegend
+
+@enduml

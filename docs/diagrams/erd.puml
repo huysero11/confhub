@@ -1,0 +1,331 @@
+@startuml erd
+' ERD nghiệp vụ P1–P3 (27 bảng). Nguồn: docs/design/erd.md
+' Bảng kỹ thuật Outbox/Inbox của MassTransit không vẽ.
+' Mọi bảng có Id (PK, Guid) + CreatedAt; bảng nối N–N dùng khóa ghép.
+
+skinparam defaultFontName "Times New Roman"
+skinparam linetype ortho
+skinparam nodesep 40
+skinparam ranksep 60
+skinparam shadowing false
+skinparam class {
+  BackgroundColor White
+  BorderColor #0E5A62
+  ArrowColor #5E6E75
+  HeaderBackgroundColor #E3EFF0
+}
+hide circle
+hide methods
+hide stereotypes
+
+' ===== 1. Người dùng =====
+package "Người dùng" {
+  entity Role {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * Code : nvarchar <<UQ>>
+    * Name : nvarchar
+    * Permissions : nvarchar (JSON)
+  }
+  entity User {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * Email : nvarchar <<UQ>>
+    * PasswordHash : nvarchar
+    * FullName : nvarchar
+    * RoleId : uniqueidentifier <<FK>>
+    Organization : nvarchar
+    Bio : nvarchar
+    * Status : nvarchar
+  }
+  entity UserToken {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * UserId : uniqueidentifier <<FK>>
+    * Purpose : nvarchar
+    * TokenHash : nvarchar
+    * ExpiresAt : datetime2
+    UsedAt : datetime2
+  }
+}
+
+' ===== 2. Hội nghị, phòng, dịch vụ =====
+package "Hội nghị, phòng, dịch vụ" {
+  entity Conference {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * Name_Vi, Name_En : nvarchar
+    Description_Vi, Description_En : nvarchar
+    * Venue : nvarchar
+    * RegistrationCloseAt : datetime2
+    * RequireApproval : bit
+    * Status : nvarchar
+    * OwnerId : uniqueidentifier <<FK>>
+  }
+  entity ConferenceDay {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * ConferenceId : uniqueidentifier <<FK>>
+    * Date : date
+    * StartTime, EndTime : time
+  }
+  entity BreakSlot {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * ConferenceDayId : uniqueidentifier <<FK>>
+    * Name : nvarchar
+    * StartTime, EndTime : time
+    ServiceItemId : uniqueidentifier <<FK>>
+    * IsOptional : bit
+  }
+  entity Room {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * ConferenceId : uniqueidentifier <<FK>>
+    * Name : nvarchar
+    * Capacity : int
+  }
+  entity RoomEquipment {
+    * RoomId : uniqueidentifier <<PK, FK>>
+    * ServiceItemId : uniqueidentifier <<PK, FK>>
+    --
+    * Quantity : int
+  }
+  entity ServiceItem {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * ConferenceId : uniqueidentifier <<FK>>
+    * Name : nvarchar
+    * Kind : nvarchar
+    * UnitPrice : decimal
+    QtyPerActiveRoom : int
+    * SupplierId : uniqueidentifier <<FK>>
+  }
+}
+
+' ===== 3. Phiên, diễn giả =====
+package "Phiên, diễn giả" {
+  entity Track {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * ConferenceId : uniqueidentifier <<FK>>
+    * Name_Vi, Name_En : nvarchar
+  }
+  entity Session {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * ConferenceId : uniqueidentifier <<FK>>
+    * TrackId : uniqueidentifier <<FK>>
+    * Title_Vi, Title_En : nvarchar
+    Abstract_Vi, Abstract_En : nvarchar
+    * DurationMinutes : int
+    ExpectedSize : int
+  }
+  entity SessionSpeaker {
+    * SessionId : uniqueidentifier <<PK, FK>>
+    * SpeakerId : uniqueidentifier <<PK, FK>>
+    --
+    * InvitationStatus : nvarchar
+    SlideKey : nvarchar
+    SlideSummary : nvarchar
+  }
+  entity SpeakerAvailability {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * ConferenceDayId : uniqueidentifier <<FK>>
+    * SpeakerId : uniqueidentifier <<FK>>
+    * StartTime, EndTime : time
+  }
+}
+
+' ===== 4. Xếp lịch =====
+package "Xếp lịch" {
+  entity ScheduleVersion {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * ConferenceId : uniqueidentifier <<FK>>
+    BaseVersionId : uniqueidentifier <<FK>>
+    * W1, W2, W3 : float
+    * Status : nvarchar
+    DurationMs : int
+    ConflictCount : int
+    LoadStdDev : float
+    WastedSeats : int
+    Objective : float
+  }
+  entity ScheduleItem {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * VersionId : uniqueidentifier <<FK>>
+    * SessionId : uniqueidentifier <<FK>>
+    RoomId : uniqueidentifier <<FK>>
+    StartAt : datetime2
+    UnscheduledReason : nvarchar
+    * IsLocked : bit
+  }
+}
+
+' ===== 5. Đăng ký, check-in =====
+package "Đăng ký, check-in" {
+  entity TicketType {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * ConferenceId : uniqueidentifier <<FK>>
+    * Name : nvarchar
+    * Price : decimal
+    * Quota : int
+  }
+  entity Registration {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * ConferenceId : uniqueidentifier <<FK>>
+    * UserId : uniqueidentifier <<FK>>
+    * TicketTypeId : uniqueidentifier <<FK>>
+    * Status : nvarchar
+    * DietType : nvarchar
+    * AllergyFlags : int
+    * TicketCode : nvarchar <<UQ>>
+    CheckedInAt : datetime2
+  }
+  entity SessionInterest {
+    * UserId : uniqueidentifier <<PK, FK>>
+    * SessionId : uniqueidentifier <<PK, FK>>
+  }
+  entity SessionCheckIn {
+    * SessionId : uniqueidentifier <<PK, FK>>
+    * RegistrationId : uniqueidentifier <<PK, FK>>
+  }
+}
+
+' ===== 6. Dịch vụ đi kèm =====
+package "Dịch vụ đi kèm" {
+  entity SessionEquipmentRequest {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * SessionId : uniqueidentifier <<FK>>
+    * ServiceItemId : uniqueidentifier <<FK>>
+    * Quantity : int
+    * Status : nvarchar
+  }
+  entity Voucher {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * RegistrationId : uniqueidentifier <<FK>>
+    * BreakSlotId : uniqueidentifier <<FK>>
+    * Code : nvarchar <<UQ>>
+    RedeemedAt : datetime2
+  }
+  entity ServiceOrder {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * ConferenceId : uniqueidentifier <<FK>>
+    * SupplierId : uniqueidentifier <<FK>>
+    * Status : nvarchar
+    * NeedsReview : bit
+  }
+  entity ServiceOrderLine {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * OrderId : uniqueidentifier <<FK>>
+    * ServiceItemId : uniqueidentifier <<FK>>
+    * ConferenceDayId : uniqueidentifier <<FK>>
+    BreakSlotId : uniqueidentifier <<FK>>
+    Variant : nvarchar
+    * Quantity : int
+    PreviousQuantity : int
+    * UnitPrice : decimal
+  }
+}
+
+' ===== 7. Hỏi đáp, AI, đánh giá =====
+package "Hỏi đáp, AI, đánh giá" {
+  entity DocumentChunk {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * SessionId : uniqueidentifier <<FK>>
+    * Content : nvarchar
+    * Embedding : varbinary
+  }
+  entity Question {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * SessionId : uniqueidentifier <<FK>>
+    * AuthorId : uniqueidentifier <<FK>>
+    * Content : nvarchar
+    * Status : nvarchar
+    ClusterLabel : nvarchar
+    * Embedding : varbinary
+  }
+  entity QuestionVote {
+    * QuestionId : uniqueidentifier <<PK, FK>>
+    * UserId : uniqueidentifier <<PK, FK>>
+  }
+  entity Feedback {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * ConferenceId : uniqueidentifier <<FK>>
+    * UserId : uniqueidentifier <<FK>>
+    SessionId : uniqueidentifier <<FK>>
+    * Rating : int
+    Comment : nvarchar
+  }
+}
+
+' ===== Quan hệ =====
+Role ||--o{ User
+User ||--o{ UserToken
+
+User ||--o{ Conference : OwnerId
+Conference ||--|{ ConferenceDay
+ConferenceDay ||--o{ BreakSlot
+ServiceItem |o--o{ BreakSlot
+Conference ||--o{ Room
+Room ||--o{ RoomEquipment
+ServiceItem ||--o{ RoomEquipment
+Conference ||--o{ ServiceItem
+User ||--o{ ServiceItem : SupplierId
+
+Conference ||--o{ Track
+Conference ||--o{ Session
+Track ||--o{ Session
+Session ||--o{ SessionSpeaker
+User ||--o{ SessionSpeaker : SpeakerId
+ConferenceDay ||--o{ SpeakerAvailability
+User ||--o{ SpeakerAvailability : SpeakerId
+
+Conference ||--o{ ScheduleVersion
+ScheduleVersion |o--o{ ScheduleVersion : BaseVersionId
+ScheduleVersion ||--o{ ScheduleItem
+Session ||--o{ ScheduleItem
+Room |o--o{ ScheduleItem
+
+Conference ||--o{ TicketType
+Conference ||--o{ Registration
+User ||--o{ Registration
+TicketType ||--o{ Registration
+User ||--o{ SessionInterest
+Session ||--o{ SessionInterest
+Session ||--o{ SessionCheckIn
+Registration ||--o{ SessionCheckIn
+
+Session ||--o{ SessionEquipmentRequest
+ServiceItem ||--o{ SessionEquipmentRequest
+Registration ||--o{ Voucher
+BreakSlot ||--o{ Voucher
+Conference ||--o{ ServiceOrder
+User ||--o{ ServiceOrder : SupplierId
+ServiceOrder ||--|{ ServiceOrderLine
+ServiceItem ||--o{ ServiceOrderLine
+ConferenceDay ||--o{ ServiceOrderLine
+BreakSlot |o--o{ ServiceOrderLine
+
+Session ||--o{ DocumentChunk
+Session ||--o{ Question
+User ||--o{ Question : AuthorId
+Question ||--o{ QuestionVote
+User ||--o{ QuestionVote
+Conference ||--o{ Feedback
+User ||--o{ Feedback
+Session |o--o{ Feedback
+
+@enduml

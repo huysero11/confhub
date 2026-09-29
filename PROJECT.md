@@ -230,6 +230,15 @@ ASP.NET Core Web API · **Clean Architecture 4 lớp** (Domain / Application / I
 
 **Xác thực & phân quyền:** JWT (access + refresh token); **phân quyền theo permission** — mỗi UC gắn một quyền cụ thể (`Conference.Create`, `Schedule.Run`, `Service.Order`…), vai trò là tập hợp quyền, kiểm tra qua Authorization Handler tùy biến. Với 6 tác nhân phạm vi rất khác nhau, cơ chế này cần thiết hơn phân quyền theo vai trò đơn thuần.
 
+**Quy tắc tài khoản (chốt 2026-09-29, G1):**
+- **Tự đăng ký** được 3 vai trò: Người tham dự, Ban tổ chức, Nhà cung cấp. BTC/NCC sau khi xác thực email chuyển `PendingApproval`, chờ QT duyệt (UC20). Nhân viên vận hành và QT không tự đăng ký (QT tạo / seed). Tới khi có UC20 (T6.1) dùng tài khoản seed cho môi trường dev.
+- **Xác thực email bắt buộc** trước khi đăng nhập. Link hết hạn 24 giờ, gửi lại được nhưng giới hạn tần suất.
+- **Quên mật khẩu** làm ở G1 (luồng phụ UC02), dùng chung cơ chế token + email với xác thực.
+- **Token:** access token JWT 15 phút, frontend giữ trong bộ nhớ; refresh token 7 ngày trong cookie `HttpOnly` + `SameSite=Strict`, xoay vòng mỗi lần làm mới, DB chỉ lưu bản băm. Lý do: script độc hại (XSS) không đọc được refresh token.
+- **Chống dò mật khẩu:** rate limiter có sẵn của ASP.NET Core trên endpoint đăng nhập / đăng ký / gửi mail. **Không khóa tài khoản** khi sai nhiều lần (tránh bị người khác cố tình khóa hộ).
+- **Token trong email do consumer sinh** (message chỉ mang `UserId`): chuỗi token gốc chỉ nằm trong email, không nằm trong bảng outbox / hàng đợi RabbitMQ / hàng đợi lỗi — những nơi đó bị lộ thì người khác chiếm được tài khoản bằng link đặt lại mật khẩu. Chi tiết: `docs/specs/g1-account.md` mục 7.
+- Băm mật khẩu bằng `PasswordHasher<T>` của ASP.NET Core Identity, **không** dùng Identity đầy đủ (ERD chỉ có User, Role, UserToken).
+
 | Thành phần         | Vai trò                                                                                                            | Ghi chú                                                                  |
 |--------------------|--------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------|
 | **SignalR**        | Q&A/poll thời gian thực theo từng phiên (**mỗi phiên là một group riêng**); theo dõi check-in; thông báo điều phối | Group tên theo SessionId — người phòng 101 không thấy câu hỏi phòng 102  |

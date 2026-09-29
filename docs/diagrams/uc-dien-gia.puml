@@ -1,0 +1,37 @@
+@startuml uc-dien-gia
+' Phân rã UC theo tác nhân: Diễn giả (8 UC)
+!include _style.iuml
+left to right direction
+
+actor "Diễn giả" as DienGia
+actor "Người dùng" as NguoiDung
+DienGia -up-|> NguoiDung
+
+rectangle "Hội nghị và chương trình" {
+  usecase "UC06. Phản hồi lời mời trình bày" as UC06
+  usecase "UC07. Khai báo thời gian có thể tham gia" as UC07
+}
+rectangle "Dịch vụ đi kèm" {
+  usecase "UC23. Yêu cầu thiết bị cho phiên" as UC23
+}
+rectangle "Hỏi đáp, AI, đánh giá" {
+  usecase "UC33. Xem phiên được phân công" as UC33
+  usecase "UC34. Tải lên slide và tóm tắt nội dung" as UC34
+  usecase "UC36. Xem và trả lời câu hỏi đã gom nhóm" as UC36
+  usecase "UC49. Phát bình chọn trong phiên" as UC49 <<P5>>
+  usecase "UC50. Xem đánh giá phiên của mình" as UC50 <<P5>>
+}
+DienGia --> UC06
+DienGia --> UC07
+DienGia --> UC23
+DienGia --> UC33
+DienGia --> UC34
+DienGia --> UC36
+DienGia --> UC49
+DienGia --> UC50
+legend right
+  Viền nét đứt, nền xám: UC mức P5 (mở rộng, cắt đầu tiên nếu thiếu thời gian)
+  Mọi UC trừ UC01, UC10, UC11 yêu cầu đã đăng nhập
+endlegend
+
+@enduml

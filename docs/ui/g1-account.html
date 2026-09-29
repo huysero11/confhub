@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>G1 Tài khoản — mockup giao diện</title>
+<!--
+  D7 — Mockup giao diện nhóm G1 (UC01, UC02). Đặc tả: docs/specs/g1-account.md
+  Token màu/chữ giống PROJECT.md mục 9 và docs/ui-prototype.html (antd v5: colorPrimary, fontSize 15, borderRadius 8).
+  Mọi màn hình thuộc Shell B. Thanh công cụ trên cùng chỉ để xem mockup, không có trong sản phẩm.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F7F8F7; --surface:#FFFFFF; --surface-2:#EEF1F1; --ink:#17232B; --muted:#5E6E75;
+  --line:#D8DEDF; --primary:#0E5A62; --primary-ink:#FFFFFF; --primary-soft:#E3F0F1;
+  --warn:#B26B00; --warn-soft:#FDF2DF; --danger:#B3261E; --danger-soft:#FCE9E7;
+  --ok:#2E6B45; --ok-soft:#E4F1E9;
+  --shadow:0 1px 2px rgba(20,35,43,.07), 0 4px 14px rgba(20,35,43,.05);
+  --r:8px;
+}
+:root[data-theme="dark"]{
+  --bg:#14181A; --surface:#1D2326; --surface-2:#252C30; --ink:#E6EAEB; --muted:#9AA8AD;
+  --line:#333C40; --primary:#4FB3BF; --primary-ink:#06262A; --primary-soft:#1B3A3E;
+  --warn:#E0A33D; --warn-soft:#3A2E18; --danger:#F2887F; --danger-soft:#3D2220;
+  --ok:#68B98A; --ok-soft:#1D3527;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 4px 14px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:15px; line-height:1.55; font-variant-numeric:tabular-nums;
+}
+button,input,select{font:inherit; color:inherit}
+
+/* ---- thanh công cụ của mockup ---- */
+.tool{
+  position:sticky; top:0; z-index:10; display:flex; flex-wrap:wrap; gap:8px 12px; align-items:center;
+  padding:10px 16px; background:var(--surface-2); border-bottom:1px solid var(--line); font-size:13.5px;
+}
+.tool b{margin-right:auto}
+.seg{display:inline-flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; background:var(--surface)}
+.seg button{border:0; background:transparent; color:var(--muted); padding:5px 11px; cursor:pointer; font-size:13px; font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--primary); color:var(--primary-ink)}
+.tabs{display:flex; gap:6px; flex-wrap:wrap; padding:10px 16px; border-bottom:1px solid var(--line); background:var(--surface)}
+.tabs button{border:1px solid var(--line); background:var(--surface); color:var(--muted); border-radius:20px; padding:4px 12px; font-size:13px; cursor:pointer}
+.tabs button[aria-pressed="true"]{border-color:var(--primary); color:var(--primary); background:var(--primary-soft); font-weight:600}
+.states{display:flex; gap:6px; flex-wrap:wrap; align-items:center; font-size:12.5px; color:var(--muted); margin:0 auto 14px; max-width:460px}
+.states button{border:1px dashed var(--line); background:transparent; color:var(--muted); border-radius:6px; padding:2px 9px; cursor:pointer; font-size:12.5px}
+.states button[aria-pressed="true"]{border-style:solid; border-color:var(--primary); color:var(--primary)}
+
+/* ---- Shell B ---- */
+.header{position:relative; display:flex; align-items:center; gap:14px; height:60px; padding:0 20px; background:var(--surface); border-bottom:1px solid var(--line)}
+.logo{display:flex; align-items:center; gap:9px; font-weight:700; letter-spacing:-.01em}
+.logo i{width:12px; height:12px; border-radius:3px; background:var(--primary); display:block}
+.search{flex:1; max-width:340px; margin-left:12px; height:36px; border:1px solid var(--line); border-radius:var(--r); padding:0 12px; background:var(--bg); color:var(--muted); display:flex; align-items:center; font-size:14px}
+.hright{margin-left:auto; display:flex; gap:8px; align-items:center}
+.main{padding:32px 16px 56px}
+@media(max-width:640px){ .search{display:none} .header{padding:0 14px} .main{padding:20px 12px 40px} }
+
+/* ---- thành phần kiểu antd ---- */
+.card{max-width:460px; margin:0 auto; background:var(--surface); border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow); padding:28px 28px 24px}
+@media(max-width:480px){ .card{padding:22px 18px} }
+h1{font-size:22px; margin:0 0 4px; letter-spacing:-.01em}
+.sub{color:var(--muted); margin:0 0 20px; font-size:14px}
+.field{margin-bottom:16px}
+.field label{display:block; font-size:14px; font-weight:500; margin-bottom:6px}
+.field label .req{color:var(--danger); margin-right:3px}
+.input{width:100%; height:40px; border:1px solid var(--line); border-radius:var(--r); padding:0 12px; background:var(--surface); display:flex; align-items:center; gap:8px}
+.input input{border:0; outline:0; background:transparent; flex:1; min-width:0; height:100%}
+.input:focus-within{border-color:var(--primary); box-shadow:0 0 0 2px var(--primary-soft)}
+.input.err{border-color:var(--danger)}
+.input .eye{color:var(--muted); cursor:pointer; font-size:13px; user-select:none}
+.help{font-size:13px; color:var(--muted); margin-top:4px}
+.help.err{color:var(--danger)}
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:6px; height:40px; padding:0 18px; border-radius:var(--r); border:1px solid transparent; background:var(--primary); color:var(--primary-ink); font-weight:600; cursor:pointer; font-size:15px}
+.btn.block{width:100%}
+.btn.default{background:var(--surface); color:var(--ink); border-color:var(--line)}
+.btn.link{background:transparent; color:var(--primary); padding:0; height:auto; font-weight:500; border:0}
+.btn.sm{height:32px; padding:0 12px; font-size:14px}
+.btn[disabled]{opacity:.5; cursor:not-allowed}
+.row{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap}
+.foot{text-align:center; margin-top:18px; font-size:14px; color:var(--muted)}
+.foot a,.a{color:var(--primary); text-decoration:none; font-weight:500; cursor:pointer}
+.roles{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
+@media(max-width:480px){ .roles{grid-template-columns:1fr} }
+.role{border:1px solid var(--line); border-radius:var(--r); padding:10px 11px; cursor:pointer; display:flex; flex-direction:column; gap:2px}
+.role b{font-size:14px}
+.role span{font-size:12px; color:var(--muted); line-height:1.35}
+.role[aria-checked="true"]{border-color:var(--primary); background:var(--primary-soft); box-shadow:0 0 0 1px var(--primary) inset}
+.alert{border-radius:var(--r); padding:10px 12px; font-size:14px; margin-bottom:16px; display:flex; gap:10px; align-items:flex-start; border:1px solid}
+.alert .ic{font-weight:700; width:18px; flex:none; text-align:center}
+.alert.info{background:var(--primary-soft); border-color:var(--primary); color:var(--ink)}
+.alert.warn{background:var(--warn-soft); border-color:var(--warn); color:var(--ink)}
+.alert.error{background:var(--danger-soft); border-color:var(--danger); color:var(--ink)}
+.alert.warn .ic{color:var(--warn)} .alert.error .ic{color:var(--danger)} .alert.info .ic{color:var(--primary)}
+.alert .act{margin-top:4px}
+.result{text-align:center; padding:8px 0 4px}
+.result .big{width:64px; height:64px; border-radius:50%; margin:0 auto 14px; display:flex; align-items:center; justify-content:center; font-size:30px; font-weight:700}
+.big.ok{background:var(--ok-soft); color:var(--ok)} .big.warn{background:var(--warn-soft); color:var(--warn)}
+.big.bad{background:var(--danger-soft); color:var(--danger)} .big.info{background:var(--primary-soft); color:var(--primary)}
+.result h1{margin-bottom:6px}
+.result p{color:var(--muted); margin:0 0 18px}
+.result .actions{display:flex; gap:8px; justify-content:center; flex-wrap:wrap}
+.strength{display:flex; gap:4px; margin-top:6px}
+.strength i{flex:1; height:4px; border-radius:2px; background:var(--line)}
+.strength.s1 i:nth-child(1){background:var(--danger)}
+.strength.s2 i:nth-child(-n+2){background:var(--warn)}
+.strength.s3 i{background:var(--ok)}
+.avatar{width:32px; height:32px; border-radius:50%; background:var(--primary); color:var(--primary-ink); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px}
+.userbtn{display:flex; align-items:center; gap:8px; cursor:pointer; padding:4px 6px; border-radius:var(--r)}
+.userbtn:hover{background:var(--surface-2)}
+.menu{position:absolute; right:16px; top:56px; width:240px; background:var(--surface); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow); padding:6px; z-index:5}
+.menu .who{padding:8px 10px 10px; border-bottom:1px solid var(--line); margin-bottom:4px}
+.menu .who b{display:block}
+.menu .who span{font-size:12.5px; color:var(--muted)}
+.menu .it{padding:8px 10px; border-radius:6px; cursor:pointer; font-size:14px}
+.menu .it:hover{background:var(--surface-2)}
+.menu .it.danger{color:var(--danger)}
+.tag{display:inline-block; font-size:12px; font-weight:600; padding:1px 8px; border-radius:10px; background:var(--primary-soft); color:var(--primary)}
+.hidden{display:none !important}
+.note{max-width:460px; margin:14px auto 0; font-size:12.5px; color:var(--muted)}
+</style>
+</head>
+<body>
+
+<div class="tool">
+  <b data-t="mock.title"></b>
+  <span data-t="mock.theme"></span>
+  <div class="seg" id="themeSeg"><button data-v="light" aria-pressed="true" data-t="mock.light"></button><button data-v="dark" aria-pressed="false" data-t="mock.dark"></button></div>
+  <div class="seg" id="langSeg"><button data-v="vi" aria-pressed="true">VI</button><button data-v="en" aria-pressed="false">EN</button></div>
+</div>
+<div class="tabs" id="tabs"></div>
+
+<!-- ===== Shell B ===== -->
+<header class="header">
+  <div class="logo"><i></i>ConfHub</div>
+  <div class="search" data-t="shell.search"></div>
+  <div class="hright">
+    <span id="guestBtns">
+      <button class="btn default sm" data-go="login" data-t="shell.login"></button>
+      <button class="btn sm" data-go="register" data-t="shell.register"></button>
+    </span>
+    <span id="userBtn" class="hidden" style="position:relative">
+      <span class="userbtn" id="userToggle"><span class="avatar">ML</span><span data-t="demo.name"></span></span>
+    </span>
+  </div>
+<div id="menu" class="menu hidden">
+  <div class="who"><b data-t="demo.name"></b><span>lan@greentech.vn · <span class="tag" data-t="role.Organizer"></span></span></div>
+  <div class="it" data-t="menu.manage"></div>
+  <div class="it" data-t="menu.profile"></div>
+  <div class="it danger" data-go="logout" data-t="menu.logout"></div>
+</div>
+</header>
+
+<main class="main">
+
+  <!-- ===== /register ===== -->
+  <section data-screen="register">
+    <div class="states"><span data-t="mock.state"></span>
+      <button data-state="ok" aria-pressed="true" data-t="st.normal"></button>
+      <button data-state="err" aria-pressed="false" data-t="st.errors"></button>
+      <button data-state="taken" aria-pressed="false" data-t="st.taken"></button>
+    </div>
+    <div class="card">
+      <h1 data-t="reg.title"></h1>
+      <p class="sub" data-t="reg.sub"></p>
+      <div class="alert error st-taken hidden"><span class="ic">!</span><div><span data-t="err.email_taken"></span>
+        <div class="act"><a class="a" data-go="login" data-t="shell.login"></a> · <a class="a" data-go="forgot" data-t="login.forgot"></a></div></div></div>
+      <div class="field">
+        <label><span class="req">*</span><span data-t="reg.role"></span></label>
+        <div class="roles" role="radiogroup" id="roles">
+          <div class="role" role="radio" aria-checked="true" data-role="Attendee"><b data-t="role.Attendee"></b><span data-t="role.Attendee.d"></span></div>
+          <div class="role" role="radio" aria-checked="false" data-role="Organizer"><b data-t="role.Organizer"></b><span data-t="role.Organizer.d"></span></div>
+          <div class="role" role="radio" aria-checked="false" data-role="Supplier"><b data-t="role.Supplier"></b><span data-t="role.Supplier.d"></span></div>
+        </div>
+      </div>
+      <div class="alert warn hidden" id="approvalNote"><span class="ic">i</span><span data-t="reg.approval"></span></div>
+      <div class="field">
+        <label><span class="req">*</span><span data-t="f.fullName"></span></label>
+        <div class="input"><input data-ph="ph.fullName"></div>
+        <div class="help err st-err hidden" data-t="v.fullName"></div>
+      </div>
+      <div class="field hidden" id="orgField">
+        <label><span class="req">*</span><span data-t="f.org"></span></label>
+        <div class="input"><input data-ph="ph.org"></div>
+      </div>
+      <div class="field">
+        <label><span class="req">*</span><span data-t="f.email"></span></label>
+        <div class="input" id="regEmail"><input type="email" data-ph="ph.email"></div>
+        <div class="help err st-err hidden" data-t="v.email"></div>
+      </div>
+      <div class="field">
+        <label><span class="req">*</span><span data-t="f.password"></span></label>
+        <div class="input"><input type="password" id="pw" data-ph="ph.password"><span class="eye" data-t="f.show"></span></div>
+        <div class="strength" id="strength"><i></i><i></i><i></i></div>
+        <div class="help" data-t="v.passwordHint"></div>
+      </div>
+      <div class="field">
+        <label><span class="req">*</span><span data-t="f.confirm"></span></label>
+        <div class="input"><input type="password" data-ph="ph.confirm"><span class="eye" data-t="f.show"></span></div>
+        <div class="help err st-err hidden" data-t="v.confirm"></div>
+      </div>
+      <button class="btn block" data-go="check" data-t="reg.submit"></button>
+      <div class="foot"><span data-t="reg.haveAcc"></span> <a data-go="login" data-t="shell.login"></a></div>
+    </div>
+    <p class="note" data-t="note.register"></p>
+  </section>
+
+  <!-- ===== /register/check-email ===== -->
+  <section data-screen="check" class="hidden">
+    <div class="states"><span data-t="mock.state"></span>
+      <button data-state="wait" aria-pressed="true" data-t="st.countdown"></button>
+      <button data-state="ready" aria-pressed="false" data-t="st.canResend"></button>
+      <button data-state="sent" aria-pressed="false" data-t="st.resent"></button>
+    </div>
+    <div class="card">
+      <div class="result">
+        <div class="big info">@</div>
+        <h1 data-t="check.title"></h1>
+        <p><span data-t="check.sub1"></span> <b>minh.nguyen@gmail.com</b>. <span data-t="check.sub2"></span></p>
+      </div>
+      <div class="alert info st-sent hidden"><span class="ic">✓</span><span data-t="check.resent"></span></div>
+      <button class="btn default block st-wait" disabled><span data-t="check.resend"></span>&nbsp;(<span id="cd">60</span>s)</button>
+      <button class="btn default block st-ready st-sent hidden" data-t="check.resend"></button>
+      <div class="foot"><span data-t="check.wrong"></span> <a data-go="register" data-t="check.back"></a></div>
+    </div>
+    <p class="note" data-t="note.check"></p>
+  </section>
+
+  <!-- ===== /verify-email ===== -->
+  <section data-screen="verify" class="hidden">
+    <div class="states"><span data-t="mock.state"></span>
+      <button data-state="active" aria-pressed="true" data-t="st.vActive"></button>
+      <button data-state="pending" aria-pressed="false" data-t="st.vPending"></button>
+      <button data-state="invalid" aria-pressed="false" data-t="st.vInvalid"></button>
+    </div>
+    <div class="card">
+      <div class="result st-active">
+        <div class="big ok">✓</div>
+        <h1 data-t="ver.okTitle"></h1>
+        <p data-t="ver.okSub"></p>
+        <div class="actions"><button class="btn" data-go="login" data-t="shell.login"></button></div>
+      </div>
+      <div class="result st-pending hidden">
+        <div class="big warn">⏳</div>
+        <h1 data-t="ver.pendTitle"></h1>
+        <p data-t="ver.pendSub"></p>
+        <div class="actions"><button class="btn default" data-t="ver.home"></button></div>
+      </div>
+      <div class="st-invalid hidden">
+        <div class="result">
+          <div class="big bad">!</div>
+          <h1 data-t="ver.badTitle"></h1>
+          <p data-t="ver.badSub"></p>
+        </div>
+        <div class="field"><label data-t="f.email"></label><div class="input"><input data-ph="ph.email"></div></div>
+        <button class="btn block" data-go="check" data-t="check.resend"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== /login ===== -->
+  <section data-screen="login" class="hidden">
+    <div class="states"><span data-t="mock.state"></span>
+      <button data-state="none" aria-pressed="true" data-t="st.normal"></button>
+      <button data-state="cred" aria-pressed="false">InvalidCredentials</button>
+      <button data-state="unver" aria-pressed="false">AccountUnverified</button>
+      <button data-state="pend" aria-pressed="false">AccountPending</button>
+      <button data-state="lock" aria-pressed="false">AccountLocked</button>
+      <button data-state="rate" aria-pressed="false">TooManyRequests</button>
+      <button data-state="exp" aria-pressed="false">SessionExpired</button>
+    </div>
+    <div class="card">
+      <h1 data-t="login.title"></h1>
+      <p class="sub" data-t="login.sub"></p>
+      <div class="alert info st-exp hidden"><span class="ic">i</span><span data-t="err.session_expired"></span></div>
+      <div class="alert error st-cred hidden"><span class="ic">!</span><span data-t="err.invalid_credentials"></span></div>
+      <div class="alert warn st-unver hidden"><span class="ic">!</span><div><span data-t="err.account_unverified"></span>
+        <div class="act"><a class="a" data-go="check" data-t="check.resend"></a></div></div></div>
+      <div class="alert warn st-pend hidden"><span class="ic">⏳</span><span data-t="err.account_pending"></span></div>
+      <div class="alert error st-lock hidden"><span class="ic">!</span><span data-t="err.account_locked"></span></div>
+      <div class="alert error st-rate hidden"><span class="ic">!</span><span data-t="err.too_many_requests"></span></div>
+      <div class="field">
+        <label><span class="req">*</span><span data-t="f.email"></span></label>
+        <div class="input"><input type="email" data-ph="ph.email"></div>
+      </div>
+      <div class="field">
+        <div class="row"><label style="margin:0 0 6px"><span class="req">*</span><span data-t="f.password"></span></label>
+          <a class="a" style="font-size:13.5px;margin-bottom:6px" data-go="forgot" data-t="login.forgot"></a></div>
+        <div class="input"><input type="password" data-ph="ph.password"><span class="eye" data-t="f.show"></span></div>
+      </div>
+      <button class="btn block" data-go="loggedin" data-t="shell.login"></button>
+      <div class="foot"><span data-t="login.noAcc"></span> <a data-go="register" data-t="shell.register"></a></div>
+    </div>
+    <p class="note" data-t="note.login"></p>
+  </section>
+
+  <!-- ===== /forgot-password ===== -->
+  <section data-screen="forgot" class="hidden">
+    <div class="states"><span data-t="mock.state"></span>
+      <button data-state="form" aria-pressed="true" data-t="st.normal"></button>
+      <button data-state="done" aria-pressed="false" data-t="st.submitted"></button>
+    </div>
+    <div class="card">
+      <div class="st-form">
+        <h1 data-t="fg.title"></h1>
+        <p class="sub" data-t="fg.sub"></p>
+        <div class="field">
+          <label><span class="req">*</span><span data-t="f.email"></span></label>
+          <div class="input"><input type="email" data-ph="ph.email"></div>
+        </div>
+        <button class="btn block" data-t="fg.submit" id="fgSubmit"></button>
+        <div class="foot"><a data-go="login" data-t="fg.back"></a></div>
+      </div>
+      <div class="result st-done hidden">
+        <div class="big info">@</div>
+        <h1 data-t="check.title"></h1>
+        <p data-t="fg.done"></p>
+        <div class="actions"><button class="btn default" data-go="login" data-t="fg.back"></button></div>
+      </div>
+    </div>
+    <p class="note" data-t="note.forgot"></p>
+  </section>
+
+  <!-- ===== /reset-password ===== -->
+  <section data-screen="reset" class="hidden">
+    <div class="states"><span data-t="mock.state"></span>
+      <button data-state="form" aria-pressed="true" data-t="st.normal"></button>
+      <button data-state="done" aria-pressed="false" data-t="st.success"></button>
+      <button data-state="invalid" aria-pressed="false" data-t="st.vInvalid"></button>
+    </div>
+    <div class="card">
+      <div class="st-form">
+        <h1 data-t="rs.title"></h1>
+        <p class="sub" data-t="rs.sub"></p>
+        <div class="field">
+          <label><span class="req">*</span><span data-t="f.newPassword"></span></label>
+          <div class="input"><input type="password" data-ph="ph.password"><span class="eye" data-t="f.show"></span></div>
+          <div class="help" data-t="v.passwordHint"></div>
+        </div>
+        <div class="field">
+          <label><span class="req">*</span><span data-t="f.confirm"></span></label>
+          <div class="input"><input type="password" data-ph="ph.confirm"><span class="eye" data-t="f.show"></span></div>
+        </div>
+        <button class="btn block" data-t="rs.submit" id="rsSubmit"></button>
+      </div>
+      <div class="result st-done hidden">
+        <div class="big ok">✓</div>
+        <h1 data-t="rs.okTitle"></h1>
+        <p data-t="rs.okSub"></p>
+        <div class="actions"><button class="btn" data-go="login" data-t="shell.login"></button></div>
+      </div>
+      <div class="result st-invalid hidden">
+        <div class="big bad">!</div>
+        <h1 data-t="ver.badTitle"></h1>
+        <p data-t="rs.badSub"></p>
+        <div class="actions"><button class="btn" data-go="forgot" data-t="rs.again"></button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Header khi đã đăng nhập ===== -->
+  <section data-screen="loggedin" class="hidden">
+    <div class="card">
+      <h1 data-t="li.title"></h1>
+      <p class="sub" data-t="li.sub"></p>
+      <table style="width:100%;border-collapse:collapse;font-size:14px">
+        <tbody id="landing"></tbody>
+      </table>
+    </div>
+    <p class="note" data-t="note.loggedin"></p>
+  </section>
+
+  <!-- ===== 403 ===== -->
+  <section data-screen="forbidden" class="hidden">
+    <div class="card">
+      <div class="result">
+        <div class="big bad">403</div>
+        <h1 data-t="fb.title"></h1>
+        <p data-t="fb.sub"></p>
+        <div class="actions"><button class="btn" data-t="ver.home"></button></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const T = {
+vi:{
+ "mock.title":"G1 Tài khoản — mockup", "mock.theme":"Giao diện", "mock.light":"Sáng", "mock.dark":"Tối", "mock.state":"Trạng thái:",
+ "tab.register":"Đăng ký", "tab.check":"Kiểm tra email", "tab.verify":"Xác thực email", "tab.login":"Đăng nhập",
+ "tab.forgot":"Quên mật khẩu", "tab.reset":"Đặt lại mật khẩu", "tab.loggedin":"Đã đăng nhập", "tab.forbidden":"Không đủ quyền",
+ "shell.search":"Tìm hội nghị…", "shell.login":"Đăng nhập", "shell.register":"Đăng ký",
+ "demo.name":"Mai Lan",
+ "menu.manage":"Trang quản lý", "menu.profile":"Hồ sơ cá nhân", "menu.logout":"Đăng xuất",
+ "role.Attendee":"Người tham dự", "role.Organizer":"Ban tổ chức", "role.Supplier":"Nhà cung cấp",
+ "role.Staff":"Nhân viên vận hành", "role.Admin":"Quản trị viên",
+ "role.Attendee.d":"Tìm và đăng ký hội nghị", "role.Organizer.d":"Tổ chức hội nghị, xếp lịch", "role.Supplier.d":"Cung cấp suất ăn, thiết bị",
+ "st.normal":"Bình thường", "st.errors":"Lỗi nhập liệu", "st.taken":"Email đã dùng", "st.countdown":"Đang đếm ngược",
+ "st.canResend":"Được gửi lại", "st.resent":"Đã gửi lại", "st.vActive":"Thành công", "st.vPending":"Chờ duyệt",
+ "st.vInvalid":"Liên kết hết hạn", "st.submitted":"Đã gửi", "st.success":"Thành công",
+ "reg.title":"Tạo tài khoản", "reg.sub":"Một tài khoản dùng cho mọi hội nghị trên ConfHub.",
+ "reg.role":"Bạn là", "reg.approval":"Tài khoản Ban tổ chức / Nhà cung cấp cần quản trị viên duyệt sau khi bạn xác thực email.",
+ "reg.submit":"Đăng ký", "reg.haveAcc":"Đã có tài khoản?",
+ "f.fullName":"Họ và tên", "f.org":"Đơn vị / công ty", "f.email":"Email", "f.password":"Mật khẩu", "f.confirm":"Nhập lại mật khẩu",
+ "f.newPassword":"Mật khẩu mới", "f.show":"Hiện",
+ "ph.fullName":"Nguyễn Văn Minh", "ph.org":"Trường Đại học…", "ph.email":"ban@vidu.com", "ph.password":"Ít nhất 8 ký tự", "ph.confirm":"Nhập lại mật khẩu",
+ "v.fullName":"Họ tên từ 2 đến 100 ký tự", "v.email":"Email không đúng định dạng", "v.confirm":"Mật khẩu nhập lại không khớp",
+ "v.passwordHint":"8–128 ký tự, có ít nhất 1 chữ cái và 1 chữ số",
+ "err.email_taken":"Email đã được sử dụng.", "err.invalid_credentials":"Email hoặc mật khẩu không đúng.",
+ "err.account_unverified":"Email chưa được xác thực. Hãy mở liên kết trong email chúng tôi đã gửi.",
+ "err.account_pending":"Tài khoản đang chờ quản trị viên duyệt. Bạn sẽ nhận email khi được duyệt.",
+ "err.account_locked":"Tài khoản đã bị khóa. Vui lòng liên hệ quản trị viên.",
+ "err.too_many_requests":"Bạn thao tác quá nhanh. Vui lòng thử lại sau ít phút.",
+ "err.session_expired":"Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.",
+ "check.title":"Kiểm tra email của bạn", "check.sub1":"Chúng tôi đã gửi liên kết xác thực tới",
+ "check.sub2":"Liên kết có hiệu lực trong 24 giờ.", "check.resend":"Gửi lại email xác thực",
+ "check.resent":"Nếu email chưa được xác thực, chúng tôi đã gửi lại liên kết.",
+ "check.wrong":"Nhập sai email?", "check.back":"Đăng ký lại",
+ "ver.okTitle":"Xác thực thành công", "ver.okSub":"Tài khoản của bạn đã sẵn sàng. Đăng nhập để tiếp tục.",
+ "ver.pendTitle":"Đã xác thực email", "ver.pendSub":"Tài khoản đang chờ quản trị viên duyệt. Chúng tôi sẽ báo qua email.",
+ "ver.badTitle":"Liên kết không còn hiệu lực", "ver.badSub":"Liên kết đã hết hạn hoặc đã được dùng. Nhập email để nhận liên kết mới.",
+ "ver.home":"Về trang chủ",
+ "login.title":"Đăng nhập", "login.sub":"Chào mừng bạn quay lại ConfHub.", "login.forgot":"Quên mật khẩu?", "login.noAcc":"Chưa có tài khoản?",
+ "fg.title":"Quên mật khẩu", "fg.sub":"Nhập email đã đăng ký, chúng tôi sẽ gửi liên kết đặt lại mật khẩu.",
+ "fg.submit":"Gửi liên kết", "fg.back":"Quay lại đăng nhập",
+ "fg.done":"Nếu email tồn tại trong hệ thống, chúng tôi đã gửi hướng dẫn. Liên kết có hiệu lực 30 phút.",
+ "rs.title":"Đặt lại mật khẩu", "rs.sub":"Sau khi đổi, bạn sẽ bị đăng xuất khỏi mọi thiết bị.", "rs.submit":"Đổi mật khẩu",
+ "rs.okTitle":"Đã đổi mật khẩu", "rs.okSub":"Hãy đăng nhập bằng mật khẩu mới.",
+ "rs.badSub":"Liên kết đã hết hạn (30 phút) hoặc đã được dùng.", "rs.again":"Gửi lại liên kết",
+ "li.title":"Sau khi đăng nhập", "li.sub":"Header đổi thành avatar + menu (bấm vào tên ở góc phải). Trang đầu theo vai trò:",
+ "fb.title":"Bạn không có quyền truy cập", "fb.sub":"Trang này cần quyền mà vai trò của bạn không có.",
+ "note.register":"Ghi chú: chọn Ban tổ chức / Nhà cung cấp thì hiện ô Đơn vị (bắt buộc) và cảnh báo cần duyệt. Thanh độ mạnh mật khẩu chỉ gợi ý, quy tắc thật là BR02.",
+ "note.check":"Ghi chú: nút gửi lại khóa 60 giây (BR08); thông báo sau khi gửi không cho biết email có tồn tại (BR09).",
+ "note.login":"Ghi chú: lỗi trạng thái chỉ hiện khi mật khẩu đúng (BR10). SessionExpired hiện khi bị chuyển về từ trang khác do làm mới phiên thất bại.",
+ "note.forgot":"Ghi chú: luôn hiện cùng một thông báo, dù email có hay không (BR09).",
+ "note.loggedin":"Có returnUrl và đủ quyền thì về returnUrl; ngược lại về trang đầu của vai trò."
+},
+en:{
+ "mock.title":"G1 Accounts — mockup", "mock.theme":"Theme", "mock.light":"Light", "mock.dark":"Dark", "mock.state":"State:",
+ "tab.register":"Sign up", "tab.check":"Check email", "tab.verify":"Verify email", "tab.login":"Sign in",
+ "tab.forgot":"Forgot password", "tab.reset":"Reset password", "tab.loggedin":"Signed in", "tab.forbidden":"Forbidden",
+ "shell.search":"Search conferences…", "shell.login":"Sign in", "shell.register":"Sign up",
+ "demo.name":"Mai Lan",
+ "menu.manage":"Management", "menu.profile":"Profile", "menu.logout":"Sign out",
+ "role.Attendee":"Attendee", "role.Organizer":"Organizer", "role.Supplier":"Supplier",
+ "role.Staff":"On-site staff", "role.Admin":"Administrator",
+ "role.Attendee.d":"Find and register for conferences", "role.Organizer.d":"Run conferences, build schedules", "role.Supplier.d":"Provide catering, equipment",
+ "st.normal":"Default", "st.errors":"Validation errors", "st.taken":"Email taken", "st.countdown":"Countdown",
+ "st.canResend":"Can resend", "st.resent":"Resent", "st.vActive":"Success", "st.vPending":"Pending approval",
+ "st.vInvalid":"Link expired", "st.submitted":"Submitted", "st.success":"Success",
+ "reg.title":"Create an account", "reg.sub":"One account for every conference on ConfHub.",
+ "reg.role":"I am", "reg.approval":"Organizer / Supplier accounts need administrator approval after email verification.",
+ "reg.submit":"Sign up", "reg.haveAcc":"Already have an account?",
+ "f.fullName":"Full name", "f.org":"Organization / company", "f.email":"Email", "f.password":"Password", "f.confirm":"Confirm password",
+ "f.newPassword":"New password", "f.show":"Show",
+ "ph.fullName":"Minh Nguyen", "ph.org":"University of…", "ph.email":"you@example.com", "ph.password":"At least 8 characters", "ph.confirm":"Re-enter password",
+ "v.fullName":"Name must be 2–100 characters", "v.email":"Invalid email address", "v.confirm":"Passwords do not match",
+ "v.passwordHint":"8–128 characters, at least 1 letter and 1 digit",
+ "err.email_taken":"This email is already in use.", "err.invalid_credentials":"Incorrect email or password.",
+ "err.account_unverified":"Your email is not verified yet. Open the link we sent you.",
+ "err.account_pending":"Your account is awaiting administrator approval. We will email you once approved.",
+ "err.account_locked":"Your account is locked. Please contact an administrator.",
+ "err.too_many_requests":"Too many attempts. Please try again in a few minutes.",
+ "err.session_expired":"Your session has expired, please sign in again.",
+ "check.title":"Check your email", "check.sub1":"We sent a verification link to",
+ "check.sub2":"The link is valid for 24 hours.", "check.resend":"Resend verification email",
+ "check.resent":"If the email is not verified yet, we have sent a new link.",
+ "check.wrong":"Wrong email?", "check.back":"Sign up again",
+ "ver.okTitle":"Email verified", "ver.okSub":"Your account is ready. Sign in to continue.",
+ "ver.pendTitle":"Email verified", "ver.pendSub":"Your account is awaiting administrator approval. We will notify you by email.",
+ "ver.badTitle":"Link no longer valid", "ver.badSub":"The link has expired or was already used. Enter your email to get a new one.",
+ "ver.home":"Back to home",
+ "login.title":"Sign in", "login.sub":"Welcome back to ConfHub.", "login.forgot":"Forgot password?", "login.noAcc":"No account yet?",
+ "fg.title":"Forgot password", "fg.sub":"Enter your email and we will send you a reset link.",
+ "fg.submit":"Send link", "fg.back":"Back to sign in",
+ "fg.done":"If this email exists, we have sent instructions. The link is valid for 30 minutes.",
+ "rs.title":"Reset password", "rs.sub":"You will be signed out of all devices after the change.", "rs.submit":"Change password",
+ "rs.okTitle":"Password changed", "rs.okSub":"Sign in with your new password.",
+ "rs.badSub":"The link has expired (30 minutes) or was already used.", "rs.again":"Send a new link",
+ "li.title":"After signing in", "li.sub":"The header shows an avatar + menu (click the name, top right). Landing page by role:",
+ "fb.title":"You do not have access", "fb.sub":"This page requires a permission your role does not have.",
+ "note.register":"Note: choosing Organizer / Supplier shows the required Organization field and the approval warning. The strength bar is only a hint; the real rule is BR02.",
+ "note.check":"Note: resend is locked for 60 seconds (BR08); the message never reveals whether the email exists (BR09).",
+ "note.login":"Note: status errors appear only after a correct password (BR10). SessionExpired appears when redirected after a failed session refresh.",
+ "note.forgot":"Note: the same message is always shown, whether the email exists or not (BR09).",
+ "note.loggedin":"With a permitted returnUrl the user goes back there; otherwise to the role's landing page."
+}};
+const SCREENS=["register","check","verify","login","forgot","reset","loggedin","forbidden"];
+const LANDING=[["Attendee","/"],["Organizer","/manage"],["Supplier","/supplier"],["Staff","/onsite"],["Admin","/admin"]];
+let lang="vi", screen="register";
+
+function apply(){
+  document.documentElement.lang=lang;
+  document.querySelectorAll("[data-t]").forEach(el=>{ const v=T[lang][el.dataset.t]; if(v!==undefined) el.textContent=v; });
+  document.querySelectorAll("[data-ph]").forEach(el=>{ el.placeholder=T[lang][el.dataset.ph]||""; });
+  const tabs=document.getElementById("tabs"); tabs.innerHTML="";
+  SCREENS.forEach(s=>{ const b=document.createElement("button"); b.textContent=T[lang]["tab."+s];
+    b.setAttribute("aria-pressed", s===screen); b.onclick=()=>go(s); tabs.appendChild(b); });
+  const body=document.getElementById("landing"); body.innerHTML="";
+  LANDING.forEach(([r,p])=>{ const tr=document.createElement("tr");
+    tr.innerHTML=`<td style="padding:8px 0;border-bottom:1px solid var(--line)">${T[lang]["role."+r]}</td><td style="padding:8px 0;border-bottom:1px solid var(--line);text-align:right"><code>${p}</code></td>`;
+    body.appendChild(tr); });
+}
+function go(s){
+  if(s==="logout"){ s="register"; }
+  screen=s;
+  document.querySelectorAll("[data-screen]").forEach(sec=>sec.classList.toggle("hidden", sec.dataset.screen!==s));
+  const signedIn = s==="loggedin" || s==="forbidden";
+  document.getElementById("guestBtns").classList.toggle("hidden", signedIn);
+  document.getElementById("userBtn").classList.toggle("hidden", !signedIn);
+  document.getElementById("menu").classList.toggle("hidden", s!=="loggedin");
+  apply(); window.scrollTo(0,0);
+}
+// Nút chọn trạng thái trong từng màn hình: hiện phần tử .st-<tên>, ẩn các .st-* khác
+document.querySelectorAll("[data-screen]").forEach(sec=>{
+  const btns=sec.querySelectorAll(".states button");
+  const all=[...btns].map(b=>b.dataset.state);
+  btns.forEach(b=>b.onclick=()=>{
+    btns.forEach(x=>x.setAttribute("aria-pressed", x===b));
+    all.forEach(st=>sec.querySelectorAll(".st-"+st).forEach(el=>{
+      el.classList.toggle("hidden", !el.classList.contains("st-"+b.dataset.state)); }));
+    if(sec.dataset.screen==="register"){
+      sec.querySelectorAll(".st-err").forEach(el=>el.classList.toggle("hidden", b.dataset.state!=="err"));
+      sec.querySelectorAll(".input").forEach(el=>el.classList.remove("err"));
+      if(b.dataset.state!=="ok") document.getElementById("regEmail").classList.add("err");
+    }
+  });
+});
+document.querySelectorAll("[data-go]").forEach(el=>el.addEventListener("click",()=>go(el.dataset.go)));
+document.getElementById("userToggle").onclick=()=>document.getElementById("menu").classList.toggle("hidden");
+document.getElementById("fgSubmit").onclick=()=>document.querySelector('[data-screen="forgot"] [data-state="done"]').click();
+document.getElementById("rsSubmit").onclick=()=>document.querySelector('[data-screen="reset"] [data-state="done"]').click();
+// Chọn vai trò: BTC / NCC hiện ô Đơn vị bắt buộc và cảnh báo cần duyệt
+document.querySelectorAll("#roles .role").forEach(r=>r.onclick=()=>{
+  document.querySelectorAll("#roles .role").forEach(x=>x.setAttribute("aria-checked", x===r));
+  const needApproval=r.dataset.role!=="Attendee";
+  document.getElementById("orgField").classList.toggle("hidden", !needApproval);
+  document.getElementById("approvalNote").classList.toggle("hidden", !needApproval);
+});
+// Gợi ý độ mạnh mật khẩu
+document.getElementById("pw").addEventListener("input",e=>{
+  const v=e.target.value; let s=0;
+  if(v.length>=8) s++; if(/[a-zA-Z]/.test(v)&&/\d/.test(v)) s++; if(v.length>=12&&/[^a-zA-Z0-9]/.test(v)) s++;
+  document.getElementById("strength").className="strength"+(v? " s"+Math.max(s,1):"");
+});
+// Hiện / ẩn mật khẩu
+document.querySelectorAll(".eye").forEach(e=>e.onclick=()=>{ const i=e.previousElementSibling; i.type=i.type==="password"?"text":"password"; });
+// Đếm ngược nút gửi lại
+let cd=60; setInterval(()=>{ cd = cd>0 ? cd-1 : 60; const el=document.getElementById("cd"); if(el) el.textContent=cd; },1000);
+// Đổi sáng / tối, ngôn ngữ
+function seg(id,fn){ const s=document.getElementById(id); s.querySelectorAll("button").forEach(b=>b.onclick=()=>{
+  s.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed", x===b)); fn(b.dataset.v); }); }
+seg("themeSeg", v=>document.documentElement.dataset.theme=v);
+seg("langSeg", v=>{ lang=v; apply(); });
+if(window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches){ document.querySelector('#themeSeg [data-v="dark"]').click(); }
+go("register");
+</script>
+</body>
+</html>

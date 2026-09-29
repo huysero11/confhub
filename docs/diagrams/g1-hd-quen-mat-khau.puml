@@ -1,0 +1,44 @@
+@startuml g1-hd-quen-mat-khau
+' Biểu đồ hoạt động UC02 (luồng con): quên mật khẩu và đặt lại
+' Đặc tả: docs/specs/g1-account.md mục 5
+!include _style.iuml
+
+|Người dùng|
+start
+:Bấm "Quên mật khẩu?", nhập email;
+|Hệ thống|
+switch (Trạng thái tài khoản của email?)
+case (Active / PendingApproval)
+  :Ghi sự kiện gửi email đặt lại mật khẩu;
+  :Sinh token (30 phút), lưu bản băm, gửi email;
+case (Unverified)
+  :Gửi lại email xác thực thay thế;
+case (Locked / không tồn tại)
+  :Không gửi gì;
+endswitch
+:Luôn báo "Nếu email tồn tại,
+chúng tôi đã gửi hướng dẫn";
+note right
+  Cùng một thông báo cho mọi trường hợp
+  để không lộ email nào có tài khoản (BR09)
+end note
+|Người dùng|
+:Bấm liên kết trong email;
+repeat
+  :Nhập mật khẩu mới hai lần;
+  |Hệ thống|
+  :Kiểm tra mật khẩu mới (BR02);
+  backward :Báo lỗi dưới ô;
+repeat while (Hợp lệ?) is (không) not (có)
+if (Token đúng mục đích, chưa dùng, chưa hết hạn?) then (có)
+  :Lưu bản băm mật khẩu mới;
+  :Đánh dấu token đã dùng;
+  :Thu hồi mọi refresh token
+  (đăng xuất khỏi mọi thiết bị);
+  :Báo thành công, chuyển tới trang đăng nhập;
+else (không)
+  :Báo "Liên kết không còn hiệu lực",
+  cho gửi lại email;
+endif
+stop
+@enduml

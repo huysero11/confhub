@@ -1,0 +1,27 @@
+@startuml uc-quan-tri-vien
+' Phân rã UC theo tác nhân: Quản trị viên (5 UC)
+!include _style.iuml
+left to right direction
+
+actor "Quản trị viên" as QuanTri
+actor "Người dùng" as NguoiDung
+QuanTri -up-|> NguoiDung
+
+rectangle "Tài khoản và hệ thống" {
+  usecase "UC20. Quản lý tài khoản (duyệt, khóa/mở)" as UC20
+  usecase "UC45. Quản lý vai trò và quyền hạn" as UC45
+  usecase "UC46. Cấu hình tham số hệ thống" as UC46
+  usecase "UC56. Xem thống kê toàn hệ thống" as UC56 <<P5>>
+  usecase "UC57. Xử lý khiếu nại" as UC57 <<P5>>
+}
+QuanTri --> UC20
+QuanTri --> UC45
+QuanTri --> UC46
+QuanTri --> UC56
+QuanTri --> UC57
+legend right
+  Viền nét đứt, nền xám: UC mức P5 (mở rộng, cắt đầu tiên nếu thiếu thời gian)
+  Mọi UC trừ UC01, UC10, UC11 yêu cầu đã đăng nhập
+endlegend
+
+@enduml

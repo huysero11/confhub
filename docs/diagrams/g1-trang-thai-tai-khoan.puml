@@ -1,0 +1,24 @@
+@startuml g1-trang-thai-tai-khoan
+' Vòng đời User.Status. Đặc tả: docs/specs/g1-account.md mục 2
+!include _style.iuml
+hide empty description
+
+state "Chưa xác thực\n(Unverified)" as Unverified
+state "Chờ duyệt\n(PendingApproval)" as PendingApproval
+state "Hoạt động\n(Active)" as Active
+state "Bị khóa\n(Locked)" as Locked
+
+[*] --> Unverified : Đăng ký (UC01)
+Unverified --> Active : Xác thực email\n[Người tham dự]
+[*] --> Active : QT tạo tài khoản\n[Nhân viên vận hành,\nQuản trị viên]
+Unverified --> PendingApproval : Xác thực email\n[Ban tổ chức, Nhà cung cấp]
+PendingApproval --> Active : QT duyệt (UC20)
+PendingApproval --> Locked : QT từ chối (UC20)
+Active --> Locked : QT khóa (UC20)
+Locked --> Active : QT mở khóa (UC20)
+
+note right of Active
+  Chỉ trạng thái này
+  được đăng nhập (UC02)
+end note
+@enduml

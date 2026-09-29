@@ -1,0 +1,44 @@
+@startuml g1-hd-dang-nhap
+' Biểu đồ hoạt động UC02: đăng nhập
+' Đặc tả: docs/specs/g1-account.md mục 5
+!include _style.iuml
+
+|Người dùng|
+start
+:Mở trang đăng nhập
+(có thể kèm returnUrl);
+repeat
+  |Người dùng|
+  :Nhập email, mật khẩu;
+  :Bấm "Đăng nhập";
+  |Hệ thống|
+  :Tìm tài khoản theo email,
+  so mật khẩu với bản băm;
+  backward :Báo "Email hoặc mật khẩu không đúng";
+repeat while (Đúng?) is (không) not (có)
+switch (Trạng thái tài khoản?)
+case (Unverified)
+  :Báo "Email chưa được xác thực",
+  hiện nút gửi lại email;
+  stop
+case (PendingApproval)
+  :Báo "Tài khoản đang chờ duyệt";
+  stop
+case (Locked)
+  :Báo "Tài khoản đã bị khóa";
+  stop
+case (Active)
+  :Tạo access token (15 phút, kèm quyền của vai trò)
+  và refresh token (7 ngày);
+  :Lưu bản băm refresh token;
+  :Trả access token trong body,
+  refresh token trong cookie HttpOnly;
+endswitch
+|Người dùng|
+if (Có returnUrl và đủ quyền vào?) then (có)
+  :Chuyển tới returnUrl;
+else (không)
+  :Chuyển tới trang đầu của vai trò;
+endif
+stop
+@enduml

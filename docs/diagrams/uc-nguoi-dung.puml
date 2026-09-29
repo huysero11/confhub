@@ -1,0 +1,28 @@
+@startuml uc-nguoi-dung
+' Phân rã UC theo tác nhân: Người dùng (3 UC)
+!include _style.iuml
+left to right direction
+
+actor "Người dùng" as NguoiDung
+
+rectangle "Tài khoản và hệ thống" {
+  usecase "UC01. Đăng ký tài khoản" as UC01
+  usecase "UC02. Đăng nhập / đăng xuất" as UC02
+  usecase "UC41. Quản lý hồ sơ cá nhân" as UC41
+}
+NguoiDung --> UC01
+NguoiDung --> UC02
+NguoiDung --> UC41
+actor "Người tham dự" as NguoiThamDu
+NguoiThamDu --|> NguoiDung
+actor "Ban tổ chức" as BanToChuc
+BanToChuc --|> NguoiDung
+actor "Diễn giả" as DienGia
+DienGia --|> NguoiDung
+actor "Nhà cung cấp" as NhaCungCap
+NhaCungCap --|> NguoiDung
+actor "Nhân viên vận hành" as NhanVien
+NhanVien --|> NguoiDung
+actor "Quản trị viên" as QuanTri
+QuanTri --|> NguoiDung
+@enduml

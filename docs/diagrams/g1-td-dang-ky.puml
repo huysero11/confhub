@@ -1,0 +1,55 @@
+@startuml g1-td-dang-ky
+' Biểu đồ tuần tự UC01: đăng ký, gửi email qua outbox, xác thực email
+' Đặc tả: docs/specs/g1-account.md mục 4, 7
+!include _style.iuml
+autonumber
+
+actor "Người dùng" as U
+participant "Giao diện\n(React)" as FE
+participant "AuthController" as API
+participant "Handler\n(MediatR)" as H
+database "SQL Server" as DB
+queue "RabbitMQ" as MQ
+participant "Consumer\ngửi email" as C
+participant "Máy chủ mail\n(smtp4dev)" as SMTP
+
+== Đăng ký ==
+U -> FE : Nhập thông tin, bấm "Đăng ký"
+FE -> API : POST /api/auth/register
+API -> H : RegisterCommand
+H -> H : Validator kiểm tra BR01–BR05
+H -> DB : Email đã tồn tại?
+DB --> H : chưa
+H -> H : Băm mật khẩu, tạo User (Unverified)
+H -> DB : Lưu User + SendVerificationEmailMessage\nvào bảng outbox (một giao dịch)
+H --> API : email
+API --> FE : 201 Created
+FE --> U : Trang "Kiểm tra email"
+
+== Gửi email (chạy nền) ==
+DB -> MQ : Outbox chuyển message lên hàng đợi
+MQ -> C : SendVerificationEmailMessage (UserId)
+C -> C : Sinh token ngẫu nhiên
+C -> DB : Hủy token cũ, lưu SHA-256 của token mới
+C -> SMTP : Gửi email chứa liên kết /verify-email?token=...
+note right of C
+  Chuỗi token gốc chỉ nằm trong email,
+  không bao giờ vào CSDL (BR07)
+end note
+
+== Xác thực email ==
+U -> FE : Bấm liên kết trong email
+FE -> API : POST /api/auth/verify-email {token}
+API -> H : VerifyEmailCommand
+H -> DB : Tìm token theo bản băm
+alt token hợp lệ
+  H -> H : User.VerifyEmail()\n→ Active hoặc PendingApproval
+  H -> DB : Đánh dấu token đã dùng, lưu User
+  H --> API : trạng thái mới
+  API --> FE : 200 {status}
+  FE --> U : "Xác thực thành công" / "Chờ duyệt"
+else hết hạn / đã dùng / không tồn tại
+  API --> FE : 422 TokenInvalid
+  FE --> U : "Liên kết không còn hiệu lực"
+end
+@enduml

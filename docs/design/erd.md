@@ -1,6 +1,6 @@
 # ERD — thiết kế cơ sở dữ liệu (T0.4)
 
-> Trạng thái: **đã chốt 2026-09-25**. Bước tiếp: vẽ `docs/diagrams/erd.puml`.
+> Trạng thái: **đã chốt 2026-09-25**. Đã vẽ `docs/diagrams/erd.puml` (P1–P3, 27 bảng nghiệp vụ) 2026-09-29.
 > Khớp 57 UC trong `use-cases.md`.
 > **Nguyên tắc:** chỉ tách bảng khi có quan hệ 1–N / N–N thật hoặc vòng đời riêng; **chỉ giữ cột mà một UC hoặc thuật toán thực sự dùng**. Cột suy ra được từ dữ liệu khác thì không lưu.
 
@@ -27,7 +27,7 @@ Kiểu dữ liệu: **Guid** (khóa), **chuỗi**, **số nguyên**, **số th�
 | PasswordHash | chuỗi | Mật khẩu đã băm |
 | FullName | chuỗi | Họ tên |
 | RoleId | FK → Role | Vai trò |
-| Organization | chuỗi | Đơn vị công tác; với nhà cung cấp là tên công ty. Hiện cạnh tên diễn giả, trên đơn hàng |
+| Organization | chuỗi, null | Đơn vị công tác; bắt buộc với BTC/NCC (D7); với nhà cung cấp là tên công ty. Hiện cạnh tên diễn giả, trên đơn hàng |
 | Bio | chuỗi, null | Giới thiệu ngắn về diễn giả, hiện ở trang chi tiết phiên |
 | Status | enum | `Unverified` (chưa xác thực email) · `PendingApproval` (BTC/NCC chờ QT duyệt) · `Active` · `Locked` |
 

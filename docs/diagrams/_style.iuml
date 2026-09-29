@@ -1,0 +1,72 @@
+' Kiểu dùng chung cho biểu đồ UC (báo cáo in Times New Roman)
+skinparam defaultFontName "Times New Roman"
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam actorStyle default
+skinparam usecase {
+  BackgroundColor White
+  BorderColor #0E5A62
+  ArrowColor #5E6E75
+  BackgroundColor<<P5>> #EEEEEE
+  BorderColor<<P5>> #9AA8AD
+  BorderStyle<<P5>> dashed
+}
+skinparam rectangle {
+  BorderColor #5E6E75
+  FontStyle bold
+}
+skinparam actor {
+  BorderColor #0E5A62
+  BackgroundColor #E3EFF0
+}
+skinparam legend {
+  BackgroundColor #F7F8F7
+  BorderColor #D8DEDF
+}
+hide stereotype
+
+' ----- Biểu đồ hoạt động -----
+skinparam activity {
+  BackgroundColor White
+  BorderColor #0E5A62
+  ArrowColor #5E6E75
+  DiamondBackgroundColor #E3EFF0
+  DiamondBorderColor #0E5A62
+}
+skinparam swimlane {
+  BorderColor #5E6E75
+  TitleFontStyle bold
+}
+skinparam partition {
+  BorderColor #5E6E75
+}
+
+' ----- Biểu đồ tuần tự -----
+skinparam sequence {
+  ArrowColor #5E6E75
+  LifeLineBorderColor #9AA8AD
+  ParticipantBackgroundColor #E3EFF0
+  ParticipantBorderColor #0E5A62
+  ActorBackgroundColor #E3EFF0
+  ActorBorderColor #0E5A62
+  GroupBorderColor #5E6E75
+  GroupHeaderFontStyle bold
+}
+skinparam databaseBackgroundColor #E3EFF0
+skinparam databaseBorderColor #0E5A62
+skinparam queueBackgroundColor #E3EFF0
+skinparam queueBorderColor #0E5A62
+skinparam sequenceMessageAlign left
+skinparam responseMessageBelowArrow true
+
+' ----- Biểu đồ trạng thái -----
+skinparam state {
+  BackgroundColor White
+  BorderColor #0E5A62
+  ArrowColor #5E6E75
+}
+skinparam note {
+  BackgroundColor #FFF9E6
+  BorderColor #D8DEDF
+}

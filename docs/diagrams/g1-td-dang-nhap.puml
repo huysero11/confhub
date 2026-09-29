@@ -1,0 +1,58 @@
+@startuml g1-td-dang-nhap
+' Biểu đồ tuần tự UC02: đăng nhập, làm mới phiên (xoay vòng), đăng xuất
+' Đặc tả: docs/specs/g1-account.md mục 5
+!include _style.iuml
+autonumber
+
+actor "Người dùng" as U
+participant "Giao diện\n(React)" as FE
+participant "AuthController" as API
+participant "Handler\n(MediatR)" as H
+database "SQL Server" as DB
+
+== Đăng nhập ==
+U -> FE : Nhập email, mật khẩu
+FE -> API : POST /api/auth/login
+API -> H : LoginCommand
+H -> DB : Tìm User + Role theo email
+H -> H : So mật khẩu với bản băm
+alt sai email / mật khẩu
+  API --> FE : 401 InvalidCredentials
+else đúng nhưng Status khác Active
+  API --> FE : 403 AccountUnverified / AccountPending / AccountLocked
+else Active
+  H -> H : Tạo JWT 15 phút (quyền của vai trò)\nvà refresh token ngẫu nhiên
+  H -> DB : Lưu băm refresh token (7 ngày)
+  API --> FE : 200 {accessToken, user}\nSet-Cookie: confhub_refresh (HttpOnly)
+  FE -> FE : Giữ access token trong bộ nhớ
+  FE --> U : Chuyển trang theo vai trò
+end
+
+== Gọi API khi access token hết hạn ==
+FE -> API : GET /api/... (Bearer token hết hạn)
+API --> FE : 401
+FE -> API : POST /api/auth/refresh (cookie tự gửi)
+API -> H : RefreshCommand
+H -> DB : Tìm refresh token theo bản băm
+alt hợp lệ, User còn Active
+  H -> DB : Đánh dấu token cũ đã dùng,\nlưu băm token mới
+  API --> FE : 200 {accessToken} + cookie mới
+  FE -> API : Gửi lại request vừa bị 401
+else token đã dùng bị gửi lại
+  H -> DB : Thu hồi mọi refresh token của User
+  API --> FE : 401 SessionExpired
+  FE --> U : Về trang đăng nhập
+else hết hạn / không tồn tại
+  API --> FE : 401 SessionExpired
+  FE --> U : Về trang đăng nhập
+end
+
+== Đăng xuất ==
+U -> FE : Bấm "Đăng xuất"
+FE -> API : POST /api/auth/logout (cookie)
+API -> H : LogoutCommand
+H -> DB : Đánh dấu refresh token đã dùng
+API --> FE : 204 + xóa cookie
+FE -> FE : Xóa access token, xóa cache
+FE --> U : Về trang chủ
+@enduml

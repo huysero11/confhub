@@ -1,0 +1,25 @@
+@startuml uc-nha-cung-cap
+' Phân rã UC theo tác nhân: Nhà cung cấp (4 UC)
+!include _style.iuml
+left to right direction
+
+actor "Nhà cung cấp" as NhaCungCap
+actor "Người dùng" as NguoiDung
+NhaCungCap -up-|> NguoiDung
+
+rectangle "Dịch vụ đi kèm" {
+  usecase "UC27. Xử lý đơn đặt hàng" as UC27
+  usecase "UC28. Cập nhật trạng thái giao hàng" as UC28
+  usecase "UC52. Quản lý danh mục sản phẩm" as UC52 <<P5>>
+  usecase "UC53. Xem lịch sử hợp tác và đánh giá" as UC53 <<P5>>
+}
+NhaCungCap --> UC27
+NhaCungCap --> UC28
+NhaCungCap --> UC52
+NhaCungCap --> UC53
+legend right
+  Viền nét đứt, nền xám: UC mức P5 (mở rộng, cắt đầu tiên nếu thiếu thời gian)
+  Mọi UC trừ UC01, UC10, UC11 yêu cầu đã đăng nhập
+endlegend
+
+@enduml
