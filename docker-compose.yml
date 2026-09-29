@@ -13,5 +13,14 @@ services:
     volumes:
       - seq-data:/data
 
+  # RabbitMQ: hàng đợi tin nhắn giữa các phần của hệ thống (sự kiện RegistrationApproved, ScheduleChanged...).
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: confhub-rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"     # cổng API gửi/nhận tin nhắn (giao thức AMQP)
+      - "15672:15672"   # trang quản lý http://localhost:15672 (guest/guest, chỉ dùng trên máy dev)
+
 volumes:
   seq-data:

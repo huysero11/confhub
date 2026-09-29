@@ -23,6 +23,15 @@ csharp_style_var_elsewhere = true:suggestion
 csharp_prefer_braces = true:warning
 dotnet_diagnostic.IDE0011.severity = warning
 
+# Hằng số (const): PascalCase, vd ConnectionString. Đặt trước luật _camelCase để được ưu tiên.
+dotnet_naming_rule.constants_pascal.symbols = constant_fields
+dotnet_naming_rule.constants_pascal.style = pascal_case
+dotnet_naming_rule.constants_pascal.severity = warning
+dotnet_naming_symbols.constant_fields.applicable_kinds = field
+dotnet_naming_symbols.constant_fields.applicable_accessibilities = *
+dotnet_naming_symbols.constant_fields.required_modifiers = const
+dotnet_naming_style.pascal_case.capitalization = pascal_case
+
 # Trường private: _camelCase
 dotnet_naming_rule.private_fields_underscore.symbols = private_fields
 dotnet_naming_rule.private_fields_underscore.style = underscore_camel
@@ -64,3 +73,8 @@ dotnet_diagnostic.CA1848.severity = none
 # Roslynator: ASP.NET Core không cần ConfigureAwait(false)
 roslynator_configure_await = false
 dotnet_diagnostic.RCS1090.severity = none
+
+# Migration do EF Core tự sinh (dotnet ef migrations add): đánh dấu là code tự sinh
+# để analyzer không bắt lỗi style. Không sửa tay các file này.
+[**/Migrations/**.cs]
+generated_code = true

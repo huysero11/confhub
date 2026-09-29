@@ -1,5 +1,6 @@
 using ConfHub.Api.ErrorHandling;
 using ConfHub.Application;
+using ConfHub.Infrastructure;
 using Scalar.AspNetCore;
 using Serilog;
 
@@ -12,6 +13,7 @@ builder.Services.AddSerilog((services, logger) => logger
 
 // ----- Service (DI) -----
 builder.Services.AddApplication();
+builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddHealthChecks();

@@ -1,10 +1,9 @@
 using System.Net;
-using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace ConfHub.Api.IntegrationTests;
 
-public class OpenApiTests(WebApplicationFactory<Program> factory)
-    : IClassFixture<WebApplicationFactory<Program>>
+public class OpenApiTests(ConfHubApiFactory factory)
+    : IClassFixture<ConfHubApiFactory>
 {
     [Fact]
     public async Task OpenApiDocumentIsAvailableInDevelopment()
