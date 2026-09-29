@@ -5,9 +5,8 @@
 
 ## 0. Đang ở đâu
 
-- **Vừa xong:** T0.1, T0.2, T0.5, T0.4 — phần backend của G0 hoàn tất (2026-09-29)
-- **Tiếp theo:** T1.1 cần D1 (ERD, đang `review`) + D7 (thiết kế G1) xong trước → làm D1, D7; T0.3 (khung FE) trước T1.2
-- **Còn lại của G0:** T0.3 (khung frontend)
+- **Vừa xong:** G0 hoàn tất (T0.1, T0.2, T0.5, T0.4; T0.3 chuyển sang T1.3) — 2026-09-29
+- **Tiếp theo:** G1 — trước T1.1 cần D1 (ERD, đang `review`) + D7 (thiết kế G1)
 - **Nhánh đang mở:** không
 
 ## 1. Quy trình một task
@@ -124,14 +123,14 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 |------|-----------------------------------------|-----------|------------|
 | T0.1 | Git                                     | –         | done       |
 | T0.2 | Khung solution backend                  | T0.1      | done       |
-| T0.3 | Khung frontend                          | T0.1      | todo       |
+| T0.3 | ~~Khung frontend~~                      | –         | dropped    |
 | T0.4 | Hạ tầng sự kiện (RabbitMQ, MassTransit) | T0.5      | done       |
 | T0.5 | Mẫu nền tảng backend                    | T0.2      | done       |
 
 **Chi tiết:**
 - **T0.1** — `.gitattributes`, `.gitignore`, repo GitHub. Huy làm tay. `docker-compose.yml` + Seq đã dời sang T0.5 (khung chưa ghi log; máy Huy chưa có Docker).
 - **T0.2** — Huy làm tay **phần khung**: `ConfHub.slnx`, 4 lớp Domain/Application/Infrastructure/Api + `ConfHub.Scheduling`, project reference, `global.json` (SDK 10), `Directory.Build.props` (Nullable, TreatWarningsAsErrors, StyleCop + Roslynator), `.editorconfig`, endpoint `/health` + `tests/ConfHub.Api.IntegrationTests`. Các mẫu code tách sang T0.5.
-- **T0.3** — Vite React TS, antd v5 token sáng/tối, i18n vi/en, 3 shell A/B/C + router rỗng.
+- **T0.3** — dropped 2026-09-29: G0 chưa có gì dùng tới frontend → chuyển thành **T1.3** trong G1 (làm ngay trước T1.2).
 - **T0.4** — Đặc tả: `plan/tasks/T0.4.md`. RabbitMQ vào compose; EF Core + DbContext + SQL Server + migration đầu tiên (chỉ bảng kỹ thuật của MassTransit); MassTransit 8.x + EF Transactional Outbox/Inbox + retry; test chứng minh đường ống. **Không** có gửi mail (sang T1.1).
 - **T0.5** — Đặc tả: `plan/tasks/T0.5.md`. BaseEntity + domain event, MediatR 12.x + ValidationBehavior, exception → ProblemDetails, Serilog → Seq, OpenAPI + Scalar; **Docker Compose + Seq**. Không có CSDL: DbContext sang T0.4, Repository/Specification sang T1.1. Quy trình chuẩn Codex → Huy gõ lại.
 
@@ -140,11 +139,13 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 | ID   | Việc                           | Phụ thuộc                | Trạng thái |
 |------|--------------------------------|--------------------------|------------|
 | T1.1 | BE: tài khoản, JWT, phân quyền | D7, T0.2, T0.4, T0.5, D1 | todo       |
-| T1.2 | FE: đăng ký / đăng nhập        | T1.1, T0.3               | todo       |
+| T1.2 | FE: đăng ký / đăng nhập        | T1.1, T1.3               | todo       |
+| T1.3 | FE: khung frontend             | T0.1                     | todo       |
 
 **Chi tiết:**
 - **T1.1** — Đăng ký, xác thực email, đăng nhập, JWT + refresh token; Role + Permissions (seed 5 vai trò), kiểm tra quyền theo permission. Nhận từ T0.5: IRepository/IReadRepository + Specification, SaveChangesInterceptor (audit), sinh Guid tuần tự. **Nhận từ T0.4 (phương án B):** thêm smtp4dev vào compose + MailKit + consumer gửi email (mail xác thực là nơi đầu tiên dùng); cơ chế domain event → publish qua outbox trước `SaveChanges`. Kiểm tra lại: tắt RabbitMQ thì `/health` phải báo `Unhealthy` (T0.4 chưa kiểm được vì chưa có consumer).
 - **T1.2** — Đăng ký / đăng nhập / đăng xuất, chặn route theo quyền.
+- **T1.3** — Khung frontend (chuyển từ T0.3): Vite React TS, antd v5 token sáng/tối, i18n vi/en, 3 shell A/B/C + router rỗng. Làm trước T1.2.
 
 #### G2 — Thuật toán bản console (làm sớm, độc lập)
 
@@ -326,3 +327,4 @@ Chỉ chia task khi P1–P4 xong.
 - T0.4 test tay: tắt RabbitMQ `/health` vẫn `Healthy` — health check MassTransit chỉ theo dõi hàng đợi của consumer, T0.4 chưa có consumer. Bỏ bước này khỏi mục 7, chuyển kiểm tra sang T1.1.
 - T0.4: cấu hình RabbitMQ đổi sang Options pattern (`RabbitMqOptions`, kiểm tra khi khởi động) theo đề xuất của Huy; chuỗi kết nối giữ `GetConnectionString`. Thêm 3 test cấu hình → 22/22 pass. Quy ước mới: dùng pattern thì comment tên + mục đích (CLAUDE.md, AGENTS.md).
 - 2026-09-29 T0.4 done: Huy gõ lại; lần kiểm tra đầu phát hiện 2 lỗi (tên chuỗi kết nối `DefaultConnection` ≠ `ConfHub`; `ConfHubDbContext` thiếu constructor nhận `DbContextOptions`) → 7 test lỗi. Huy sửa, kiểm lại: khác bản đáp án chỉ ở comment/tên biến + thêm `ApplyConfigurationsFromAssembly` (giữ, dùng từ T1.1); build 0 warning, test 22/22. Merge vào main.
+- T0.4 merge vào main (827ba62), đẩy tag `ref/T0.4`. T0.3 → `dropped`, chuyển thành T1.3 (khung FE) trong G1 vì G0 không dùng frontend; T1.2 phụ thuộc T1.3. **G0 hoàn tất.**
