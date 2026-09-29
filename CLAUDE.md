@@ -30,6 +30,7 @@
   - Đơn giản ở **cách viết**, không cắt bớt chất lượng: logic đúng, xử lý đủ trường hợp biên/lỗi, đúng best practice (Clean Architecture, DI, async/await đúng, validate đầu vào, không lộ bí mật, bảo mật), có test đầy đủ.
   - Ưu tiên cách viết thẳng, dễ đọc hơn cách viết "hay"/ngắn: `if`/`foreach` rõ ràng thay vì chuỗi LINQ dài; tên biến đầy đủ.
   - Không thêm lớp trừu tượng, generic, reflection, source generator, pattern… khi task chưa cần.
+  - Dùng pattern/cơ chế chuẩn khi nó làm code đúng và chắc hơn (vd Options pattern cho nhóm cấu hình, có kiểm tra khi khởi động); comment ghi rõ **tên pattern + mục đích** để dễ hiểu.
   - Analyzer ép cách viết phức tạp chỉ để tối ưu hiệu năng nhỏ → cân nhắc tắt luật đó (ghi lý do trong `.editorconfig`) thay vì làm code khó hiểu.
 - **Markdown dễ đọc cả khi mở file thô**: bảng phải căn thẳng cột (đệm khoảng trắng cho các `|` thẳng hàng), mỗi dòng bảng ≤ ~90 ký tự; nội dung dài không nhét vào ô mà viết thành danh sách ngay dưới bảng; đường dẫn dài thì ghi "Thư mục: ..." một lần rồi bảng chỉ ghi tên file.
 - **Hướng dẫn cho Huy làm theo**: chia nhóm, mỗi lần một nhóm, xong nhóm mới sang nhóm tiếp; lệnh dùng **cmd** (không PowerShell trừ khi bắt buộc); công cụ mới (Docker…) vừa làm vừa giải thích.

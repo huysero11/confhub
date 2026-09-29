@@ -13,6 +13,7 @@
 - **Đơn giản nhưng không kém chất lượng**: đơn giản ở cách viết, KHÔNG cắt bớt logic, xử lý lỗi/trường hợp biên, best practice (Clean Architecture, DI, async/await đúng, validate, bảo mật) hay test.
 - Cách viết thẳng, dễ hiểu hơn cách viết ngắn/"hay". `if`/`foreach` rõ ràng thay vì chuỗi LINQ dài; không lồng quá sâu.
 - Không thêm lớp trừu tượng, generic, reflection, source generator, pattern khi file task không yêu cầu.
+- Dùng pattern/cơ chế chuẩn của .NET khi nó làm code chắc hơn (Options pattern cho nhóm cấu hình + `ValidateOnStart`, `GetConnectionString` cho chuỗi kết nối); comment ghi **tên pattern + mục đích**.
 - Analyzer ép cách viết phức tạp (chủ yếu luật tối ưu hiệu năng nhỏ) → **dừng lại, ghi vào báo cáo** cho Claude quyết định; không tự làm code rối để né luật.
 - File nhỏ, một trách nhiệm. Tên rõ nghĩa, tiếng Anh; tên hàm nói đúng việc nó làm (`MapExceptionToProblem`, `BuildProblem`). Không dùng overload (cùng tên, khác tham số) cho hai việc khác nhau.
 - Comment tiếng Việt ngắn ở chỗ có logic không hiển nhiên (thuật toán, ràng buộc, lý do thiết kế). Không comment thừa.
