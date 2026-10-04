@@ -1,77 +1,27 @@
+using ConfHub.Application.Common.Security;
+using ConfHub.Infrastructure.Email;
 using ConfHub.Infrastructure.Messaging;
 using ConfHub.Infrastructure.Persistence;
-using MassTransit;
-using Microsoft.EntityFrameworkCore;
+using ConfHub.Infrastructure.Security;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace ConfHub.Infrastructure;
 
+// "Mục lục" đăng ký DI của tầng Infrastructure: mỗi mục có file đăng ký riêng trong thư mục của nó
+// (<Tên mục>ServiceRegistration.cs). Mục chỉ có 1 dòng thì viết thẳng ở đây.
 public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("ConfHub");
-        if (string.IsNullOrWhiteSpace(connectionString))
-        {
-            throw new InvalidOperationException("Connection string 'ConfHub' is not configured.");
-        }
+        // Đồng hồ hệ thống (UTC). Test thay bằng đồng hồ giả để tua thời gian.
+        services.AddSingleton(TimeProvider.System);
 
-        // Add DbContext with SQL Server provider
-        services.AddDbContext<ConfHubDbContext>(options => options.UseSqlServer(connectionString));
+        services.AddPersistence(configuration);
+        services.AddMessaging(configuration);
+        services.AddEmail(configuration);
 
-        // Bind json vào class RabbitMqOptions, và validate các thuộc tính lúc khởi tạo
-        services.AddOptions<RabbitMqOptions>()
-            .Bind(configuration.GetSection(RabbitMqOptions.SectionName))
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
-
-        services.AddMassTransit(bus =>
-        {
-            /*
-                Outbox ở phía GỬI: khi publish event thì ghi vào bảng OutboxMessage cùng
-                transaction với SaveChanges của DbContext.
-            */
-            bus.AddEntityFrameworkOutbox<ConfHubDbContext>(outbox =>
-            {
-                outbox.UseSqlServer();
-                outbox.UseBusOutbox();
-            });
-
-            /*
-                Áp dụng cho mọi CONSUMER:
-                - Thử lại khi lỗi sau 1s, 5s, 15s (lỗi tạm thời như mạng chập chờn tự khỏi)
-                - Inbox phía NHẬN: ghi nhận tin nhắn đã xử lý
-            */
-            bus.AddConfigureEndpointsCallback((context, _, endpoint) =>
-            {
-                endpoint.UseMessageRetry(retry => retry.Intervals(
-                    TimeSpan.FromSeconds(1),
-                    TimeSpan.FromSeconds(5),
-                    TimeSpan.FromSeconds(15)));
-                endpoint.UseEntityFrameworkOutbox<ConfHubDbContext>(context);
-            });
-
-            // add comsumer trong project
-            bus.AddConsumers(typeof(DependencyInjection).Assembly);
-
-            // nói với MassTransit là dùng RabbitMQ làm transport, và cấu hình kết nối
-            bus.UsingRabbitMq((context, rabbit) =>
-            {
-                var rabbitMqOptions = context.GetRequiredService<IOptions<RabbitMqOptions>>().Value;
-
-                // tham số: host, virtual host, và credentials
-                rabbit.Host(rabbitMqOptions.Host, "/", credentials =>
-                {
-                    credentials.Username(rabbitMqOptions.Username);
-                    credentials.Password(rabbitMqOptions.Password);
-                });
-
-                // Tự tạo hàng đợi trên RabbitMQ cho từng consumer đã đăng ký.
-                rabbit.ConfigureEndpoints(context);
-            });
-        });
+        services.AddSingleton<IPasswordHasher, AspNetPasswordHasher>();
 
         return services;
     }

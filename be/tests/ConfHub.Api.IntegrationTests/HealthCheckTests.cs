@@ -2,8 +2,8 @@ using System.Net;
 
 namespace ConfHub.Api.IntegrationTests;
 
+[Collection(ApiCollectionDefinition.Name)]
 public class HealthCheckTests(ConfHubApiFactory factory)
-    : IClassFixture<ConfHubApiFactory>
 {
     [Fact]
     public async Task HealthEndpointReturnsOk()

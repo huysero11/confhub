@@ -207,7 +207,7 @@ Mọi endpoint dưới `/api/auth`. Lỗi trả ProblemDetails (middleware của
 | `SendVerificationEmailMessage`  | Đăng ký, gửi lại, quên MK | Sinh token, lưu băm, gửi |
 | `SendPasswordResetEmailMessage` | Quên MK                   | Sinh token, lưu băm, gửi |
 
-- Aggregate `User` phát domain event (`UserRegistered`, `VerificationEmailRequested`, `PasswordResetRequested`); repository đổi chúng thành 2 message trên và publish qua outbox ngay trước `SaveChanges`.
+- Aggregate `User` phát domain event (`UserRegistered`, `EmailVerificationRequested`, `PasswordResetRequested`); repository đổi chúng thành 2 message trên và publish qua outbox ngay trước `SaveChanges`.
 - Quên mật khẩu: tài khoản `Unverified` nhận mail xác thực, `Active` / `PendingApproval` nhận mail đặt lại mật khẩu.
 - Phát qua MassTransit EF Outbox (T0.4) cùng giao dịch với thay đổi dữ liệu; consumer có Inbox nên mỗi message chỉ xử lý một lần.
 - Gửi mail bằng MailKit tới smtp4dev (môi trường dev; xem thư trên giao diện web của smtp4dev, cổng chốt ở T1.1); mỗi email có cả tiếng Việt và tiếng Anh (chưa lưu ngôn ngữ của người dùng).
