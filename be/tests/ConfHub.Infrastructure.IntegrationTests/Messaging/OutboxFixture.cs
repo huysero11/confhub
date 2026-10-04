@@ -1,3 +1,4 @@
+using ConfHub.Application.Common.Persistence;
 using ConfHub.Infrastructure.Persistence;
 using MassTransit;
 using MassTransit.Testing;
@@ -7,7 +8,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace ConfHub.Infrastructure.IntegrationTests.Messaging;
 
-// Dựng một "mini host" giống API nhưng chỉ có CSDL + MassTransit:
+// Dựng một "mini host" giống API nhưng chỉ có CSDL + repository + MassTransit:
 // - CSDL riêng ConfHub_Test trên SQL Server thật của máy dev, xóa và tạo lại mỗi lần chạy test.
 // - RabbitMQ được thay bằng test harness (hàng đợi trong bộ nhớ) → không cần bật Docker.
 public sealed class OutboxFixture : IAsyncLifetime
@@ -26,7 +27,14 @@ public sealed class OutboxFixture : IAsyncLifetime
     public async Task InitializeAsync()
     {
         var builder = Host.CreateApplicationBuilder();
-        builder.Services.AddDbContext<ConfHubDbContext>(options => options.UseSqlServer(ConnectionString));
+        builder.Services.AddSingleton(TimeProvider.System);
+        builder.Services.AddSingleton<AuditInterceptor>();
+        builder.Services.AddDbContext<ConfHubDbContext>((serviceProvider, options) => options
+            .UseSqlServer(ConnectionString)
+            .AddInterceptors(serviceProvider.GetRequiredService<AuditInterceptor>()));
+        builder.Services.AddScoped<DomainEventPublisher>();
+        builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+        builder.Services.AddScoped(typeof(IReadRepository<>), typeof(EfRepository<>));
         builder.Services.AddMassTransitTestHarness(bus =>
         {
             // Outbox cấu hình giống AddInfrastructure; chỉ khác transport là bộ nhớ thay cho RabbitMQ.
@@ -39,6 +47,7 @@ public sealed class OutboxFixture : IAsyncLifetime
                 outbox.QueryDelay = TimeSpan.FromMilliseconds(100);
             });
             bus.AddConsumer<PingConsumer>();
+            bus.AddConsumer<VerificationMessageConsumer>();
         });
         _host = builder.Build();
 

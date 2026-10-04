@@ -6,9 +6,9 @@
 ## 0. Đang ở đâu
 
 - **Vừa xong:** G0 hoàn tất (T0.1, T0.2, T0.5, T0.4; T0.3 chuyển sang T1.3) — 2026-09-29
-- **Đang làm:** T1.1 `spec` — `plan/tasks/T1.1.md` chờ Huy duyệt
-- **Tiếp theo:** giao Codex T1.1 trên nhánh `task/T1.1-register`
-- **Nhánh đang mở:** không
+- **Đang làm:** T1.1 — Huy gõ lại xong, Claude đã kiểm (build 0 warning, test 68/68); chờ Huy commit + merge `main`
+- **Tiếp theo:** T1.4 (đăng nhập, JWT, phân quyền) hoặc T1.3 (khung FE, độc lập)
+- **Nhánh đang mở:** `task/T1.1-register` (code T1.1 chưa commit, bản đáp án tag `ref/T1.1`)
 
 ## 1. Quy trình một task
 
@@ -139,7 +139,7 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 
 | ID   | Việc                               | Phụ thuộc                | Trạng thái |
 |------|------------------------------------|--------------------------|------------|
-| T1.1 | BE: đăng ký, xác thực email        | D7, T0.2, T0.4, T0.5, D1 | spec       |
+| T1.1 | BE: đăng ký, xác thực email        | D7, T0.2, T0.4, T0.5, D1 | retype     |
 | T1.2 | FE: đăng ký / đăng nhập            | T1.3, T1.4               | todo       |
 | T1.3 | FE: khung frontend                 | T0.1                     | todo       |
 | T1.4 | BE: đăng nhập, JWT, phân quyền     | T1.1                     | todo       |
@@ -338,3 +338,12 @@ Chỉ chia task khi P1–P4 xong.
 - Quy ước mới (Huy): biểu đồ vẫn vẽ theo nhóm đang làm nhưng Huy kiểm sau, không chặn code. D1, D2, D7 → `done` (biểu đồ chờ Huy kiểm).
 - T1.1 → `spec`: viết `plan/tasks/T1.1.md`. Chốt kỹ thuật: Repository Ardalis + publish domain event trong `EfRepository.SaveChangesAsync` (không dùng interceptor vì vòng phụ thuộc DbContext ↔ IPublishEndpoint) → quy ước **ghi dữ liệu nghiệp vụ luôn qua repository**; Guid tuần tự dùng sẵn của EF Core SQL Server; `CreatedAt` qua `AuditInterceptor` + `TimeProvider`; `UserToken` là aggregate riêng; consumer gọi MediatR command (logic ở Application).
 - Sửa `g1-account.md` cho khớp code T0.5: mã lỗi PascalCase (`EmailTaken`, `TokenInvalid`…); token sai trả 422 (`DomainException`); bỏ `ResendTooSoon` — gửi lại trong 60 giây thì consumer bỏ qua im lặng (báo lỗi sẽ lộ email có tài khoản); message đổi tên `SendVerificationEmailMessage` / `SendPasswordResetEmailMessage`; email gồm cả vi + en. Cập nhật theo: `g1-hd-dang-ky.puml`, `g1-td-dang-ky.puml`, `g1-td-dang-nhap.puml`, mockup.
+- T1.1 code xong trên `task/T1.1-register`: Claude viết code (Codex bị ngắt 60 giây/lượt), Codex chạy `dotnet add package` (Ardalis.Specification 9.3.1, Ardalis.Specification.EntityFrameworkCore 9.3.1, MailKit 4.18.1), build, `migrations add T1_1_Accounts`, test. Build 0 warning; test 68/68 pass, chạy 2 lần ổn định (trong đó có test chứng minh consumer chạy trong transaction: gửi mail lỗi → token bị rollback → thử lại gửi được). Khác đặc tả: `AccountErrorCodes` đặt ở Domain; thêm `EmailTokenIssuer` (bước 2–4 consumer dùng chung); tắt Required ngầm định của ASP.NET Core để lỗi thiếu trường đi qua FluentValidation. Viết mục 9, tag `ref/T1.1` → `ui-test`.
+- Thêm `README.md` ở gốc repo: lệnh chạy máy dev + bảng địa chỉ / cổng (API, Scalar, smtp4dev, RabbitMQ, Seq, SQL Server). Task nào thêm container / cổng mới thì cập nhật bảng này.
+- Quy ước mục 9 (Huy): nhóm gõ lại theo **use case** (lát cắt dọc qua các lớp), không theo lớp. Viết lại mục 9 của T1.1: nhóm 1 Domain (Huy đã gõ) → 2 Đăng ký → 3 Gửi mail + xác thực → 4 Gửi lại mail → 5 Quên / đặt lại mật khẩu → 6 Rate limit → 7 Test. Sửa theo: CLAUDE.md, AGENTS.md, `_TEMPLATE.md`.
+- 2026-10-01 T1.1: Huy gõ xong nhóm 1–2. Rà tên: giữ đổi tên của Huy cho domain event / method (`EmailVerificationRequested`, `RequestEmailVerification()` — cùng mẫu `PasswordResetRequested`); trả lại `SendVerificationEmailMessage` (gửi đi là *email xác thực*) và `TokenPurpose.Refresh` (khớp ERD, không lặp chữ Token); sửa typo `uerId`, `null!` → `null`, lambda `u =>` → `user =>`, `HasLetterAndDigit` về private. Ghi quy ước đặt tên vào `T1.1.md` mục 9 + AGENTS.md. Build 0 warning, test 68/68. Gắn lại tag `ref/T1.1` (501a8af).
+- Quy ước mục 9 (Huy): trong mỗi nhóm use case, gõ **từ chỗ gọi xuống chỗ được gọi** (outside-in) để biết tham số được truyền thế nào; chấp nhận báo đỏ tạm, build ở điểm dừng. Viết lại T1.1 mục 9 từ nhóm 3 (tách: 3 gửi mail, 4 xác thực, 5 gửi lại, 6 quên/đặt lại, 7 rate limit, 8 test). Sửa theo: CLAUDE.md, AGENTS.md, `_TEMPLATE.md`.
+- Mục 9 (Huy): thêm dòng `↳ gặp:` dưới mỗi file — tên của dự án mà file đó dùng (theo thứ tự xuất hiện) → file chứa nó, để gặp tên nào mở file đó gõ luôn. Ghi ở hướng dẫn, không ghi vào code. Đã thêm cho T1.1 nhóm 3–7.
+- 2026-10-04 Đổi tên `SecureToken` → `RandomToken` (rõ nghĩa hơn; không dùng `TokenService` vì T1.4 có JWT và class này là static thuần). `EmailTokenIssuer`: biến kiểu `UserToken` đặt đồng bộ `latestUserToken` / `oldUserTokens` / `newUserToken`, `lifeTime` → `lifetime`, sửa comment cooldown. Gắn lại `ref/T1.1`.
+- T1.1: Huy gõ xong nhóm 3. Tách `Infrastructure/DependencyInjection.cs` theo mục (đề xuất của Huy): `Persistence/PersistenceServiceRegistration.cs`, `Messaging/MessagingServiceRegistration.cs`, `Email/EmailServiceRegistration.cs`; file gốc chỉ còn gọi `AddPersistence/AddMessaging/AddEmail`. Giữ route tường minh `[Route("api/auth")]` thay vì `[controller]` (URL là hợp đồng với FE, tên nhiều từ cần kebab-case). Quy ước ghi AGENTS.md.
+- T1.1: Huy gõ xong nhóm 4, 5, 7 (nhóm 6 giống nhóm 3–4 nên chỉ đọc). Kiểm tra lần cuối: phát hiện `VerifyEmailCommandHandler` thiếu `SaveChangesAsync` (xác thực không được lưu) → thêm lại; trả tiêu đề email xác thực về song ngữ; đồng bộ tên `userTokenRepository` / `userToken` / `emailTokenIssuer` sang 2 handler đặt lại mật khẩu; sửa 3 comment chưa chính xác. Build 0 warning, test 68/68. Gắn lại `ref/T1.1`. Chờ Huy commit + merge.

@@ -1,3 +1,4 @@
+using ConfHub.Application.Accounts;
 using ConfHub.Application.Common.Behaviors;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +17,8 @@ public static class DependencyInjection
             config.AddOpenBehavior(typeof(ValidationBehavior<,>));
         });
         services.AddValidatorsFromAssembly(assembly);
+
+        services.AddScoped<EmailTokenIssuer>();
 
         return services;
     }

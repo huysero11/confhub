@@ -1,4 +1,5 @@
 using ConfHub.Api.ErrorHandling;
+using ConfHub.Api.RateLimiting;
 using ConfHub.Application;
 using ConfHub.Infrastructure;
 using Scalar.AspNetCore;
@@ -14,7 +15,13 @@ builder.Services.AddSerilog((services, logger) => logger
 // ----- Service (DI) -----
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    // Không tự bắt buộc thuộc tính string không-null: để FluentValidation kiểm và trả lỗi
+    // theo đúng 1 định dạng (mã lỗi từng trường) thay vì lỗi mặc định của ASP.NET Core.
+    options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+});
+builder.Services.AddAuthRateLimiting(builder.Configuration);
 builder.Services.AddOpenApi();
 builder.Services.AddHealthChecks();
 
@@ -25,6 +32,7 @@ var app = builder.Build();
 app.UseSerilogRequestLogging();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
+app.UseRateLimiter();
 app.UseAuthorization();
 
 // ----- Endpoint -----

@@ -16,7 +16,7 @@
 1. Claude viết `plan/tasks/<ID>.md` từ template, cho người dùng xem nếu có quyết định nghiệp vụ.
 2. Giao Codex: tạo nhánh `task/<ID>-<slug>` từ `main`, làm theo file task, chạy test.
 3. Claude review diff thật + kết quả test. Sai thì giao Codex sửa, lặp tới khi đạt. Không tin báo cáo suông.
-4. **Viết mục 9 "Hướng dẫn gõ lại" trong `plan/tasks/<ID>.md`**: luồng tổng + **file chia theo nhóm**, mỗi nhóm một bảng theo thứ tự gõ (vai trò, điểm chính, Gõ/Đọc) + điểm dừng build/test. Dựa trên bản nháp của Codex nhưng Claude tự kiểm tra thứ tự với code thật (file dùng đến phải đứng trước). Rồi **giữ bản tham khảo nhưng để code chưa commit** (xem "Quy ước với Huy"), báo người dùng: cách chạy, cách test trên UI, link tới mục 9.
+4. **Viết mục 9 "Hướng dẫn gõ lại" trong `plan/tasks/<ID>.md`**: luồng tổng + **file chia nhóm theo use case** (lát cắt dọc: mỗi nhóm đi trọn 1 luồng Application → Infrastructure → Api, trong nhóm gõ **từ chỗ gọi xuống chỗ được gọi**: điểm vào → Command → Handler → thứ handler dùng → cài đặt Infrastructure, chấp nhận báo đỏ tạm và build ở điểm dừng cuối nhóm; file dùng chung gõ ở use case đầu tiên cần nó, file gõ dần qua nhiều nhóm ghi **Phần** / **Thêm**; dưới mỗi file có dòng `↳ gặp:` liệt kê theo thứ tự xuất hiện các tên của dự án file đó dùng → số thứ tự file chứa nó; không ghi chú kiểu này vào code), mỗi nhóm một danh sách đánh số theo thứ tự gõ (Gõ/Đọc/Chép, điểm chính) + điểm dừng build/chạy thử. **Không** chia nhóm theo lớp (cả Application rồi mới Infrastructure). Domain có thể gõ trước thành 1 nhóm. Dựa trên bản nháp của Codex nhưng Claude tự kiểm tra thứ tự với code thật (file dùng đến phải đứng trước). Rồi **giữ bản tham khảo nhưng để code chưa commit** (xem "Quy ước với Huy"), báo người dùng: cách chạy, cách test trên UI, link tới mục 9.
 5. Người dùng test UI → tự gõ lại → Claude kiểm tra bản gõ lại bằng `git diff ref/<ID>` + chạy test.
 6. Merge vào `main`, cập nhật bảng trạng thái trong `plan/README.md`.
 
@@ -41,6 +41,7 @@
 - **Làm tăng dần theo nhóm** (plan/README.md mục 3): tài liệu, giao diện, bảng/cột, hạ tầng chỉ làm tới nhóm đang làm. Trước khi code nhóm nào phải xong task thiết kế nhóm đó (D7–D14).
 
 - Không kết luận khi chưa có bằng chứng (code, log, test).
+- Task thêm container / cổng / trang web dev mới → cập nhật bảng "Địa chỉ và cổng" trong `README.md` gốc repo.
 - Chỉ hỏi người dùng khi cần quyết định nghiệp vụ, credential, thao tác phá hủy, hoặc bị chặn thật sự.
 - Khi báo kết quả: ghi rõ file/path và bằng chứng verification. Giải thích gom theo nhóm chức năng.
 - Khi giải thích code cho người dùng: đi từ luồng tổng (request đi qua những lớp nào) rồi mới vào chi tiết từng file.
@@ -55,4 +56,6 @@
 - **Codex MCP bị ngắt sau ~60 giây/lượt gọi** (kết nối tới máy Huy): lượt dài (viết cả task) sẽ chết giữa chừng. Cách làm đã chạy được: Claude viết code (qua `device_bash`), Codex chỉ chạy lệnh ngắn (`dotnet build/test`, git) và trả kết quả. Lượt timeout vẫn có thể chạy xong phía sau → kiểm tra lại trạng thái trước khi gọi lại.
 - Codex sandbox `workspace-write`: cần `config {"sandbox_workspace_write": {"network_access": true}}` để restore NuGet; **không ghi được `.git`** → lệnh git (commit, tag, reset) chạy với `danger-full-access`, chỉ đúng lệnh cần.
 - File Codex tạo trong sandbox thuộc tài khoản `CodexSandbox*` → Huy (tài khoản `Admin`, không nâng quyền) không xóa được (lỗi `Unlink of file ... failed` khi `git switch`). Đã sửa 2026-09-28: `icacls D:\Code\my-projects\confhub /grant Admin:(OI)(CI)F /T` (chạy Administrator) → mọi file mới tự thừa hưởng quyền của Admin. Gặp lại thì chạy lại lệnh này.
+- Lệnh Codex chạy trên Windows tách message commit có dấu cách / ngoặc thành nhiều tham số (`git commit -m "ref(T1.1): ..."` lỗi pathspec, commit không xảy ra nhưng các lệnh sau vẫn chạy) → message tag tạm viết liền: `git commit -m ref-<ID>-ban-tham-khao`, và kiểm tra reflog trước khi `reset`.
+- `device_commit_files` có thể giữ bản cũ nếu dùng lại cùng `stagedPath` → mỗi lần ghi lại 1 file, chép ra `stagedPath` **tên mới** (vd `T1.1-v3.md`), và kiểm tra nội dung trên máy sau khi ghi (không chạy song song với lệnh ghi).
 - `device_bash` không xóa được file và `git status` thường sẽ để lại `.git/index.lock` → chỉ dùng git đọc với `git --no-optional-locks`.

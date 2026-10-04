@@ -16,6 +16,7 @@
 - Dùng pattern/cơ chế chuẩn của .NET khi nó làm code chắc hơn (Options pattern cho nhóm cấu hình + `ValidateOnStart`, `GetConnectionString` cho chuỗi kết nối); comment ghi **tên pattern + mục đích**.
 - Analyzer ép cách viết phức tạp (chủ yếu luật tối ưu hiệu năng nhỏ) → **dừng lại, ghi vào báo cáo** cho Claude quyết định; không tự làm code rối để né luật.
 - File nhỏ, một trách nhiệm. Tên rõ nghĩa, tiếng Anh; tên hàm nói đúng việc nó làm (`MapExceptionToProblem`, `BuildProblem`). Không dùng overload (cùng tên, khác tham số) cho hai việc khác nhau.
+- Đặt tên tiếng Anh đúng ngữ pháp: cụm danh từ thì danh từ chính đứng cuối (`VerificationEmail` = email để xác thực; `EmailVerification` = việc xác thực email). Domain event thì quá khứ theo nghiệp vụ (`UserRegistered`, `EmailVerificationRequested`); Command/Message là động từ mệnh lệnh (`SendVerificationEmailMessage`); bool dùng `Is/Can/Has/Requires`; biến lambda viết đủ tên (`user =>`, không `u =>`). Chi tiết: `plan/tasks/T1.1.md` mục 9.
 - Comment tiếng Việt ngắn ở chỗ có logic không hiển nhiên (thuật toán, ràng buộc, lý do thiết kế). Không comment thừa.
 - Không thêm thư viện ngoài danh sách trong PROJECT.md mục 8 trừ khi file task cho phép.
 
@@ -31,6 +32,7 @@
 - Aggregate: constructor private + factory method + phương thức nghiệp vụ kiểm tra bất biến; không public setter. Trạng thái là enum (lưu chuỗi). Value object cho khái niệm dùng lại (`TimeRange`).
 - Repository chỉ cho aggregate root (Ardalis.Specification). Truy vấn danh sách dùng Specification + Mapster `ProjectToType`.
 - Lỗi: ném exception nghiệp vụ (`NotFoundException`, `ConflictException`…) → middleware → ProblemDetails. Handler trả DTO, không bọc Result.
+- Đăng ký DI: `DependencyInjection.cs` của mỗi tầng là "mục lục"; mục có từ 2 dòng đăng ký trở lên tách thành `<Thư mục>/<Tên mục>ServiceRegistration.cs` (`internal static`, hàm `Add<Tên mục>(configuration)`), mục 1 dòng viết thẳng ở file gốc. Route controller ghi tường minh, chữ thường, gạch nối (`[Route("api/auth")]`), không dùng `[controller]`.
 - Mọi endpoint ghi dữ liệu có `[MustHavePermission]`; `AllowAnonymous` chỉ cho trang công khai.
 - Sự kiện ra ngoài: publish qua MassTransit trong cùng transaction (EF Outbox). Consumer phải idempotent, không giữ trạng thái trong bộ nhớ, có retry.
 - Không code bị comment, không bí mật trong repo (dùng User Secrets / biến môi trường), `EnableSensitiveDataLogging` chỉ ở Development.
@@ -56,4 +58,4 @@
 2. Lệnh đã chạy + kết quả (dán phần tóm tắt pass/fail).
 3. Cách chạy và test thủ công trên giao diện/API.
 4. Ghi chú cho Claude: giả định đã đặt, việc chưa làm, rủi ro.
-5. **Thứ tự gõ lại (bản nháp), chia nhóm theo lớp/chức năng:** liệt kê MỌI file đã tạo/sửa theo thứ tự phụ thuộc (file được dùng đứng trước file dùng nó: Domain → Application → Infrastructure → Api → Test; FE: types → api → hook → component → page → route). Mỗi file 1 dòng: đường dẫn · vai trò · điểm chính cần hiểu. Đánh dấu điểm dừng có thể build/test giữa chừng.
+5. **Thứ tự gõ lại (bản nháp), chia nhóm theo use case:** liệt kê MỌI file đã tạo/sửa; mỗi nhóm là 1 use case đi trọn luồng qua các lớp (Application → Infrastructure → Api; FE: types → api → hook → component → page → route), trong nhóm xếp **từ chỗ gọi xuống chỗ được gọi** (điểm vào → Command → Handler → thứ handler dùng → cài đặt Infrastructure; file trên tạm báo đỏ là chấp nhận được), file dùng chung đặt ở use case đầu tiên cần nó; Domain có thể là nhóm đầu; test ở cuối. Mỗi file 1 dòng: đường dẫn · vai trò · điểm chính cần hiểu. Đánh dấu điểm dừng có thể build/test giữa chừng.
