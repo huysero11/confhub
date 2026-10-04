@@ -5,10 +5,10 @@
 
 ## 0. Đang ở đâu
 
-- **Vừa xong:** G0 hoàn tất (T0.1, T0.2, T0.5, T0.4; T0.3 chuyển sang T1.3) — 2026-09-29
-- **Đang làm:** T1.1 — Huy gõ lại xong, Claude đã kiểm (build 0 warning, test 68/68); chờ Huy commit + merge `main`
+- **Vừa xong:** T1.1 (đăng ký, xác thực email, quên mật khẩu) — merge `main` 2026-10-04 (`7fcb61b`)
+- **Đang làm:** chưa có task đang code (chờ viết đặc tả T1.4)
 - **Tiếp theo:** T1.4 (đăng nhập, JWT, phân quyền) hoặc T1.3 (khung FE, độc lập)
-- **Nhánh đang mở:** `task/T1.1-register` (code T1.1 chưa commit, bản đáp án tag `ref/T1.1`)
+- **Nhánh đang mở:** không có (bản đáp án T1.1: tag `ref/T1.1`)
 
 ## 1. Quy trình một task
 
@@ -139,7 +139,7 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 
 | ID   | Việc                               | Phụ thuộc                | Trạng thái |
 |------|------------------------------------|--------------------------|------------|
-| T1.1 | BE: đăng ký, xác thực email        | D7, T0.2, T0.4, T0.5, D1 | retype     |
+| T1.1 | BE: đăng ký, xác thực email        | D7, T0.2, T0.4, T0.5, D1 | done       |
 | T1.2 | FE: đăng ký / đăng nhập            | T1.3, T1.4               | todo       |
 | T1.3 | FE: khung frontend                 | T0.1                     | todo       |
 | T1.4 | BE: đăng nhập, JWT, phân quyền     | T1.1                     | todo       |
@@ -347,3 +347,4 @@ Chỉ chia task khi P1–P4 xong.
 - 2026-10-04 Đổi tên `SecureToken` → `RandomToken` (rõ nghĩa hơn; không dùng `TokenService` vì T1.4 có JWT và class này là static thuần). `EmailTokenIssuer`: biến kiểu `UserToken` đặt đồng bộ `latestUserToken` / `oldUserTokens` / `newUserToken`, `lifeTime` → `lifetime`, sửa comment cooldown. Gắn lại `ref/T1.1`.
 - T1.1: Huy gõ xong nhóm 3. Tách `Infrastructure/DependencyInjection.cs` theo mục (đề xuất của Huy): `Persistence/PersistenceServiceRegistration.cs`, `Messaging/MessagingServiceRegistration.cs`, `Email/EmailServiceRegistration.cs`; file gốc chỉ còn gọi `AddPersistence/AddMessaging/AddEmail`. Giữ route tường minh `[Route("api/auth")]` thay vì `[controller]` (URL là hợp đồng với FE, tên nhiều từ cần kebab-case). Quy ước ghi AGENTS.md.
 - T1.1: Huy gõ xong nhóm 4, 5, 7 (nhóm 6 giống nhóm 3–4 nên chỉ đọc). Kiểm tra lần cuối: phát hiện `VerifyEmailCommandHandler` thiếu `SaveChangesAsync` (xác thực không được lưu) → thêm lại; trả tiêu đề email xác thực về song ngữ; đồng bộ tên `userTokenRepository` / `userToken` / `emailTokenIssuer` sang 2 handler đặt lại mật khẩu; sửa 3 comment chưa chính xác. Build 0 warning, test 68/68. Gắn lại `ref/T1.1`. Chờ Huy commit + merge.
+- 2026-10-04 T1.1 → `done`: Huy commit `c0ab1e1`, merge `--no-ff` vào `main` (`7fcb61b`). Viết báo cáo tuần G-1 phần 1 (D1, D2, D7, T1.1) cho Huy dán vào Google Docs. Tiếp theo: đặc tả T1.4.
