@@ -22,6 +22,167 @@ namespace ConfHub.Infrastructure.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("ConfHub.Domain.Accounts.Role", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.PrimitiveCollection<string>("Permissions")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("Roles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("0199e0a0-0000-7000-8000-000000000001"),
+                            Code = "Attendee",
+                            CreatedAt = new DateTime(2026, 9, 29, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Name = "Người tham dự",
+                            Permissions = "[]"
+                        },
+                        new
+                        {
+                            Id = new Guid("0199e0a0-0000-7000-8000-000000000002"),
+                            Code = "Organizer",
+                            CreatedAt = new DateTime(2026, 9, 29, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Name = "Ban tổ chức",
+                            Permissions = "[]"
+                        },
+                        new
+                        {
+                            Id = new Guid("0199e0a0-0000-7000-8000-000000000003"),
+                            Code = "Supplier",
+                            CreatedAt = new DateTime(2026, 9, 29, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Name = "Nhà cung cấp",
+                            Permissions = "[]"
+                        },
+                        new
+                        {
+                            Id = new Guid("0199e0a0-0000-7000-8000-000000000004"),
+                            Code = "Staff",
+                            CreatedAt = new DateTime(2026, 9, 29, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Name = "Nhân viên vận hành",
+                            Permissions = "[]"
+                        },
+                        new
+                        {
+                            Id = new Guid("0199e0a0-0000-7000-8000-000000000005"),
+                            Code = "Admin",
+                            CreatedAt = new DateTime(2026, 9, 29, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Name = "Quản trị viên",
+                            Permissions = "[]"
+                        });
+                });
+
+            modelBuilder.Entity("ConfHub.Domain.Accounts.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Bio")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Organization")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("Users", (string)null);
+                });
+
+            modelBuilder.Entity("ConfHub.Domain.Accounts.UserToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Purpose")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<DateTime?>("UsedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.HasIndex("UserId", "Purpose");
+
+                    b.ToTable("UserTokens", (string)null);
+                });
+
             modelBuilder.Entity("MassTransit.EntityFrameworkCoreIntegration.InboxState", b =>
                 {
                     b.Property<long>("Id")
@@ -190,6 +351,26 @@ namespace ConfHub.Infrastructure.Persistence.Migrations
                     b.HasIndex("Created");
 
                     b.ToTable("OutboxState");
+                });
+
+            modelBuilder.Entity("ConfHub.Domain.Accounts.User", b =>
+                {
+                    b.HasOne("ConfHub.Domain.Accounts.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("ConfHub.Domain.Accounts.UserToken", b =>
+                {
+                    b.HasOne("ConfHub.Domain.Accounts.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("MassTransit.EntityFrameworkCoreIntegration.OutboxMessage", b =>

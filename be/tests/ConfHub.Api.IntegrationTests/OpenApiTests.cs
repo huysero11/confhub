@@ -2,8 +2,8 @@ using System.Net;
 
 namespace ConfHub.Api.IntegrationTests;
 
+[Collection(ApiCollectionDefinition.Name)]
 public class OpenApiTests(ConfHubApiFactory factory)
-    : IClassFixture<ConfHubApiFactory>
 {
     [Fact]
     public async Task OpenApiDocumentIsAvailableInDevelopment()

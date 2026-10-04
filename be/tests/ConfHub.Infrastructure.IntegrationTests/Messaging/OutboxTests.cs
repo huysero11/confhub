@@ -5,7 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace ConfHub.Infrastructure.IntegrationTests.Messaging;
 
-public class OutboxTests(OutboxFixture fixture) : IClassFixture<OutboxFixture>
+[Collection(DatabaseCollectionDefinition.Name)]
+public class OutboxTests(OutboxFixture fixture)
 {
     [Fact]
     public async Task MigrationCreatesOutboxTables()
