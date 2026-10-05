@@ -198,6 +198,8 @@ Mọi endpoint dưới `/api/auth`. Lỗi trả ProblemDetails (middleware của
 | `AccountPending`     | 403  | Chờ QT duyệt                         |
 | `AccountLocked`      | 403  | Bị khóa                              |
 | `SessionExpired`     | 401  | Refresh token không hợp lệ           |
+| `Unauthorized`       | 401  | Thiếu / sai / hết hạn access token   |
+| `Forbidden`          | 403  | Đã đăng nhập nhưng thiếu quyền       |
 | `TooManyRequests`    | 429  | Vượt rate limit                      |
 
 ## 7. Sự kiện và email

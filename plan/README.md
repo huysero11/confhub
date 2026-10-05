@@ -6,8 +6,8 @@
 ## 0. Đang ở đâu
 
 - **Vừa xong:** T1.1 (đăng ký, xác thực email, quên mật khẩu) — merge `main` 2026-10-04 (`7fcb61b`)
-- **Đang làm:** chưa có task đang code (chờ viết đặc tả T1.4)
-- **Tiếp theo:** T1.4 (đăng nhập, JWT, phân quyền) hoặc T1.3 (khung FE, độc lập)
+- **Đang làm:** T1.4 — đặc tả `plan/tasks/T1.4.md` đã viết, chờ Huy duyệt rồi giao Codex
+- **Tiếp theo:** T1.3 (khung FE, độc lập — Codex sinh khi Huy gõ lại T1.4) → T1.2
 - **Nhánh đang mở:** không có (bản đáp án T1.1: tag `ref/T1.1`)
 
 ## 1. Quy trình một task
@@ -142,7 +142,7 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 | T1.1 | BE: đăng ký, xác thực email        | D7, T0.2, T0.4, T0.5, D1 | done       |
 | T1.2 | FE: đăng ký / đăng nhập            | T1.3, T1.4               | todo       |
 | T1.3 | FE: khung frontend                 | T0.1                     | todo       |
-| T1.4 | BE: đăng nhập, JWT, phân quyền     | T1.1                     | todo       |
+| T1.4 | BE: đăng nhập, JWT, phân quyền     | T1.1                     | spec       |
 
 **Chi tiết:**
 - **T1.1** — Tách 2026-09-29 (phần đăng nhập sang T1.4). Nền persistence nhận từ T0.5: IRepository/IReadRepository + Specification, SaveChangesInterceptor (audit), Guid tuần tự. User/Role/UserToken + migration + seed 5 vai trò, danh mục quyền là hằng số. Đăng ký (chọn Người tham dự / BTC / NCC), băm mật khẩu `PasswordHasher<T>`, xác thực email (token băm, hạn 24 giờ, gửi lại có giới hạn), quên mật khẩu. **Nhận từ T0.4 (phương án B):** smtp4dev vào compose + MailKit + consumer gửi email; domain event → publish qua outbox trước `SaveChanges`. Kiểm tra lại: tắt RabbitMQ thì `/health` phải báo `Unhealthy`. Rate limit cho endpoint đăng ký / gửi lại mail.
@@ -348,3 +348,5 @@ Chỉ chia task khi P1–P4 xong.
 - T1.1: Huy gõ xong nhóm 3. Tách `Infrastructure/DependencyInjection.cs` theo mục (đề xuất của Huy): `Persistence/PersistenceServiceRegistration.cs`, `Messaging/MessagingServiceRegistration.cs`, `Email/EmailServiceRegistration.cs`; file gốc chỉ còn gọi `AddPersistence/AddMessaging/AddEmail`. Giữ route tường minh `[Route("api/auth")]` thay vì `[controller]` (URL là hợp đồng với FE, tên nhiều từ cần kebab-case). Quy ước ghi AGENTS.md.
 - T1.1: Huy gõ xong nhóm 4, 5, 7 (nhóm 6 giống nhóm 3–4 nên chỉ đọc). Kiểm tra lần cuối: phát hiện `VerifyEmailCommandHandler` thiếu `SaveChangesAsync` (xác thực không được lưu) → thêm lại; trả tiêu đề email xác thực về song ngữ; đồng bộ tên `userTokenRepository` / `userToken` / `emailTokenIssuer` sang 2 handler đặt lại mật khẩu; sửa 3 comment chưa chính xác. Build 0 warning, test 68/68. Gắn lại `ref/T1.1`. Chờ Huy commit + merge.
 - 2026-10-04 T1.1 → `done`: Huy commit `c0ab1e1`, merge `--no-ff` vào `main` (`7fcb61b`). Viết báo cáo tuần G-1 phần 1 (D1, D2, D7, T1.1) cho Huy dán vào Google Docs. Tiếp theo: đặc tả T1.4.
+- 2026-10-05 T1.4 → `spec`: viết `plan/tasks/T1.4.md`. Chốt: gói JwtBearer đặt ở Infrastructure (Api dùng lại); `FallbackPolicy` = phải đăng nhập (endpoint công khai ghi rõ `AllowAnonymous`); `me` ở `CurrentUserController` riêng; **không migration**, chưa tạo danh mục quyền (G1 chưa có quyền nghiệp vụ → T3.1); tài khoản mẫu seed lúc khởi động ở Development (`DevSeed`), tạo bằng `User.CreateActive`; thêm mã lỗi `Unauthorized` / `Forbidden` vào `g1-account.md`. Codex kết nối lại bằng tài khoản mới (tool `codex`), thư mục mặc định `C:\Windows\System32` → luôn ghi đường dẫn repo trong prompt.
+- T1.4 (Huy): làm `ICurrentUser` (Application) + `HttpCurrentUser` (Api) ngay ở T1.4 thay vì chờ T3.1; `/me` dùng làm mẫu. Phân biệt: `ICurrentUser` = ai đang gọi (từ JWT), repository = dữ liệu User; use case chưa đăng nhập và consumer không dùng.
