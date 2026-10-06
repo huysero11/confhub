@@ -30,7 +30,7 @@
 ### Quy tắc chất lượng backend (chi tiết: `docs/design/base-reference.md`)
 - .NET 10, `Nullable` bật, `TreatWarningsAsErrors=true`, StyleCop + Roslynator, file-scoped namespace.
 - Aggregate: constructor private + factory method + phương thức nghiệp vụ kiểm tra bất biến; không public setter. Trạng thái là enum (lưu chuỗi). Value object cho khái niệm dùng lại (`TimeRange`).
-- Repository chỉ cho aggregate root (Ardalis.Specification). Truy vấn danh sách dùng Specification + Mapster `ProjectToType`.
+- Repository chỉ cho aggregate root (Ardalis.Specification). Truy vấn danh sách dùng `Specification<T, TResult>` với `Query.Select(...)` (SQL chỉ lấy cột DTO cần). **Không dùng Mapster / AutoMapper**: map tay bằng hàm tĩnh trên DTO (vd `CurrentUserResponse.FromUser`).
 - Lỗi: ném exception nghiệp vụ (`NotFoundException`, `ConflictException`…) → middleware → ProblemDetails. Handler trả DTO, không bọc Result.
 - Đăng ký DI: `DependencyInjection.cs` của mỗi tầng là "mục lục"; mục có từ 2 dòng đăng ký trở lên tách thành `<Thư mục>/<Tên mục>ServiceRegistration.cs` (`internal static`, hàm `Add<Tên mục>(configuration)`), mục 1 dòng viết thẳng ở file gốc. Route controller ghi tường minh, chữ thường, gạch nối (`[Route("api/auth")]`), không dùng `[controller]`.
 - Mọi endpoint ghi dữ liệu có `[MustHavePermission]`; `AllowAnonymous` chỉ cho trang công khai.

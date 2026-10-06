@@ -20,7 +20,7 @@ public sealed class EmailTokenIssuer(
     {
         var now = timeProvider.GetUtcNow().UtcDateTime;
         var latestUserToken = await userTokenRepository.FirstOrDefaultAsync(
-            new LatestTokenSpec(userId, purpose),
+            new LatestUserTokenSpec(userId, purpose),
             cancellationToken);
 
         // Cooldown (BR08): vừa gửi email cùng loại trong vòng 60 giây thì không gửi nữa.
@@ -31,7 +31,7 @@ public sealed class EmailTokenIssuer(
 
         // các link trong email bị cũ, đánh dấu đã dùng, chỉ cái mới nhất dùng được
         var oldUserTokens = await userTokenRepository.ListAsync(
-            new ActiveTokensSpec(userId, purpose, now),
+            new ActiveUserTokensSpec(userId, purpose, now),
             cancellationToken);
         foreach (var oldUserToken in oldUserTokens)
         {

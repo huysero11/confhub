@@ -1,4 +1,3 @@
-using ConfHub.Application.Common.Security;
 using ConfHub.Infrastructure.Email;
 using ConfHub.Infrastructure.Messaging;
 using ConfHub.Infrastructure.Persistence;
@@ -20,8 +19,7 @@ public static class DependencyInjection
         services.AddPersistence(configuration);
         services.AddMessaging(configuration);
         services.AddEmail(configuration);
-
-        services.AddSingleton<IPasswordHasher, AspNetPasswordHasher>();
+        services.AddSecurity(configuration);
 
         return services;
     }

@@ -401,6 +401,7 @@ Làm đến nhóm chức năng nào thì tài liệu (đặc tả, biểu đồ)
 - *Vector database riêng* (Qdrant/pgvector) — quy mô vài trăm đoạn/hội nghị, lưu vector trong SQL Server và so sánh bằng vòng lặp C# là đủ; giữ trọng tâm ở web/backend.
 - *Figma để thiết kế* — connector chỉ đọc được thiết kế và sinh code, không vẽ hộ được.
 - *Tailwind/Bootstrap* — xung đột với antd.
+- *Mapster / AutoMapper* (2026-10-05) — DTO map tay bằng hàm tĩnh (`CurrentUserResponse.FromUser`); truy vấn danh sách dùng `Specification<T, TResult>` + `Query.Select` của Ardalis (SQL vẫn chỉ lấy cột cần). Map tự động theo trùng tên tiết kiệm vài dòng nhưng thêm thư viện và khó giải thích khi bảo vệ.
 
 ---
 

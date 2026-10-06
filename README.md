@@ -38,3 +38,19 @@ dotnet run --project src\ConfHub.Api
 - Cấu hình API cho máy dev: `be/src/ConfHub.Api/appsettings.Development.json` — ghi đè
   `appsettings.json` (file gốc để trống / giá trị cho máy thật).
 - Cổng của chính API: `be/src/ConfHub.Api/Properties/launchSettings.json`.
+
+## Tài khoản mẫu (chỉ máy dev)
+
+API tự tạo khi khởi động ở môi trường Development (`DevSeed` trong `appsettings.Development.json`),
+sau khi đã chạy `dotnet ef database update`. Mật khẩu chung: `Confhub@123`.
+
+| Email                     | Vai trò            |
+|---------------------------|--------------------|
+| `attendee@confhub.local`  | Người tham dự      |
+| `organizer@confhub.local` | Ban tổ chức        |
+| `supplier@confhub.local`  | Nhà cung cấp       |
+| `staff@confhub.local`     | Nhân viên vận hành |
+| `admin@confhub.local`     | Quản trị viên      |
+
+Đăng nhập: `POST /api/auth/login` trong Scalar → dán `accessToken` vào ô Bearer token để gọi các API
+cần đăng nhập.

@@ -18,17 +18,17 @@ public sealed class VerifyEmailCommandHandler(
 
         // Lấy token từ DB theo hash
         var tokenHash = RandomToken.Hash(request.Token);
-        var userToken = await userTokenRepository.FirstOrDefaultAsync(new TokenByHashSpec(tokenHash), cancellationToken);
+        var userToken = await userTokenRepository.FirstOrDefaultAsync(new UserTokenByHashSpec(tokenHash), cancellationToken);
         if (userToken is null || userToken.Purpose != TokenPurpose.VerifyEmail || !userToken.IsActive(now))
         {
-            throw TokenInvalid();
+            throw CreateTokenInvalidException();
         }
 
         // Lấy user kèm role
         var user = await userRepository.FirstOrDefaultAsync(new UserWithRoleByIdSpec(userToken.UserId), cancellationToken);
         if (user is null || user.Status != UserStatus.Unverified)
         {
-            throw TokenInvalid();
+            throw CreateTokenInvalidException();
         }
 
         // Xác thực email
@@ -43,7 +43,7 @@ public sealed class VerifyEmailCommandHandler(
     }
 
     // Mọi trường hợp token sai (không có, hết hạn, đã dùng, sai mục đích) trả cùng 1 lỗi.
-    private static DomainException TokenInvalid()
+    private static DomainException CreateTokenInvalidException()
     {
         return new DomainException(AccountErrorCodes.TokenInvalid, "The link is invalid or has expired.");
     }

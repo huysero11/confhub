@@ -18,8 +18,8 @@ public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidat
 
         foreach (var validator in validators)
         {
-            var res = await validator.ValidateAsync(context, cancellationToken);
-            failures.AddRange(res.Errors.Where(x => x is not null));
+            var validationResult = await validator.ValidateAsync(context, cancellationToken);
+            failures.AddRange(validationResult.Errors.Where(failure => failure is not null));
         }
 
         if (failures.Count != 0)

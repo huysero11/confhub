@@ -48,12 +48,12 @@ public sealed class DomainEventPublisher(IPublishEndpoint publishEndpoint)
     {
         switch (domainEvent)
         {
-            case UserRegistered registered:
-                return new SendVerificationEmailMessage(registered.User.Id);
-            case EmailVerificationRequested requested:
-                return new SendVerificationEmailMessage(requested.User.Id);
-            case PasswordResetRequested requested:
-                return new SendPasswordResetEmailMessage(requested.User.Id);
+            case UserRegistered userRegistered:
+                return new SendVerificationEmailMessage(userRegistered.User.Id);
+            case EmailVerificationRequested verificationRequested:
+                return new SendVerificationEmailMessage(verificationRequested.User.Id);
+            case PasswordResetRequested passwordResetRequested:
+                return new SendPasswordResetEmailMessage(passwordResetRequested.User.Id);
             default:
                 throw new InvalidOperationException(
                     $"No mapping defined for domain event type {domainEvent.GetType().Name}");
