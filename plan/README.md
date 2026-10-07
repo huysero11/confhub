@@ -6,9 +6,9 @@
 ## 0. Đang ở đâu
 
 - **Vừa xong:** T1.4 (đăng nhập, JWT, refresh token, phân quyền) — 2026-10-07; backend G1 xong (9 API `api/auth`)
-- **Đang làm:** T1.3 — đặc tả `plan/tasks/T1.3.md` đã viết, chờ Huy duyệt rồi giao Codex
+- **Đang làm:** T1.3 — Huy tự làm tay theo 8 bước trong `plan/tasks/T1.3.md` mục 9 (không Codex, không tag `ref`); đang ở bước 1
 - **Tiếp theo:** T1.2 (FE tài khoản) → G1 xong; viết phần Tài khoản trên Overleaf
-- **Nhánh đang mở:** không có sau khi merge `task/T1.4-login` (bản đáp án T1.4: tag `ref/T1.4`)
+- **Nhánh đang mở:** `task/T1.3-fe-skeleton`
 
 ## 1. Quy trình một task
 
@@ -141,7 +141,7 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 |------|------------------------------------|--------------------------|------------|
 | T1.1 | BE: đăng ký, xác thực email        | D7, T0.2, T0.4, T0.5, D1 | done       |
 | T1.2 | FE: đăng ký / đăng nhập            | T1.3, T1.4               | todo       |
-| T1.3 | FE: khung frontend                 | T0.1                     | spec       |
+| T1.3 | FE: khung frontend                 | T0.1                     | retype     |
 | T1.4 | BE: đăng nhập, JWT, phân quyền     | T1.1                     | done       |
 
 **Chi tiết:**
@@ -361,3 +361,4 @@ Chỉ chia task khi P1–P4 xong.
 - 2026-10-07 T1.4 → `done`: Huy gõ xong nhóm 5–6, Claude kiểm lần cuối bằng diff với `ref/T1.4` (chỉ còn khác comment / cách xuống dòng; sửa 1 thông báo lỗi của `DevAccountSeeder`). Build 0 warning, test 99/99, không đổi model. Huy commit + merge `--no-ff` vào `main`. Viết báo cáo tuần G-1 phần 2 (T1.4). G1 còn T1.3, T1.2.
 - 2026-10-07 T1.4 merge vào `main` (`08c4b7b`). T1.3 → `spec`: viết `plan/tasks/T1.3.md`. Chốt phạm vi: chỉ dựng **Shell B** (Shell A → T3.3, Shell C → T7.2 theo nguyên tắc làm tăng dần — khác mô tả cũ "3 shell"); chưa có API client / TanStack Query / proxy (T1.2); phông `@fontsource/be-vietnam-pro`; react-router v7; Vitest + Testing Library; giữ antd v5.
 - T1.3 (Huy): chốt kiến trúc FE `page → component → hook → api → lib/apiClient` theo nhóm chức năng (`features/<nhóm>/`), **không có lớp service riêng** (hook TanStack Query thay vai trò đó); mọi file `fe/src` có comment đầu file (là gì, chứa gì, ai dùng); FE cũng theo quy trình gõ lại (mục 9 + tag `ref/<ID>`). Đã ghi vào `T1.3.md` và `AGENTS.md`.
+- 2026-10-07 T1.3 → `retype` (làm tay): Huy duyệt đặc tả, chọn **tự làm tay từng bước** như khung BE ở G0 (lần đầu chạm công cụ FE) và dùng **npm** (không yarn / pnpm). Từ T1.2 quay lại quy trình Codex → gõ lại.
