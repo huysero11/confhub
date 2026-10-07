@@ -43,6 +43,9 @@
 - Ant Design v5, **không Tailwind/Bootstrap**. Không gõ số pixel/màu trực tiếp: dùng token antd (`theme.useToken()`) hoặc biến CSS đã khai.
 - Mọi chữ hiển thị qua `react-i18next` (`vi.json`/`en.json`), không hardcode.
 - Gọi API qua TanStack Query.
+- Kiến trúc: chia theo nhóm chức năng `src/features/<nhóm>/`, các lớp `page → component → hook → api → lib/apiClient`, kiểu ở `types.ts`; lớp trên chỉ gọi lớp ngay dưới. **Không có lớp `service` riêng** giữa api và hook (hook TanStack Query đã lo); logic không gắn React đặt ở `src/lib/`. Thứ dùng chung: `components/`, `layouts/`, `theme/`, `i18n/`. Chi tiết: `plan/tasks/T1.3.md` mục "Kiến trúc frontend".
+- **Comment đầu file bắt buộc** (mọi file trong `fe/src`): 2–5 dòng tiếng Việt — file là gì, chứa gì, ai dùng, thuộc lớp nào.
+- Component: 1 file 1 component, `export function` có tên (không `export default`), props có kiểu rõ ràng; không `any`.
 
 ## Làm tăng dần — không làm trước cho task sau
 - Chỉ tạo bảng/cột mà file task liệt kê. Thêm bảng/cột = migration mới tên `<ID>_<MoTa>`, dấu `.` trong mã task đổi thành `_` (vd `T1_1_Users`); không sửa migration đã có.

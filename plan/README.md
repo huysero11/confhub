@@ -6,8 +6,8 @@
 ## 0. Đang ở đâu
 
 - **Vừa xong:** T1.4 (đăng nhập, JWT, refresh token, phân quyền) — 2026-10-07; backend G1 xong (9 API `api/auth`)
-- **Đang làm:** chưa có task đang code (chờ viết đặc tả T1.3)
-- **Tiếp theo:** T1.3 (khung FE) → T1.2 (FE tài khoản) → G1 xong; viết phần Tài khoản trên Overleaf
+- **Đang làm:** T1.3 — đặc tả `plan/tasks/T1.3.md` đã viết, chờ Huy duyệt rồi giao Codex
+- **Tiếp theo:** T1.2 (FE tài khoản) → G1 xong; viết phần Tài khoản trên Overleaf
 - **Nhánh đang mở:** không có sau khi merge `task/T1.4-login` (bản đáp án T1.4: tag `ref/T1.4`)
 
 ## 1. Quy trình một task
@@ -141,14 +141,14 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 |------|------------------------------------|--------------------------|------------|
 | T1.1 | BE: đăng ký, xác thực email        | D7, T0.2, T0.4, T0.5, D1 | done       |
 | T1.2 | FE: đăng ký / đăng nhập            | T1.3, T1.4               | todo       |
-| T1.3 | FE: khung frontend                 | T0.1                     | todo       |
+| T1.3 | FE: khung frontend                 | T0.1                     | spec       |
 | T1.4 | BE: đăng nhập, JWT, phân quyền     | T1.1                     | done       |
 
 **Chi tiết:**
 - **T1.1** — Tách 2026-09-29 (phần đăng nhập sang T1.4). Nền persistence nhận từ T0.5: IRepository/IReadRepository + Specification, SaveChangesInterceptor (audit), Guid tuần tự. User/Role/UserToken + migration + seed 5 vai trò, danh mục quyền là hằng số. Đăng ký (chọn Người tham dự / BTC / NCC), băm mật khẩu `PasswordHasher<T>`, xác thực email (token băm, hạn 24 giờ, gửi lại có giới hạn), quên mật khẩu. **Nhận từ T0.4 (phương án B):** smtp4dev vào compose + MailKit + consumer gửi email; domain event → publish qua outbox trước `SaveChanges`. Kiểm tra lại: tắt RabbitMQ thì `/health` phải báo `Unhealthy`. Rate limit cho endpoint đăng ký / gửi lại mail.
 - **T1.4** — Đăng nhập (chặn `Unverified` / `PendingApproval` / `Locked`), access token JWT 15 phút + refresh token 7 ngày trong cookie `HttpOnly` (xoay vòng, lưu băm trong UserToken), làm mới, đăng xuất (thu hồi). Phân quyền theo permission tự viết: `[MustHavePermission]` + PolicyProvider + AuthorizationHandler, quyền trong claim JWT. Rate limit đăng nhập. Seed tài khoản mẫu cho 5 vai trò (dev) để dùng tới khi có UC20.
 - **T1.2** — Đăng ký / xác thực email / đăng nhập / đăng xuất / quên mật khẩu, interceptor tự làm mới token, chặn route theo quyền.
-- **T1.3** — Khung frontend (chuyển từ T0.3): Vite React TS, antd v5 token sáng/tối, i18n vi/en, 3 shell A/B/C + router rỗng. Làm trước T1.2.
+- **T1.3** — Đặc tả: `plan/tasks/T1.3.md`. Khung frontend (chuyển từ T0.3): Vite React TS, antd v5 token sáng/tối, i18n vi/en, **Shell B** + router (`/`, 404), lint/typecheck/test/build. Shell A dựng ở T3.3, Shell C ở T7.2. Chưa gọi API (T1.2).
 
 #### G2 — Thuật toán bản console (làm sớm, độc lập)
 
@@ -359,3 +359,5 @@ Chỉ chia task khi P1–P4 xong.
 - Quy ước đặt tên bổ sung: hàm trả về exception / đối tượng mới bắt đầu bằng động từ (`Create…`, `Build…`); biến local không viết tắt (`res`, `x`, `value`, `result` → nói rõ nội dung); chuỗi token gốc luôn có tiền tố `raw` (`rawToken`, `rawRefreshToken`).
 - 2026-10-06 T1.4: kiểm bản gõ lại nhóm 2–4. Sửa: thiếu `MapInboundClaims = false` trong `AuthenticationExtensions` (claim `sub` bị đổi tên → `/me` 401); `RevokeAllSessionAsync` → `RevokeAllSessionsAsync`; `userClaim` → `userIdClaim`; `hashedRefreshToken` → `tokenHash` (đồng bộ các handler khác); `CreateSessionExpiredException` về dạng block. Comment của Huy giữ nguyên. Build 0 warning, test 99/99.
 - 2026-10-07 T1.4 → `done`: Huy gõ xong nhóm 5–6, Claude kiểm lần cuối bằng diff với `ref/T1.4` (chỉ còn khác comment / cách xuống dòng; sửa 1 thông báo lỗi của `DevAccountSeeder`). Build 0 warning, test 99/99, không đổi model. Huy commit + merge `--no-ff` vào `main`. Viết báo cáo tuần G-1 phần 2 (T1.4). G1 còn T1.3, T1.2.
+- 2026-10-07 T1.4 merge vào `main` (`08c4b7b`). T1.3 → `spec`: viết `plan/tasks/T1.3.md`. Chốt phạm vi: chỉ dựng **Shell B** (Shell A → T3.3, Shell C → T7.2 theo nguyên tắc làm tăng dần — khác mô tả cũ "3 shell"); chưa có API client / TanStack Query / proxy (T1.2); phông `@fontsource/be-vietnam-pro`; react-router v7; Vitest + Testing Library; giữ antd v5.
+- T1.3 (Huy): chốt kiến trúc FE `page → component → hook → api → lib/apiClient` theo nhóm chức năng (`features/<nhóm>/`), **không có lớp service riêng** (hook TanStack Query thay vai trò đó); mọi file `fe/src` có comment đầu file (là gì, chứa gì, ai dùng); FE cũng theo quy trình gõ lại (mục 9 + tag `ref/<ID>`). Đã ghi vào `T1.3.md` và `AGENTS.md`.
