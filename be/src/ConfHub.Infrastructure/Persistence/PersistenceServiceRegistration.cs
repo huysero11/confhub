@@ -1,11 +1,12 @@
 using ConfHub.Application.Common.Persistence;
+using ConfHub.Infrastructure.Persistence.Seeding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ConfHub.Infrastructure.Persistence;
 
-// Đăng ký DI cho phần lưu trữ: DbContext, interceptor, repository, publisher.
+// Đăng ký DI cho phần lưu trữ: DbContext, interceptor, repository, publisher, tài khoản mẫu.
 // Được gọi từ DependencyInjection.AddInfrastructure.
 internal static class PersistenceServiceRegistration
 {
@@ -27,6 +28,11 @@ internal static class PersistenceServiceRegistration
         services.AddScoped<DomainEventPublisher>();
         services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
         services.AddScoped(typeof(IReadRepository<>), typeof(EfRepository<>));
+
+        // Tài khoản mẫu cho máy dev (Program.cs gọi khi khởi động ở môi trường Development).
+        services.AddOptions<DevSeedOptions>()
+            .Bind(configuration.GetSection(DevSeedOptions.SectionName));
+        services.AddScoped<DevAccountSeeder>();
 
         return services;
     }

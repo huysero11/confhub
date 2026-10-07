@@ -8,6 +8,9 @@ public sealed class AuthRateLimitOptions
     public const string SectionName = "RateLimiting";
 
     [Range(1, 10000)]
+    public int LoginPerMinute { get; init; } = 5;
+
+    [Range(1, 10000)]
     public int RegisterPerMinute { get; init; } = 5;
 
     // Gửi lại email xác thực + quên mật khẩu.

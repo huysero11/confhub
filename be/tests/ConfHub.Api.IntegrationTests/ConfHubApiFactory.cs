@@ -13,6 +13,7 @@ namespace ConfHub.Api.IntegrationTests;
 // Dựng API trong bộ nhớ cho test:
 // - CSDL riêng ConfHub_ApiTest trên SQL Server của máy dev, xóa và tạo lại mỗi lần chạy test.
 // - RabbitMQ thay bằng test harness của MassTransit (hàng đợi trong bộ nhớ) → không cần Docker.
+// - Nạp thêm TestProbeController (controller mẫu của test) để thử cơ chế phân quyền.
 // - Email thay bằng FakeEmailSender (ghi lại thay vì gửi), đồng hồ thay bằng TestClock (tua được).
 public sealed class ConfHubApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
@@ -39,12 +40,17 @@ public sealed class ConfHubApiFactory : WebApplicationFactory<Program>, IAsyncLi
         builder.UseSetting("ConnectionStrings:ConfHub", ConnectionString);
 
         // Test gọi API rất nhiều lần từ cùng 1 "IP" → nới giới hạn; test rate limit tự đặt lại thấp.
+        builder.UseSetting("RateLimiting:LoginPerMinute", "10000");
         builder.UseSetting("RateLimiting:RegisterPerMinute", "10000");
         builder.UseSetting("RateLimiting:EmailPerMinute", "10000");
         builder.UseSetting("RateLimiting:ResetPasswordPerMinute", "10000");
 
+        // Test tự tạo tài khoản mình cần, không dùng tài khoản mẫu.
+        builder.UseSetting("DevSeed:Enabled", "false");
+
         builder.ConfigureTestServices(services =>
         {
+            services.AddControllers().AddApplicationPart(typeof(TestProbeController).Assembly);
             services.AddMassTransitTestHarness();
             services.AddSingleton<IEmailSender>(EmailSender);
             services.AddSingleton<TimeProvider>(Clock);

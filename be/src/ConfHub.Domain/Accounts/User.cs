@@ -42,11 +42,7 @@ public sealed class User : BaseEntity, IAggregateRoot
                 $"The role '{role.Code}' is not allowed for self-registration.");
         }
 
-        string? trimmedOrganization = null;
-        if (!string.IsNullOrWhiteSpace(organization))
-        {
-            trimmedOrganization = organization.Trim();
-        }
+        var trimmedOrganization = TrimOrNull(organization);
 
         if (role.RequiresApproval && trimmedOrganization is null)
         {
@@ -67,6 +63,25 @@ public sealed class User : BaseEntity, IAggregateRoot
         };
         user.AddDomainEvent(new UserRegistered(user));
         return user;
+    }
+
+    // Tạo tài khoản dùng được ngay: không qua xác thực email, không ghi sự kiện (không gửi mail),
+    // vai trò nào cũng tạo được. Dùng cho tài khoản mẫu (dev); sau này cho quản trị viên tạo tài khoản.
+    public static User CreateActive(
+        string email, string passwordHash, string fullName, Role role, string? organization)
+    {
+        ArgumentNullException.ThrowIfNull(role);
+
+        return new User
+        {
+            Email = NormalizeEmail(email),
+            PasswordHash = passwordHash,
+            FullName = fullName.Trim(),
+            RoleId = role.Id,
+            Role = role,
+            Organization = TrimOrNull(organization),
+            Status = UserStatus.Active
+        };
     }
 
     // Yêu cầu gửi (lại) email xác thực: chỉ ghi sự kiện, consumer mới tạo token và gửi mail.
@@ -101,6 +116,17 @@ public sealed class User : BaseEntity, IAggregateRoot
     {
         EnsureStatus(CanResetPassword);
         PasswordHash = newPasswordHash;
+    }
+
+    // Chuỗi rỗng / toàn khoảng trắng coi như không nhập.
+    private static string? TrimOrNull(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+
+        return value.Trim();
     }
 
     private void EnsureStatus(bool isAllowed)

@@ -18,16 +18,16 @@ public sealed class ResetPasswordCommandHandler(
         var now = timeProvider.GetUtcNow().UtcDateTime;
 
         var tokenHash = RandomToken.Hash(request.Token);
-        var userToken = await userTokenRepository.FirstOrDefaultAsync(new TokenByHashSpec(tokenHash), cancellationToken);
+        var userToken = await userTokenRepository.FirstOrDefaultAsync(new UserTokenByHashSpec(tokenHash), cancellationToken);
         if (userToken is null || userToken.Purpose != TokenPurpose.ResetPassword || !userToken.IsActive(now))
         {
-            throw TokenInvalid();
+            throw CreateTokenInvalidException();
         }
 
         var user = await userRepository.GetByIdAsync(userToken.UserId, cancellationToken);
         if (user is null || !user.CanResetPassword)
         {
-            throw TokenInvalid();
+            throw CreateTokenInvalidException();
         }
 
         user.ResetPassword(passwordHasher.Hash(request.NewPassword));
@@ -35,7 +35,7 @@ public sealed class ResetPasswordCommandHandler(
 
         // BR14: đổi mật khẩu → đăng xuất khỏi mọi thiết bị (thu hồi refresh token còn hạn).
         var refreshTokens = await userTokenRepository.ListAsync(
-            new ActiveTokensSpec(user.Id, TokenPurpose.Refresh, now),
+            new ActiveUserTokensSpec(user.Id, TokenPurpose.Refresh, now),
             cancellationToken);
         foreach (var refreshToken in refreshTokens)
         {
@@ -46,7 +46,7 @@ public sealed class ResetPasswordCommandHandler(
         await userTokenRepository.SaveChangesAsync(cancellationToken);
     }
 
-    private static DomainException TokenInvalid()
+    private static DomainException CreateTokenInvalidException()
     {
         return new DomainException(AccountErrorCodes.TokenInvalid, "The link is invalid or has expired.");
     }

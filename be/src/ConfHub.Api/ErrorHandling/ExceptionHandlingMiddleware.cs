@@ -133,9 +133,14 @@ public sealed class ExceptionHandlingMiddleware(
             return BuildProblem(StatusCodes.Status422UnprocessableEntity, domainException.Code, exception.Message);
         }
 
-        if (exception is ForbiddenException)
+        if (exception is UnauthorizedException unauthorizedException)
         {
-            return BuildProblem(StatusCodes.Status403Forbidden, "Forbidden", exception.Message);
+            return BuildProblem(StatusCodes.Status401Unauthorized, unauthorizedException.Code, exception.Message);
+        }
+
+        if (exception is ForbiddenException forbiddenException)
+        {
+            return BuildProblem(StatusCodes.Status403Forbidden, forbiddenException.Code, exception.Message);
         }
 
         // Lỗi không lường trước → 500. Ngoài môi trường dev không trả message gốc

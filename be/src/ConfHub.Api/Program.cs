@@ -1,7 +1,10 @@
+using ConfHub.Api.Authentication;
+using ConfHub.Api.Authorization;
 using ConfHub.Api.ErrorHandling;
 using ConfHub.Api.RateLimiting;
 using ConfHub.Application;
 using ConfHub.Infrastructure;
+using ConfHub.Infrastructure.Persistence.Seeding;
 using Scalar.AspNetCore;
 using Serilog;
 
@@ -22,6 +25,8 @@ builder.Services.AddControllers(options =>
     options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
 });
 builder.Services.AddAuthRateLimiting(builder.Configuration);
+builder.Services.AddJwtAuthentication();
+builder.Services.AddPermissionAuthorization();
 builder.Services.AddOpenApi();
 builder.Services.AddHealthChecks();
 
@@ -33,16 +38,27 @@ app.UseSerilogRequestLogging();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
 app.UseRateLimiter();
+
+// Authentication (đây là ai?) phải đứng trước Authorization (được làm việc này không?).
+app.UseAuthentication();
 app.UseAuthorization();
 
 // ----- Endpoint -----
+// Mặc định mọi endpoint phải đăng nhập (FallbackPolicy) → trang công khai phải ghi rõ AllowAnonymous.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
-    app.MapScalarApiReference();
+    app.MapOpenApi().AllowAnonymous();
+    app.MapScalarApiReference().AllowAnonymous();
 }
 
 app.MapControllers();
-app.MapHealthChecks("/health");
+app.MapHealthChecks("/health").AllowAnonymous();
 
-app.Run();
+// ----- Tài khoản mẫu cho máy dev (bật bằng DevSeed:Enabled, cần chạy migration trước) -----
+if (app.Environment.IsDevelopment())
+{
+    await using var scope = app.Services.CreateAsyncScope();
+    await scope.ServiceProvider.GetRequiredService<DevAccountSeeder>().SeedAsync(CancellationToken.None);
+}
+
+await app.RunAsync();

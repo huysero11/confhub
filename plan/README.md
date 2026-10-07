@@ -5,10 +5,10 @@
 
 ## 0. Đang ở đâu
 
-- **Vừa xong:** T1.1 (đăng ký, xác thực email, quên mật khẩu) — merge `main` 2026-10-04 (`7fcb61b`)
-- **Đang làm:** T1.4 — đặc tả `plan/tasks/T1.4.md` đã viết, chờ Huy duyệt rồi giao Codex
-- **Tiếp theo:** T1.3 (khung FE, độc lập — Codex sinh khi Huy gõ lại T1.4) → T1.2
-- **Nhánh đang mở:** không có (bản đáp án T1.1: tag `ref/T1.1`)
+- **Vừa xong:** T1.4 (đăng nhập, JWT, refresh token, phân quyền) — 2026-10-07; backend G1 xong (9 API `api/auth`)
+- **Đang làm:** chưa có task đang code (chờ viết đặc tả T1.3)
+- **Tiếp theo:** T1.3 (khung FE) → T1.2 (FE tài khoản) → G1 xong; viết phần Tài khoản trên Overleaf
+- **Nhánh đang mở:** không có sau khi merge `task/T1.4-login` (bản đáp án T1.4: tag `ref/T1.4`)
 
 ## 1. Quy trình một task
 
@@ -142,7 +142,7 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 | T1.1 | BE: đăng ký, xác thực email        | D7, T0.2, T0.4, T0.5, D1 | done       |
 | T1.2 | FE: đăng ký / đăng nhập            | T1.3, T1.4               | todo       |
 | T1.3 | FE: khung frontend                 | T0.1                     | todo       |
-| T1.4 | BE: đăng nhập, JWT, phân quyền     | T1.1                     | spec       |
+| T1.4 | BE: đăng nhập, JWT, phân quyền     | T1.1                     | done       |
 
 **Chi tiết:**
 - **T1.1** — Tách 2026-09-29 (phần đăng nhập sang T1.4). Nền persistence nhận từ T0.5: IRepository/IReadRepository + Specification, SaveChangesInterceptor (audit), Guid tuần tự. User/Role/UserToken + migration + seed 5 vai trò, danh mục quyền là hằng số. Đăng ký (chọn Người tham dự / BTC / NCC), băm mật khẩu `PasswordHasher<T>`, xác thực email (token băm, hạn 24 giờ, gửi lại có giới hạn), quên mật khẩu. **Nhận từ T0.4 (phương án B):** smtp4dev vào compose + MailKit + consumer gửi email; domain event → publish qua outbox trước `SaveChanges`. Kiểm tra lại: tắt RabbitMQ thì `/health` phải báo `Unhealthy`. Rate limit cho endpoint đăng ký / gửi lại mail.
@@ -350,3 +350,12 @@ Chỉ chia task khi P1–P4 xong.
 - 2026-10-04 T1.1 → `done`: Huy commit `c0ab1e1`, merge `--no-ff` vào `main` (`7fcb61b`). Viết báo cáo tuần G-1 phần 1 (D1, D2, D7, T1.1) cho Huy dán vào Google Docs. Tiếp theo: đặc tả T1.4.
 - 2026-10-05 T1.4 → `spec`: viết `plan/tasks/T1.4.md`. Chốt: gói JwtBearer đặt ở Infrastructure (Api dùng lại); `FallbackPolicy` = phải đăng nhập (endpoint công khai ghi rõ `AllowAnonymous`); `me` ở `CurrentUserController` riêng; **không migration**, chưa tạo danh mục quyền (G1 chưa có quyền nghiệp vụ → T3.1); tài khoản mẫu seed lúc khởi động ở Development (`DevSeed`), tạo bằng `User.CreateActive`; thêm mã lỗi `Unauthorized` / `Forbidden` vào `g1-account.md`. Codex kết nối lại bằng tài khoản mới (tool `codex`), thư mục mặc định `C:\Windows\System32` → luôn ghi đường dẫn repo trong prompt.
 - T1.4 (Huy): làm `ICurrentUser` (Application) + `HttpCurrentUser` (Api) ngay ở T1.4 thay vì chờ T3.1; `/me` dùng làm mẫu. Phân biệt: `ICurrentUser` = ai đang gọi (từ JWT), repository = dữ liệu User; use case chưa đăng nhập và consumer không dùng.
+- 2026-10-05 T1.4: nhánh `task/T1.4-login` đã có sẵn code (tạo 10:32, không qua phiên này). Claude đọc toàn bộ mã nguồn: khớp đặc tả, chưa thấy lỗi. Codex báo `Connection closed` → build/test/`has-pending-model-changes` **chưa chạy lại**; chưa gắn `ref/T1.4`, chưa viết mục 9.
+- 2026-10-05 Codex nối lại bằng tool chạy nền (`codex_start` / `codex_status`, truyền `cwd` = gốc repo) → hết giới hạn 60 giây/lượt. T1.4 chạy lại: build lỗi 1 `using` thừa ở `SessionApiTests.cs` (Claude xóa) → build 0 warning / 0 error, test 99/99 (Application 39, Infrastructure 15, Api 45), `has-pending-model-changes`: không đổi model.
+- 2026-10-05 T1.4 → `retype`: viết mục 9 (8 nhóm: nền lỗi → đăng nhập → làm mới / đăng xuất → kiểm JWT + `ICurrentUser` + `/me` → permission → rate limit → tài khoản mẫu → test), sửa `g1-td-dang-nhap.puml` (`RefreshSessionCommand`), gắn tag `ref/T1.4`.
+- T1.4 mục 9 (Huy nhắc): bỏ nhóm "Nền" — không gom file theo lớp ở đầu. Mã lỗi, `UnauthorizedException`, `ForbiddenException`, nhánh 401 / 403 của middleware chuyển vào nhóm Đăng nhập (ngay sau handler ném chúng); `User.CreateActive` chuyển vào nhóm Tài khoản mẫu (sau `DevAccountSeeder` gọi nó). Còn 7 nhóm, đánh số lại 1–52. Quy tắc cho các task sau: **không có nhóm "nền / chuẩn bị"**, mọi file nằm ở use case đầu tiên dùng nó.
+- 2026-10-05 Quyết định (Huy): **bỏ Mapster**. Map tay trên DTO; danh sách dùng `Query.Select` của Specification (từ T3.1). Đã sửa `AGENTS.md`, `base-reference.md`, `T0.5.md`, ghi PROJECT.md mục 12.
+- 2026-10-06 T1.4: kiểm bản gõ lại nhóm 1 — sửa `Verify` ngược tham số, `Role.Name` → `Role.Code`, 403 cho chưa xác thực / chờ duyệt, thêm lại băm giả khi email không tồn tại. Rà tên toàn `be/src` (Huy yêu cầu): spec của UserToken theo mẫu `<Entity>By<Khóa>Spec` (`UserTokenByHashSpec`, `ActiveUserTokensSpec`, `LatestUserTokenSpec`); hàm trả exception đặt `Create…Exception()`; `SessionResult.AccessTokenExpiresInSeconds`; `SmtpOptions.UseStartTls` (đổi cả khóa appsettings); `CreateFixedWindowPartition`, `GetRateLimitOptions`; `RefreshTokenCookie.CookiePath` / `BuildCookieOptions`; biến local viết tắt đổi rõ nghĩa. Build 0 warning, test 99/99. Gắn lại `ref/T1.4` (afe9c21).
+- Quy ước đặt tên bổ sung: hàm trả về exception / đối tượng mới bắt đầu bằng động từ (`Create…`, `Build…`); biến local không viết tắt (`res`, `x`, `value`, `result` → nói rõ nội dung); chuỗi token gốc luôn có tiền tố `raw` (`rawToken`, `rawRefreshToken`).
+- 2026-10-06 T1.4: kiểm bản gõ lại nhóm 2–4. Sửa: thiếu `MapInboundClaims = false` trong `AuthenticationExtensions` (claim `sub` bị đổi tên → `/me` 401); `RevokeAllSessionAsync` → `RevokeAllSessionsAsync`; `userClaim` → `userIdClaim`; `hashedRefreshToken` → `tokenHash` (đồng bộ các handler khác); `CreateSessionExpiredException` về dạng block. Comment của Huy giữ nguyên. Build 0 warning, test 99/99.
+- 2026-10-07 T1.4 → `done`: Huy gõ xong nhóm 5–6, Claude kiểm lần cuối bằng diff với `ref/T1.4` (chỉ còn khác comment / cách xuống dòng; sửa 1 thông báo lỗi của `DevAccountSeeder`). Build 0 warning, test 99/99, không đổi model. Huy commit + merge `--no-ff` vào `main`. Viết báo cáo tuần G-1 phần 2 (T1.4). G1 còn T1.3, T1.2.

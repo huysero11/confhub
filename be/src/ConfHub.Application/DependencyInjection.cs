@@ -19,6 +19,7 @@ public static class DependencyInjection
         services.AddValidatorsFromAssembly(assembly);
 
         services.AddScoped<EmailTokenIssuer>();
+        services.AddScoped<SessionIssuer>();
 
         return services;
     }

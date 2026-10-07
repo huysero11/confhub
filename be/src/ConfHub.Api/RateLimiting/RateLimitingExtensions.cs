@@ -1,8 +1,6 @@
-using System.Diagnostics;
 using System.Threading.RateLimiting;
-using Microsoft.AspNetCore.Mvc;
+using ConfHub.Api.ErrorHandling;
 using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 
 namespace ConfHub.Api.RateLimiting;
@@ -26,26 +24,29 @@ public static class RateLimitingExtensions
             limiter.OnRejected = WriteTooManyRequestsAsync;
 
             limiter.AddPolicy(
+                RateLimitPolicies.Login,
+                httpContext => CreateFixedWindowPartition(httpContext, GetRateLimitOptions(httpContext).LoginPerMinute));
+            limiter.AddPolicy(
                 RateLimitPolicies.Register,
-                httpContext => FixedWindowPerIp(httpContext, GetOptions(httpContext).RegisterPerMinute));
+                httpContext => CreateFixedWindowPartition(httpContext, GetRateLimitOptions(httpContext).RegisterPerMinute));
             limiter.AddPolicy(
                 RateLimitPolicies.Email,
-                httpContext => FixedWindowPerIp(httpContext, GetOptions(httpContext).EmailPerMinute));
+                httpContext => CreateFixedWindowPartition(httpContext, GetRateLimitOptions(httpContext).EmailPerMinute));
             limiter.AddPolicy(
                 RateLimitPolicies.ResetPassword,
-                httpContext => FixedWindowPerIp(httpContext, GetOptions(httpContext).ResetPasswordPerMinute));
+                httpContext => CreateFixedWindowPartition(httpContext, GetRateLimitOptions(httpContext).ResetPasswordPerMinute));
         });
 
         return services;
     }
 
-    private static AuthRateLimitOptions GetOptions(HttpContext httpContext)
+    private static AuthRateLimitOptions GetRateLimitOptions(HttpContext httpContext)
     {
         return httpContext.RequestServices.GetRequiredService<IOptions<AuthRateLimitOptions>>().Value;
     }
 
     // Fixed window: đếm request của mỗi IP trong từng khung 1 phút, đủ số thì chặn tới hết khung.
-    private static RateLimitPartition<string> FixedWindowPerIp(HttpContext httpContext, int permitLimit)
+    private static RateLimitPartition<string> CreateFixedWindowPartition(HttpContext httpContext, int permitLimit)
     {
         var ipAddress = httpContext.Connection.RemoteIpAddress?.ToString() ?? UnknownIpAddress;
 
@@ -60,22 +61,11 @@ public static class RateLimitingExtensions
     // Trả lỗi 429 cùng định dạng ProblemDetails với ExceptionHandlingMiddleware.
     private static async ValueTask WriteTooManyRequestsAsync(OnRejectedContext context, CancellationToken cancellationToken)
     {
-        var httpContext = context.HttpContext;
-        var problem = new ProblemDetails
-        {
-            Status = StatusCodes.Status429TooManyRequests,
-            Title = ReasonPhrases.GetReasonPhrase(StatusCodes.Status429TooManyRequests),
-            Detail = "Too many requests. Please try again later.",
-        };
-        problem.Extensions["code"] = "TooManyRequests";
-        problem.Extensions["traceId"] = Activity.Current?.Id ?? httpContext.TraceIdentifier;
-
-        httpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
-        await httpContext.Response.WriteAsJsonAsync(
-            problem,
-            problem.GetType(),
-            options: null,
-            contentType: "application/problem+json",
-            cancellationToken: cancellationToken);
+        await ProblemResponseWriter.WriteAsync(
+            context.HttpContext,
+            StatusCodes.Status429TooManyRequests,
+            "TooManyRequests",
+            "Too many requests. Please try again later.",
+            cancellationToken);
     }
 }

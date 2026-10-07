@@ -17,9 +17,9 @@ public sealed class AspNetPasswordHasher : IPasswordHasher
 
     public bool Verify(string passwordHash, string password)
     {
-        var result = _passwordHasher.VerifyHashedPassword(_userPlaceholder, passwordHash, password);
+        var verificationResult = _passwordHasher.VerifyHashedPassword(_userPlaceholder, passwordHash, password);
 
         // SuccessRehashNeeded: đúng mật khẩu, chỉ là bản băm theo thuật toán cũ hơn.
-        return result is PasswordVerificationResult.Success or PasswordVerificationResult.SuccessRehashNeeded;
+        return verificationResult is PasswordVerificationResult.Success or PasswordVerificationResult.SuccessRehashNeeded;
     }
 }

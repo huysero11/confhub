@@ -50,14 +50,14 @@ public sealed class FakeEmailSender : IEmailSender
         return SentTo(email, kind);
     }
 
-    public Task SendVerificationEmailAsync(string email, string fullName, string token, CancellationToken cancellationToken)
+    public Task SendVerificationEmailAsync(string email, string fullName, string rawToken, CancellationToken cancellationToken)
     {
-        return RecordAsync(VerifyEmailKind, email, token);
+        return RecordAsync(VerifyEmailKind, email, rawToken);
     }
 
-    public Task SendPasswordResetEmailAsync(string email, string fullName, string token, CancellationToken cancellationToken)
+    public Task SendPasswordResetEmailAsync(string email, string fullName, string rawToken, CancellationToken cancellationToken)
     {
-        return RecordAsync(ResetPasswordKind, email, token);
+        return RecordAsync(ResetPasswordKind, email, rawToken);
     }
 
     private Task RecordAsync(string kind, string email, string token)

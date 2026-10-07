@@ -10,4 +10,11 @@ public static class AccountErrorCodes
     public const string PasswordNeedsLetterAndDigit = "PasswordNeedsLetterAndDigit";
     public const string InvalidAccountStatus = "InvalidAccountStatus";
     public const string TokenAlreadyUsed = "TokenAlreadyUsed";
+
+    // Đăng nhập / phiên (T1.4)
+    public const string InvalidCredentials = "InvalidCredentials";
+    public const string AccountUnverified = "AccountUnverified";
+    public const string AccountPending = "AccountPending";
+    public const string AccountLocked = "AccountLocked";
+    public const string SessionExpired = "SessionExpired";
 }
