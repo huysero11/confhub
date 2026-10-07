@@ -18,7 +18,9 @@ public class ExceptionHandlingMiddlewareTests
         { new NotFoundException("Conference", 1), StatusCodes.Status404NotFound, "NotFound" },
         { new ConflictException("User.EmailTaken", "Email taken"), StatusCodes.Status409Conflict, "User.EmailTaken" },
         { new DomainException("Session.SpeakerBusy", "Speaker busy"), StatusCodes.Status422UnprocessableEntity, "Session.SpeakerBusy" },
+        { new UnauthorizedException("SessionExpired", "Expired"), StatusCodes.Status401Unauthorized, "SessionExpired" },
         { new ForbiddenException("No access"), StatusCodes.Status403Forbidden, "Forbidden" },
+        { new ForbiddenException("AccountLocked", "Locked"), StatusCodes.Status403Forbidden, "AccountLocked" },
         { new InvalidOperationException("Boom"), StatusCodes.Status500InternalServerError, "Internal" },
     };
 

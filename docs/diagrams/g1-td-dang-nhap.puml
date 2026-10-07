@@ -32,7 +32,7 @@ end
 FE -> API : GET /api/... (Bearer token hết hạn)
 API --> FE : 401
 FE -> API : POST /api/auth/refresh (cookie tự gửi)
-API -> H : RefreshCommand
+API -> H : RefreshSessionCommand
 H -> DB : Tìm refresh token theo bản băm
 alt hợp lệ, User còn Active
   H -> DB : Đánh dấu token cũ đã dùng,\nlưu băm token mới

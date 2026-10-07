@@ -17,6 +17,7 @@
 - Analyzer ép cách viết phức tạp (chủ yếu luật tối ưu hiệu năng nhỏ) → **dừng lại, ghi vào báo cáo** cho Claude quyết định; không tự làm code rối để né luật.
 - File nhỏ, một trách nhiệm. Tên rõ nghĩa, tiếng Anh; tên hàm nói đúng việc nó làm (`MapExceptionToProblem`, `BuildProblem`). Không dùng overload (cùng tên, khác tham số) cho hai việc khác nhau.
 - Đặt tên tiếng Anh đúng ngữ pháp: cụm danh từ thì danh từ chính đứng cuối (`VerificationEmail` = email để xác thực; `EmailVerification` = việc xác thực email). Domain event thì quá khứ theo nghiệp vụ (`UserRegistered`, `EmailVerificationRequested`); Command/Message là động từ mệnh lệnh (`SendVerificationEmailMessage`); bool dùng `Is/Can/Has/Requires`; biến lambda viết đủ tên (`user =>`, không `u =>`). Chi tiết: `plan/tasks/T1.1.md` mục 9.
+- Tên biến / hàm: biến local không viết tắt (`res`, `x`, `value`, `result` → `validationResult`, `failure`, `userIdClaim`…); hàm trả về exception / đối tượng mới bắt đầu bằng động từ (`CreateTokenInvalidException()`, `BuildCookieOptions()`); chuỗi token gốc có tiền tố `raw` (`rawToken`, `rawRefreshToken`); Specification đặt `<Entity>By<Khóa>Spec` với đúng tên entity (`UserTokenByHashSpec`), biến lambda là tên entity viết thường (`userToken => …`).
 - Comment tiếng Việt ngắn ở chỗ có logic không hiển nhiên (thuật toán, ràng buộc, lý do thiết kế). Không comment thừa.
 - Không thêm thư viện ngoài danh sách trong PROJECT.md mục 8 trừ khi file task cho phép.
 
@@ -30,7 +31,7 @@
 ### Quy tắc chất lượng backend (chi tiết: `docs/design/base-reference.md`)
 - .NET 10, `Nullable` bật, `TreatWarningsAsErrors=true`, StyleCop + Roslynator, file-scoped namespace.
 - Aggregate: constructor private + factory method + phương thức nghiệp vụ kiểm tra bất biến; không public setter. Trạng thái là enum (lưu chuỗi). Value object cho khái niệm dùng lại (`TimeRange`).
-- Repository chỉ cho aggregate root (Ardalis.Specification). Truy vấn danh sách dùng Specification + Mapster `ProjectToType`.
+- Repository chỉ cho aggregate root (Ardalis.Specification). Truy vấn danh sách dùng `Specification<T, TResult>` với `Query.Select(...)` (SQL chỉ lấy cột DTO cần). **Không dùng Mapster / AutoMapper**: map tay bằng hàm tĩnh trên DTO (vd `CurrentUserResponse.FromUser`).
 - Lỗi: ném exception nghiệp vụ (`NotFoundException`, `ConflictException`…) → middleware → ProblemDetails. Handler trả DTO, không bọc Result.
 - Đăng ký DI: `DependencyInjection.cs` của mỗi tầng là "mục lục"; mục có từ 2 dòng đăng ký trở lên tách thành `<Thư mục>/<Tên mục>ServiceRegistration.cs` (`internal static`, hàm `Add<Tên mục>(configuration)`), mục 1 dòng viết thẳng ở file gốc. Route controller ghi tường minh, chữ thường, gạch nối (`[Route("api/auth")]`), không dùng `[controller]`.
 - Mọi endpoint ghi dữ liệu có `[MustHavePermission]`; `AllowAnonymous` chỉ cho trang công khai.

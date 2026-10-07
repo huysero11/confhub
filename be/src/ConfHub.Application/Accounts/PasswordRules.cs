@@ -16,9 +16,9 @@ public static class PasswordRules
           (vd .WithMessage(...)).
     */
     public static IRuleBuilderOptions<T, string> StrongPassword<T>(
-        this IRuleBuilder<T, string> rule)
+        this IRuleBuilder<T, string> ruleBuilder)
     {
-        return rule
+        return ruleBuilder
             .NotEmpty()
             .Length(MinLength, MaxLength)
             .Must(HasLetterAndDigit)

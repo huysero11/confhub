@@ -24,7 +24,7 @@
 | Cache | `ICacheService` (Redis / memory) + `CacheKeyService` | Giữ | |
 | Seeder | `ICustomSeeder` + `SeederOrderAttribute` | Giữ — seed vai trò + dữ liệu mẫu "Công nghệ Xanh 2026" | |
 | Audit tự động | SaveChanges tự gán `CreatedOn`/`CreatedBy` | Giữ dạng **SaveChangesInterceptor** | Bỏ bảng AuditTrail |
-| Mapping | Mapster (`ProjectToType` trong spec) | Giữ | |
+| Mapping | Mapster (`ProjectToType` trong spec) | Bỏ (2026-10-05) | Map tay (`FromXxx` trên DTO); danh sách dùng `Query.Select` của Specification |
 | Email | MailKit + template Razor | Giữ MailKit; template đơn giản | |
 | OpenAPI | NSwag + FluentValidation schema | Giữ (hoặc Swashbuckle/Scalar) | Bỏ API versioning |
 

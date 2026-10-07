@@ -99,4 +99,22 @@ public class UserTests
 
         Assert.Equal("new-hash", user.PasswordHash);
     }
+
+    [Theory]
+    [InlineData(RoleCodes.Admin)]
+    [InlineData(RoleCodes.Staff)]
+    [InlineData(RoleCodes.Organizer)]
+    public void CreateActiveWorksForAnyRoleAndRaisesNoEvent(string roleCode)
+    {
+        var user = User.CreateActive("  Admin@ConfHub.Local ", "hash", "  Quản trị ", TestRoles.Create(roleCode), "  ");
+
+        Assert.Equal("admin@confhub.local", user.Email);
+        Assert.Equal("Quản trị", user.FullName);
+        Assert.Null(user.Organization);
+        Assert.Equal(UserStatus.Active, user.Status);
+        Assert.Equal(roleCode, user.Role.Code);
+
+        // Không có sự kiện → không gửi email xác thực.
+        Assert.Empty(user.DomainEvents);
+    }
 }

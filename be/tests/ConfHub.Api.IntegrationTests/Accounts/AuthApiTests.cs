@@ -149,8 +149,8 @@ public sealed class AuthApiTests(ConfHubApiFactory factory) : IDisposable
     public async Task ForgotPasswordThenResetPassword()
     {
         var email = await CreateActiveUserAsync();
-        var userId = await GetUserIdAsync(email);
-        var refreshTokenHash = await AddRefreshTokenAsync(userId);
+        var loginResponse = await PostAsync("login", new { email, password = Password });
+        var refreshToken = RefreshCookie.ReadValue(loginResponse);
 
         var forgotResponse = await PostAsync("forgot-password", new { email });
         Assert.Equal(HttpStatusCode.Accepted, forgotResponse.StatusCode);
@@ -162,11 +162,13 @@ public sealed class AuthApiTests(ConfHubApiFactory factory) : IDisposable
         var reuseResponse = await PostAsync("reset-password", new { token, newPassword = "matkhaumoi789" });
         await AssertProblemAsync(reuseResponse, HttpStatusCode.UnprocessableEntity, AccountErrorCodes.TokenInvalid);
 
-        // BR14: refresh token cũ bị thu hồi.
-        await using var scope = factory.Services.CreateAsyncScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<ConfHubDbContext>();
-        var refreshToken = await dbContext.Set<UserToken>().SingleAsync(item => item.TokenHash == refreshTokenHash);
-        Assert.NotNull(refreshToken.UsedAt);
+        // BR14: phiên đăng nhập trước đó bị thu hồi, mật khẩu mới đăng nhập được.
+        using var refreshRequest = RefreshCookie.Post("/api/auth/refresh", refreshToken);
+        var refreshResponse = await _client.SendAsync(refreshRequest);
+        await AssertProblemAsync(refreshResponse, HttpStatusCode.Unauthorized, AccountErrorCodes.SessionExpired);
+
+        var newLoginResponse = await PostAsync("login", new { email, password = "matkhaumoi456" });
+        Assert.Equal(HttpStatusCode.OK, newLoginResponse.StatusCode);
     }
 
     [Fact]
@@ -297,18 +299,5 @@ public sealed class AuthApiTests(ConfHubApiFactory factory) : IDisposable
             .Where(user => user.Email == normalizedEmail)
             .Select(user => user.Id)
             .SingleAsync();
-    }
-
-    // Chèn thẳng 1 refresh token còn hạn (T1.4 mới có đăng nhập để sinh ra).
-    private async Task<string> AddRefreshTokenAsync(Guid userId)
-    {
-        await using var scope = factory.Services.CreateAsyncScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<ConfHubDbContext>();
-        var tokenHash = RandomToken.Hash(RandomToken.Generate());
-        var expiresAt = factory.Clock.GetUtcNow().UtcDateTime.AddDays(7);
-
-        dbContext.Set<UserToken>().Add(UserToken.Issue(userId, TokenPurpose.Refresh, tokenHash, expiresAt));
-        await dbContext.SaveChangesAsync();
-        return tokenHash;
     }
 }

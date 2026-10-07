@@ -14,7 +14,7 @@ public sealed class SmtpOptions
     public int Port { get; init; }
 
     // Máy chủ mail thật cần mã hóa + đăng nhập; smtp4dev (dev) thì không.
-    public bool UseSsl { get; init; }
+    public bool UseStartTls { get; init; }
 
     public string? Username { get; init; }
 
