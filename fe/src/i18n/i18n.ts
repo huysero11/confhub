@@ -30,6 +30,7 @@ const initialLanguage = readInitialLanguage();
 
 // Nối i18next với React, để hook useTranslation dùng được.
 void i18n.use(initReactI18next).init({
+  // Nạp 2 file vào bộ nhớ để chuyển ngôn ngữ thì tra
   resources: {
     vi: { translation: vi },
     en: { translation: en },

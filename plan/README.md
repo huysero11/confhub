@@ -5,10 +5,10 @@
 
 ## 0. Đang ở đâu
 
-- **Vừa xong:** T1.4 (đăng nhập, JWT, refresh token, phân quyền) — 2026-10-07; backend G1 xong (9 API `api/auth`)
-- **Đang làm:** T1.3 — Huy tự làm tay theo 8 bước trong `plan/tasks/T1.3.md` mục 9 (không Codex, không tag `ref`); đang ở bước 1
+- **Vừa xong:** T1.3 (khung frontend: Vite + React + antd, sáng/tối, vi/en, Shell B) — 2026-10-08
+- **Đang làm:** chưa có task đang code (chờ viết đặc tả T1.2)
 - **Tiếp theo:** T1.2 (FE tài khoản) → G1 xong; viết phần Tài khoản trên Overleaf
-- **Nhánh đang mở:** `task/T1.3-fe-skeleton`
+- **Nhánh đang mở:** không có sau khi merge `task/T1.3-fe-skeleton` (bản đáp án: tag `ref/T1.3`)
 
 ## 1. Quy trình một task
 
@@ -141,7 +141,7 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 |------|------------------------------------|--------------------------|------------|
 | T1.1 | BE: đăng ký, xác thực email        | D7, T0.2, T0.4, T0.5, D1 | done       |
 | T1.2 | FE: đăng ký / đăng nhập            | T1.3, T1.4               | todo       |
-| T1.3 | FE: khung frontend                 | T0.1                     | retype     |
+| T1.3 | FE: khung frontend                 | T0.1                     | done       |
 | T1.4 | BE: đăng nhập, JWT, phân quyền     | T1.1                     | done       |
 
 **Chi tiết:**
@@ -362,3 +362,6 @@ Chỉ chia task khi P1–P4 xong.
 - 2026-10-07 T1.4 merge vào `main` (`08c4b7b`). T1.3 → `spec`: viết `plan/tasks/T1.3.md`. Chốt phạm vi: chỉ dựng **Shell B** (Shell A → T3.3, Shell C → T7.2 theo nguyên tắc làm tăng dần — khác mô tả cũ "3 shell"); chưa có API client / TanStack Query / proxy (T1.2); phông `@fontsource/be-vietnam-pro`; react-router v7; Vitest + Testing Library; giữ antd v5.
 - T1.3 (Huy): chốt kiến trúc FE `page → component → hook → api → lib/apiClient` theo nhóm chức năng (`features/<nhóm>/`), **không có lớp service riêng** (hook TanStack Query thay vai trò đó); mọi file `fe/src` có comment đầu file (là gì, chứa gì, ai dùng); FE cũng theo quy trình gõ lại (mục 9 + tag `ref/<ID>`). Đã ghi vào `T1.3.md` và `AGENTS.md`.
 - 2026-10-07 T1.3 → `retype` (làm tay): Huy duyệt đặc tả, chọn **tự làm tay từng bước** như khung BE ở G0 (lần đầu chạm công cụ FE) và dùng **npm** (không yarn / pnpm). Từ T1.2 quay lại quy trình Codex → gõ lại.
+- 2026-10-08 T1.3: Huy làm tay xong bước 1–5 và 2 trang của bước 6, nhờ Claude làm nốt. Claude viết `ShellB`, `ShellBHeader`, `router`, `AppProviders`, `main.tsx`, test (Vitest 5.0.3 + Testing Library + jsdom; `mockMatchMedia`, `renderApp`, 8 test / 3 file), README. Codex cài gói + chạy kiểm tra: format / lint / typecheck đạt, test 8/8, build đạt (cảnh báo bundle 722 kB > 500 kB do antd — chia nhỏ khi có nhiều trang). Test chạy chậm (~160 giây, nạp antd vào jsdom). Viết hướng dẫn gõ lại (3 nhóm, 15 mục), gắn tag `ref/T1.3`.
+- 2026-10-08 Quy ước (Huy): **mục 9 không có nhóm test** (BE và FE) — Huy không gõ lại test; Huy báo gõ xong thì Claude kiểm rồi **gửi lệnh chạy thử**. Sửa CLAUDE.md, AGENTS.md, `_TEMPLATE.md`, T1.3 mục 9. Cập nhật ghi chú Codex chạy nền (`codex_start` / `codex_status`) trong CLAUDE.md.
+- 2026-10-08 T1.3 → `done`: Huy gõ lại nhóm Router + Shell B; Claude kiểm bằng diff với `ref/T1.3` (chỉ khác comment). format / lint / typecheck / build đạt, test 8/8. Huy commit + merge `--no-ff` vào `main`.

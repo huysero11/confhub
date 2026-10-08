@@ -1,6 +1,6 @@
 // LanguageToggle.tsx — nút đổi ngôn ngữ vi / en.
 // Chứa: một Button của antd, hiện mã của ngôn ngữ SẼ chuyển sang ("EN" khi đang ở tiếng Việt).
-// Dùng ở: header của Shell B (bước 6).
+// Dùng ở: layouts/ShellB/ShellBHeader.tsx.
 import { Button } from "antd";
 import { useTranslation } from "react-i18next";
 import { changeAppLanguage, toAppLanguage } from "@/i18n/i18n";

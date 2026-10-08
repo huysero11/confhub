@@ -25,14 +25,14 @@
 - **Code xong + test pass thì để nguyên trong thư mục, KHÔNG để lại commit**, không giấu/xóa code: Huy tự chọn file muốn gõ lại, tự copy code ra chỗ khác rồi vừa nhìn vừa gõ vào đúng file đó. Mục 9 là thứ tự gợi ý, Huy không bắt buộc gõ hết.
   - Claude vẫn gắn tag `ref/<ID>` làm bản đáp án để tự kiểm tra bản gõ lại (`git diff ref/<ID>`); Huy không cần dùng tag. Cách gắn mà không để lại commit:
     `git add -A` → `git commit -m "ref(<ID>): ban tham khao"` → `git tag ref/<ID>` → `git reset --mixed HEAD~1`
-  - Huy gõ xong báo Claude → Claude diff với tag + build/test → Huy commit (`<ID>: ...`) → merge. Không chạy lệnh xóa thay đổi của Huy (`reset --hard`, `restore`, `clean`) khi Huy chưa đồng ý.
+  - Huy gõ xong báo Claude → Claude diff với tag + build/test → **gửi Huy lệnh chạy thử** (chạy API / FE, mở trang nào, thử gì) → Huy commit (`<ID>: ...`) → merge. Không chạy lệnh xóa thay đổi của Huy (`reset --hard`, `restore`, `clean`) khi Huy chưa đồng ý.
 - **Code đơn giản, dễ hiểu nhưng KHÔNG kém chất lượng** — Huy phải tự gõ lại và giải thích được khi bảo vệ:
   - Đơn giản ở **cách viết**, không cắt bớt chất lượng: logic đúng, xử lý đủ trường hợp biên/lỗi, đúng best practice (Clean Architecture, DI, async/await đúng, validate đầu vào, không lộ bí mật, bảo mật), có test đầy đủ.
   - Ưu tiên cách viết thẳng, dễ đọc hơn cách viết "hay"/ngắn: `if`/`foreach` rõ ràng thay vì chuỗi LINQ dài; tên biến đầy đủ.
   - Không thêm lớp trừu tượng, generic, reflection, source generator, pattern… khi task chưa cần.
   - Dùng pattern/cơ chế chuẩn khi nó làm code đúng và chắc hơn (vd Options pattern cho nhóm cấu hình, có kiểm tra khi khởi động); comment ghi rõ **tên pattern + mục đích** để dễ hiểu.
   - Analyzer ép cách viết phức tạp chỉ để tối ưu hiệu năng nhỏ → cân nhắc tắt luật đó (ghi lý do trong `.editorconfig`) thay vì làm code khó hiểu.
-- **Báo cáo cho Huy không nói về test** (Huy không quan tâm phần test): vẫn viết test đầy đủ và dùng làm bằng chứng khi Claude review, nhưng không liệt kê test trong tin nhắn, file task mục 7 hay mục 9 (file test ghi `Đọc` ở cuối mục 9 là đủ).
+- **Báo cáo cho Huy không nói về test** (Huy không quan tâm phần test): vẫn viết test đầy đủ và dùng làm bằng chứng khi Claude review, nhưng không liệt kê test trong tin nhắn, file task mục 7 hay mục 9. **Mục 9 không có nhóm test** (cả BE và FE, từ 2026-10-08): Huy không gõ lại test, file test giữ nguyên trong thư mục.
 - **Markdown dễ đọc cả khi mở file thô**: bảng phải căn thẳng cột (đệm khoảng trắng cho các `|` thẳng hàng), mỗi dòng bảng ≤ ~90 ký tự; nội dung dài không nhét vào ô mà viết thành danh sách ngay dưới bảng; đường dẫn dài thì ghi "Thư mục: ..." một lần rồi bảng chỉ ghi tên file.
 - **Hướng dẫn cho Huy làm theo**: chia nhóm, mỗi lần một nhóm, xong nhóm mới sang nhóm tiếp; lệnh dùng **cmd** (không PowerShell trừ khi bắt buộc); công cụ mới (Docker…) vừa làm vừa giải thích.
 
@@ -53,7 +53,7 @@
 - Repo trên máy Windows: `D:\Code\my-projects\confhub`. Codex chạy trên Windows (có dotnet/node).
 - Shell `device_bash` của Claude là VM Linux, **không có dotnet** → build/test .NET phải giao Codex chạy.
 - SQL Server local: `127.0.0.1,1433` — SQL Server 2022 (16.0), đăng nhập **Windows Authentication** (tài khoản `ADMIN-PC\Admin`), mã hóa bắt buộc → chuỗi kết nối: `Server=127.0.0.1,1433;Database=ConfHub;Trusted_Connection=True;TrustServerCertificate=True` (không có mật khẩu, để trong appsettings.Development.json được). Lưu ý: Codex trong sandbox chạy bằng tài khoản khác → test cần SQL Server phải chạy với `danger-full-access`.
-- **Codex MCP bị ngắt sau ~60 giây/lượt gọi** (kết nối tới máy Huy): lượt dài (viết cả task) sẽ chết giữa chừng. Cách làm đã chạy được: Claude viết code (qua `device_bash`), Codex chỉ chạy lệnh ngắn (`dotnet build/test`, git) và trả kết quả. Lượt timeout vẫn có thể chạy xong phía sau → kiểm tra lại trạng thái trước khi gọi lại.
+- **Codex MCP chạy nền** (từ 2026-10-05): `codex_start` (truyền `cwd` = gốc repo) trả `taskId`, theo dõi bằng `codex_status` tới khi `completed`; không còn giới hạn 60 giây/lượt. Lệnh dài ghi output ra `scratch\*.log` để Claude đọc bằng `device_bash`. Không mở task trùng khi task cũ còn chạy. Máy Huy tắt giữa chừng thì task dừng → kiểm tra lại trạng thái file / log trước khi chạy lại.
 - Codex sandbox `workspace-write`: cần `config {"sandbox_workspace_write": {"network_access": true}}` để restore NuGet; **không ghi được `.git`** → lệnh git (commit, tag, reset) chạy với `danger-full-access`, chỉ đúng lệnh cần.
 - File Codex tạo trong sandbox thuộc tài khoản `CodexSandbox*` → Huy (tài khoản `Admin`, không nâng quyền) không xóa được (lỗi `Unlink of file ... failed` khi `git switch`). Đã sửa 2026-09-28: `icacls D:\Code\my-projects\confhub /grant Admin:(OI)(CI)F /T` (chạy Administrator) → mọi file mới tự thừa hưởng quyền của Admin. Gặp lại thì chạy lại lệnh này.
 - Lệnh Codex chạy trên Windows tách message commit có dấu cách / ngoặc thành nhiều tham số (`git commit -m "ref(T1.1): ..."` lỗi pathspec, commit không xảy ra nhưng các lệnh sau vẫn chạy) → message tag tạm viết liền: `git commit -m ref-<ID>-ban-tham-khao`, và kiểm tra reflog trước khi `reset`.

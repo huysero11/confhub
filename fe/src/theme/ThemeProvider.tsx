@@ -1,7 +1,7 @@
 // ThemeProvider.tsx — giữ chế độ sáng / tối của cả ứng dụng.
 // Chứa: đọc lựa chọn đã lưu (hoặc theo hệ điều hành), lưu khi người dùng đổi,
 //       bọc ConfigProvider của antd với token của nền đang dùng.
-// Dùng ở: main.tsx (bước 6 chuyển vào app/AppProviders.tsx).
+// Dùng ở: app/AppProviders.tsx.
 import { ConfigProvider, theme } from "antd";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { getThemeTokens, type ThemeMode } from "@/theme/themeTokens";
