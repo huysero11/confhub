@@ -1,0 +1,12 @@
+/* global.css — CSS chung tối thiểu của cả ứng dụng (màu, chữ, khoảng cách do antd lo).
+   Chứa: bỏ lề mặc định của trình duyệt, số dạng bảng để các cột số thẳng hàng. */
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}

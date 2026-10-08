@@ -1,0 +1,19 @@
+{
+  "app": {
+    "name": "ConfHub"
+  },
+  "shell": {
+    "themeToLight": "Chuyển sang nền sáng",
+    "themeToDark": "Chuyển sang nền tối",
+    "switchLanguage": "Chuyển sang tiếng Anh"
+  },
+  "home": {
+    "title": "Chào mừng đến với ConfHub",
+    "subtitle": "Nền tảng quản lý hội nghị và sự kiện"
+  },
+  "notFound": {
+    "title": "Không tìm thấy trang",
+    "subtitle": "Đường dẫn bạn mở không tồn tại hoặc đã bị xóa.",
+    "backHome": "Về trang chủ"
+  }
+}

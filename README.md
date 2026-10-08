@@ -13,6 +13,17 @@ dotnet ef database update --project src\ConfHub.Infrastructure --startup-project
 dotnet run --project src\ConfHub.Api
 ```
 
+Frontend (cửa sổ cmd khác):
+
+```cmd
+cd /d D:\Code\my-projects\confhub\fe
+npm install
+npm run dev
+```
+
+Kiểm tra frontend: `npm run lint`, `npm run typecheck`, `npm run test`, `npm run build`
+(`npm run format` để định dạng lại code).
+
 ## Địa chỉ và cổng
 
 **Mở bằng trình duyệt:**
