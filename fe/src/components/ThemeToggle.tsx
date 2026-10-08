@@ -5,13 +5,13 @@
 import { MoonOutlined, SunOutlined } from "@ant-design/icons";
 import { Button } from "antd";
 import { useThemeMode } from "@/theme/useThemeMode";
+import { useTranslation } from "react-i18next";
 
 export function ThemeToggle() {
+  const { t } = useTranslation();
   const { mode, toggleMode } = useThemeMode();
   const isDark = mode === "dark";
-
-  // Tạm viết chữ thẳng; bước 5 đổi sang i18n.
-  const label = isDark ? "Chuyển sang nền sáng" : "Chuyển sang nền tối";
+  const label = isDark ? t("shell.themeToLight") : t("shell.themeToDark");
 
   return (
     <Button

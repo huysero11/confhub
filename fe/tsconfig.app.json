@@ -8,6 +8,7 @@
     "allowArbitraryExtensions": true,
     "skipLibCheck": true,
     "strict": true,
+    "resolveJsonModule": true,
 
     /* Alias: phải khớp với resolve.alias trong vite.config.ts */
     "paths": { "@/*": ["./src/*"] },

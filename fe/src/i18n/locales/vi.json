@@ -1,0 +1,11 @@
+{
+  "shell": {
+    "themeToLight": "Chuyển sang nền sáng",
+    "themeToDark": "Chuyển sang nền tối",
+    "switchLanguage": "Chuyển sang tiếng Anh"
+  },
+  "home": {
+    "title": "ConfHub",
+    "subtitle": "Nền tảng quản lý hội nghị và sự kiện"
+  }
+}
