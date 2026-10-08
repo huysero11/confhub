@@ -6,7 +6,7 @@
 ## 0. Đang ở đâu
 
 - **Vừa xong:** T1.4 (đăng nhập, JWT, refresh token, phân quyền) — 2026-10-07; backend G1 xong (9 API `api/auth`)
-- **Đang làm:** T1.3 — Huy tự làm tay theo 8 bước trong `plan/tasks/T1.3.md` mục 9 (không Codex, không tag `ref`); đang ở bước 1
+- **Đang làm:** T1.3 — Huy làm tay bước 1–5 + `HomePage`/`NotFoundPage`; Claude làm nốt bước 6–8, tag `ref/T1.3`; Huy gõ lại theo `T1.3.md` mục 9 (phần "Hướng dẫn gõ lại")
 - **Tiếp theo:** T1.2 (FE tài khoản) → G1 xong; viết phần Tài khoản trên Overleaf
 - **Nhánh đang mở:** `task/T1.3-fe-skeleton`
 
@@ -362,3 +362,4 @@ Chỉ chia task khi P1–P4 xong.
 - 2026-10-07 T1.4 merge vào `main` (`08c4b7b`). T1.3 → `spec`: viết `plan/tasks/T1.3.md`. Chốt phạm vi: chỉ dựng **Shell B** (Shell A → T3.3, Shell C → T7.2 theo nguyên tắc làm tăng dần — khác mô tả cũ "3 shell"); chưa có API client / TanStack Query / proxy (T1.2); phông `@fontsource/be-vietnam-pro`; react-router v7; Vitest + Testing Library; giữ antd v5.
 - T1.3 (Huy): chốt kiến trúc FE `page → component → hook → api → lib/apiClient` theo nhóm chức năng (`features/<nhóm>/`), **không có lớp service riêng** (hook TanStack Query thay vai trò đó); mọi file `fe/src` có comment đầu file (là gì, chứa gì, ai dùng); FE cũng theo quy trình gõ lại (mục 9 + tag `ref/<ID>`). Đã ghi vào `T1.3.md` và `AGENTS.md`.
 - 2026-10-07 T1.3 → `retype` (làm tay): Huy duyệt đặc tả, chọn **tự làm tay từng bước** như khung BE ở G0 (lần đầu chạm công cụ FE) và dùng **npm** (không yarn / pnpm). Từ T1.2 quay lại quy trình Codex → gõ lại.
+- 2026-10-08 T1.3: Huy làm tay xong bước 1–5 và 2 trang của bước 6, nhờ Claude làm nốt. Claude viết `ShellB`, `ShellBHeader`, `router`, `AppProviders`, `main.tsx`, test (Vitest 5.0.3 + Testing Library + jsdom; `mockMatchMedia`, `renderApp`, 8 test / 3 file), README. Codex cài gói + chạy kiểm tra: format / lint / typecheck đạt, test 8/8, build đạt (cảnh báo bundle 722 kB > 500 kB do antd — chia nhỏ khi có nhiều trang). Test chạy chậm (~160 giây, nạp antd vào jsdom). Viết hướng dẫn gõ lại (3 nhóm, 15 mục), gắn tag `ref/T1.3`.

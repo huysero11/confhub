@@ -1,11 +1,19 @@
 {
+  "app": {
+    "name": "ConfHub"
+  },
   "shell": {
     "themeToLight": "Switch to light theme",
     "themeToDark": "Switch to dark theme",
     "switchLanguage": "Switch to Vietnamese"
   },
   "home": {
-    "title": "ConfHub",
+    "title": "Welcome to ConfHub",
     "subtitle": "Conference and event management platform"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "subtitle": "The page you opened does not exist or has been removed.",
+    "backHome": "Back to home"
   }
 }
