@@ -26,6 +26,9 @@ const colorTokensByMode: Record<ThemeMode, ThemeTokens> = {
     colorWarning: "#B26B00",
     colorError: "#B3261E",
     colorSuccess: "#2E6B45",
+    // antd tự sinh nền / viền thông báo thành công từ #2E6B45 ra màu xám đục → khai rõ.
+    colorSuccessBg: "#EAF4EE",
+    colorSuccessBorder: "#B5D6C1",
   },
   dark: {
     colorPrimary: "#4FB3BF",

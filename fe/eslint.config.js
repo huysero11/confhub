@@ -19,6 +19,10 @@ export default defineConfig([
       reactRefresh.configs.vite,
       // Đặt cuối cùng: tắt mọi luật định dạng của các bộ phía trên.
       eslintConfigPrettier,
+      {
+        // if luôn có ngoặc nhọn, giống backend; đặt sau vì eslint-config-prettier tắt luật này.
+        rules: { curly: ["error", "all"] },
+      },
     ],
     languageOptions: {
       globals: globals.browser,

@@ -13,6 +13,7 @@ import { AppProviders } from "@/app/AppProviders";
 import { router } from "@/app/router";
 
 const rootElement = document.getElementById("root");
+
 if (!rootElement) {
   throw new Error("Không tìm thấy phần tử #root trong index.html");
 }
@@ -20,6 +21,8 @@ if (!rootElement) {
 // StrictMode: ở chế độ phát triển React chạy mỗi component 2 lần để lộ lỗi sớm.
 createRoot(rootElement).render(
   <StrictMode>
+    {/* AppProviders có 2 giá trị props là children và queryClient, ở đây không chuyền, thì sẽ dùng
+    cái tự tạo ở AppProviders */}
     <AppProviders>
       <RouterProvider router={router} />
     </AppProviders>

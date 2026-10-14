@@ -42,9 +42,10 @@
 ## Frontend (React + TS)
 - Ant Design v5, **không Tailwind/Bootstrap**. Không gõ số pixel/màu trực tiếp: dùng token antd (`theme.useToken()`) hoặc biến CSS đã khai.
 - Mọi chữ hiển thị qua `react-i18next` (`vi.json`/`en.json`), không hardcode.
-- Gọi API qua TanStack Query.
+- Gọi API qua TanStack Query; HTTP dùng **axios** — chỉ qua đối tượng `apiClient` trong `src/lib/apiClient.ts` (interceptor gắn token, làm mới phiên khi 401, đổi lỗi thành `ApiError`); test giả response bằng `axios-mock-adapter` (`src/test/apiMock.ts`).
 - Kiến trúc: chia theo nhóm chức năng `src/features/<nhóm>/`, các lớp `page → component → hook → api → lib/apiClient`, kiểu ở `types.ts`; lớp trên chỉ gọi lớp ngay dưới. **Không có lớp `service` riêng** giữa api và hook (hook TanStack Query đã lo); logic không gắn React đặt ở `src/lib/`. Thứ dùng chung: `components/`, `layouts/`, `theme/`, `i18n/`. Chi tiết: `plan/tasks/T1.3.md` mục "Kiến trúc frontend".
 - **Comment đầu file bắt buộc** (mọi file trong `fe/src`): 2–5 dòng tiếng Việt — file là gì, chứa gì, ai dùng, thuộc lớp nào.
+- **Chia phần trong file:** hàm / phần cùng một việc đặt cạnh nhau; file .ts có ≥ 2 nhóm hàm thì mở mỗi nhóm bằng dòng `// ---------- TÊN PHẦN ----------`; component dài thì comment một dòng trước mỗi khối logic và `{/* Tên khối */}` trước mỗi khối JSX lớn. File ngắn một việc thì không cần.
 - Component: 1 file 1 component, `export function` có tên (không `export default`), props có kiểu rõ ràng; không `any`.
 
 ## Làm tăng dần — không làm trước cho task sau

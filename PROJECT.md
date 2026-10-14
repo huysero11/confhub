@@ -264,7 +264,7 @@ ASP.NET Core Web API · **Clean Architecture 4 lớp** (Domain / Application / I
 **Kiểm thử:** unit test tầng Application (Handler) · **test riêng cho thuật toán xếp lịch** (xác minh không vi phạm ràng buộc cứng trên nhiều bộ dữ liệu) · integration test cho API chính.
 
 ### Frontend
-React + TypeScript + **Ant Design v5** + TanStack Query + SignalR client + Recharts.
+React + TypeScript + **Ant Design v5** + TanStack Query + **axios** (gọi API, qua `lib/apiClient`) + SignalR client + Recharts.
 
 **Không thêm Tailwind/Bootstrap** — antd đã đủ. Tailwind chung với antd phải tắt preflight vì reset CSS làm vỡ style antd, không đáng.
 

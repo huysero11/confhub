@@ -1,4 +1,5 @@
 // i18n.test.tsx — test song ngữ: hai từ điển cùng bộ khóa, nút đổi ngôn ngữ, chữ có sẵn của antd.
+// Kiểm tra lớp i18n qua component và provider; chờ khôi phục phiên trước khi tương tác.
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { DatePicker } from "antd";
@@ -33,7 +34,7 @@ describe("i18n", () => {
 
   it("bấm nút thì đổi ngôn ngữ, đổi <html lang> và lưu lựa chọn", async () => {
     const user = userEvent.setup();
-    renderApp();
+    await renderApp();
     expect(screen.getByRole("heading", { name: vi.home.title })).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: vi.shell.switchLanguage }));
