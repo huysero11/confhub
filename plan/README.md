@@ -6,9 +6,9 @@
 ## 0. Đang ở đâu
 
 - **Vừa xong:** T1.3 (khung frontend: Vite + React + antd, sáng/tối, vi/en, Shell B) — 2026-10-08
-- **Đang làm:** chưa có task đang code (chờ viết đặc tả T1.2)
+- **Đang làm:** T1.2 — code đã review (format / lint / typecheck / build đạt, test 25/25), tag `ref/T1.2`; Huy gõ lại xong nhóm 1–3/6; nhóm 4–6 Huy chỉ đọc (không gõ lại). Còn: Huy chạy thử → commit + merge
 - **Tiếp theo:** T1.2 (FE tài khoản) → G1 xong; viết phần Tài khoản trên Overleaf
-- **Nhánh đang mở:** không có sau khi merge `task/T1.3-fe-skeleton` (bản đáp án: tag `ref/T1.3`)
+- **Nhánh đang mở:** `task/T1.2-fe-auth`
 
 ## 1. Quy trình một task
 
@@ -140,14 +140,14 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 | ID   | Việc                               | Phụ thuộc                | Trạng thái |
 |------|------------------------------------|--------------------------|------------|
 | T1.1 | BE: đăng ký, xác thực email        | D7, T0.2, T0.4, T0.5, D1 | done       |
-| T1.2 | FE: đăng ký / đăng nhập            | T1.3, T1.4               | todo       |
+| T1.2 | FE: đăng ký / đăng nhập            | T1.3, T1.4               | retype     |
 | T1.3 | FE: khung frontend                 | T0.1                     | done       |
 | T1.4 | BE: đăng nhập, JWT, phân quyền     | T1.1                     | done       |
 
 **Chi tiết:**
 - **T1.1** — Tách 2026-09-29 (phần đăng nhập sang T1.4). Nền persistence nhận từ T0.5: IRepository/IReadRepository + Specification, SaveChangesInterceptor (audit), Guid tuần tự. User/Role/UserToken + migration + seed 5 vai trò, danh mục quyền là hằng số. Đăng ký (chọn Người tham dự / BTC / NCC), băm mật khẩu `PasswordHasher<T>`, xác thực email (token băm, hạn 24 giờ, gửi lại có giới hạn), quên mật khẩu. **Nhận từ T0.4 (phương án B):** smtp4dev vào compose + MailKit + consumer gửi email; domain event → publish qua outbox trước `SaveChanges`. Kiểm tra lại: tắt RabbitMQ thì `/health` phải báo `Unhealthy`. Rate limit cho endpoint đăng ký / gửi lại mail.
 - **T1.4** — Đăng nhập (chặn `Unverified` / `PendingApproval` / `Locked`), access token JWT 15 phút + refresh token 7 ngày trong cookie `HttpOnly` (xoay vòng, lưu băm trong UserToken), làm mới, đăng xuất (thu hồi). Phân quyền theo permission tự viết: `[MustHavePermission]` + PolicyProvider + AuthorizationHandler, quyền trong claim JWT. Rate limit đăng nhập. Seed tài khoản mẫu cho 5 vai trò (dev) để dùng tới khi có UC20.
-- **T1.2** — Đăng ký / xác thực email / đăng nhập / đăng xuất / quên mật khẩu, interceptor tự làm mới token, chặn route theo quyền.
+- **T1.2** — Đặc tả: `plan/tasks/T1.2.md`. 6 màn hình (đăng ký, kiểm tra email, xác thực email, đăng nhập, quên / đặt lại mật khẩu), header theo trạng thái đăng nhập, khôi phục + tự làm mới phiên; nền gọi API (`lib/apiClient`, `lib/authSession`, TanStack Query, proxy Vite). Chặn route theo quyền + trang 403 → T3.3 (G1 chưa có trang cần đăng nhập).
 - **T1.3** — Đặc tả: `plan/tasks/T1.3.md`. Khung frontend (chuyển từ T0.3): Vite React TS, antd v5 token sáng/tối, i18n vi/en, **Shell B** + router (`/`, 404), lint/typecheck/test/build. Shell A dựng ở T3.3, Shell C ở T7.2. Chưa gọi API (T1.2).
 
 #### G2 — Thuật toán bản console (làm sớm, độc lập)
@@ -177,7 +177,7 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 **Chi tiết:**
 - **T3.1** — Conference, ConferenceDay, BreakSlot, Room, RoomEquipment, ServiceItem (cơ bản), Track.
 - **T3.2** — Session, SessionSpeaker (mời nhiều diễn giả / phản hồi), SpeakerAvailability.
-- **T3.3** — Hội nghị, ngày, khung nghỉ, phòng, phiên, mời diễn giả.
+- **T3.3** — Hội nghị, ngày, khung nghỉ, phòng, phiên, mời diễn giả. **Kèm (dời từ T1.2):** chặn route cần đăng nhập (`/login?returnUrl=`) và cần quyền (`[MustHavePermission]` phía FE đọc `permissions` của người dùng), trang 403 (`docs/ui/g1-account.html` màn "Không đủ quyền"), mục "Trang quản lý" trong menu tài khoản, sửa `roleLandingPaths` cho BTC.
 - **T3.4** — Lời mời, khai giờ rảnh.
 
 #### G4 — Đăng ký (P1: UC09–UC14)
@@ -365,3 +365,9 @@ Chỉ chia task khi P1–P4 xong.
 - 2026-10-08 T1.3: Huy làm tay xong bước 1–5 và 2 trang của bước 6, nhờ Claude làm nốt. Claude viết `ShellB`, `ShellBHeader`, `router`, `AppProviders`, `main.tsx`, test (Vitest 5.0.3 + Testing Library + jsdom; `mockMatchMedia`, `renderApp`, 8 test / 3 file), README. Codex cài gói + chạy kiểm tra: format / lint / typecheck đạt, test 8/8, build đạt (cảnh báo bundle 722 kB > 500 kB do antd — chia nhỏ khi có nhiều trang). Test chạy chậm (~160 giây, nạp antd vào jsdom). Viết hướng dẫn gõ lại (3 nhóm, 15 mục), gắn tag `ref/T1.3`.
 - 2026-10-08 Quy ước (Huy): **mục 9 không có nhóm test** (BE và FE) — Huy không gõ lại test; Huy báo gõ xong thì Claude kiểm rồi **gửi lệnh chạy thử**. Sửa CLAUDE.md, AGENTS.md, `_TEMPLATE.md`, T1.3 mục 9. Cập nhật ghi chú Codex chạy nền (`codex_start` / `codex_status`) trong CLAUDE.md.
 - 2026-10-08 T1.3 → `done`: Huy gõ lại nhóm Router + Shell B; Claude kiểm bằng diff với `ref/T1.3` (chỉ khác comment). format / lint / typecheck / build đạt, test 8/8. Huy commit + merge `--no-ff` vào `main`.
+- 2026-10-08 T1.3 merge vào `main` (`43cc91d`). Báo cáo tuần G-1 phần 3 (T1.3). T1.2 → `spec`: viết `plan/tasks/T1.2.md`. Chốt: proxy `/api` của Vite thay CORS; access token chỉ trong bộ nhớ; `refreshSession` chỉ 1 request đang bay (StrictMode + xoay vòng refresh token); xác thực email dùng `useQuery` theo token; chặn route + 403 dời sang T3.3; mọi vai trò tạm về `/` sau đăng nhập (`roleLandingPaths`).
+- 2026-10-08 Huy duyệt T1.2; chặn route theo quyền + trang 403 chính thức dời sang **T3.3** (ghi vào mô tả T3.3). T1.2 → `codex`.
+- 2026-10-08 T1.2: Codex viết bản đầu (36 file mới). Claude review: vòng import `lib/apiClient` ↔ `features/auth/api` (lib không được phụ thuộc features → kiểu phiên + gọi `/auth/refresh` chuyển vào lib), `<Link>` bọc `<Button>`, hook form trộn 3 việc, bootstrap dùng `useQuery` + setState, link gửi lại email sai chỗ ở trang đăng nhập, khóa i18n viết tắt, số 60 000 rải rác, `if` không ngoặc (thêm luật ESLint `curly`). Lượt sửa của Codex bị ngắt giữa chừng (để lại 5 file mất dấu tiếng Việt trong comment) và Codex báo lỗi cả với lệnh thử → Claude tự sửa nốt (tách `useFormErrors` / `useAuthFormRules` / `getErrorMessage`, sửa comment, test), tự chạy kiểm tra trong máy ảo Linux (bản sao `fe` cài gói riêng): đạt hết, test 18/18. Viết mục 9 (6 nhóm, 46 mục), gắn tag `ref/T1.2`. T1.2 → `retype`.
+- 2026-10-09 Quyết định (Huy): FE gọi API bằng **axios** (thay `fetch`). Sửa đặc tả T1.2 mục 3 trước, rồi Codex đổi `lib/apiClient.ts` (đối tượng `apiClient` + interceptor gắn token / làm mới phiên khi 401 / đổi lỗi thành `ApiError`), `features/auth/api.ts`, test dùng `axios-mock-adapter`. Ghim `axios@1.20.0`, `axios-mock-adapter@2.1.0`. Claude review + chạy lại: format / lint / typecheck / build đạt, test 25/25. Sửa mục 9 (#1, #6, #19), ghi vào PROJECT.md + AGENTS.md; gắn lại tag `ref/T1.2`.
+- 2026-10-11 T1.2: Huy gõ lại xong nhóm 1 (Claude sửa 2 lỗi: `setIsPending(true)`, thiếu `/` ở `"/auth/refresh"` làm treo khi refresh 401; sửa tên `boostrap`). Quy ước mới (Huy): **chia phần trong file** — hàm cùng việc đặt cạnh nhau, dòng comment tiêu đề mỗi phần (ghi CLAUDE.md, AGENTS.md); Codex áp vào 16 file T1.2. Chụp giao diện bằng Chrome cho báo cáo tuần → lộ 2 lỗi nhỏ, đã sửa: lỗi mật khẩu trùng chữ gợi ý (thêm khóa `validation.password`), nền thông báo thành công xám đục ở nền sáng (khai `colorSuccessBg` / `colorSuccessBorder`). Test 25/25. Báo cáo tuần G-1 phần 4 (T1.2). Gắn lại tag `ref/T1.2`.
+- 2026-10-14 T1.2: Huy gõ lại xong nhóm 2–3; Claude sửa lỗi bản gõ lại (`description?` của `AuthCard` làm hỏng typecheck; khóa i18n sai `auth.header.forgotPassword`, `auth.checkEmail.senTo`, `auth.checkMail.*`; thiếu khoảng trắng trước email; `confimPassword`; `==` → `===`). Quyết định (Huy): nhóm 4–6 chỉ đọc, không gõ lại. Quy ước comment: viết hoa chữ cái đầu mỗi ý (trừ khi mở đầu bằng tên trong code); dòng trống chia vùng trong hàm và JSX — Codex áp cho 28 file T1.2. format / lint / typecheck / build đạt, test 25/25.

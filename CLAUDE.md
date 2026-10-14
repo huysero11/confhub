@@ -29,6 +29,7 @@
 - **Code đơn giản, dễ hiểu nhưng KHÔNG kém chất lượng** — Huy phải tự gõ lại và giải thích được khi bảo vệ:
   - Đơn giản ở **cách viết**, không cắt bớt chất lượng: logic đúng, xử lý đủ trường hợp biên/lỗi, đúng best practice (Clean Architecture, DI, async/await đúng, validate đầu vào, không lộ bí mật, bảo mật), có test đầy đủ.
   - Ưu tiên cách viết thẳng, dễ đọc hơn cách viết "hay"/ngắn: `if`/`foreach` rõ ràng thay vì chuỗi LINQ dài; tên biến đầy đủ.
+  - **Chia phần trong file** (Huy chốt 2026-10-11, cả BE và FE): hàm / phần cùng một việc đặt cạnh nhau; file có ≥ 2 nhóm hàm thì mở mỗi nhóm bằng dòng comment tiêu đề `// ---------- TÊN PHẦN ----------`; component dài thì comment 1 dòng trước mỗi khối logic và `{/* Tên khối */}` trước mỗi khối JSX lớn. File ngắn một việc thì không cần. Comment viết hoa chữ cái đầu mỗi ý (trừ khi mở đầu bằng tên trong code); dòng trống tách các vùng trong hàm và giữa các khối JSX lớn.
   - Không thêm lớp trừu tượng, generic, reflection, source generator, pattern… khi task chưa cần.
   - Dùng pattern/cơ chế chuẩn khi nó làm code đúng và chắc hơn (vd Options pattern cho nhóm cấu hình, có kiểm tra khi khởi động); comment ghi rõ **tên pattern + mục đích** để dễ hiểu.
   - Analyzer ép cách viết phức tạp chỉ để tối ưu hiệu năng nhỏ → cân nhắc tắt luật đó (ghi lý do trong `.editorconfig`) thay vì làm code khó hiểu.

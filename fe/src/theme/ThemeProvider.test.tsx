@@ -7,17 +7,17 @@ import { mockMatchMedia } from "@/test/mockMatchMedia";
 import { renderApp } from "@/test/renderApp";
 
 describe("ThemeProvider", () => {
-  it("lần đầu theo nền của hệ điều hành", () => {
+  it("lần đầu theo nền của hệ điều hành", async () => {
     mockMatchMedia(true);
 
-    renderApp();
+    await renderApp();
 
     expect(document.documentElement.dataset.theme).toBe("dark");
   });
 
   it("bấm nút thì đổi nền và lưu lựa chọn", async () => {
     const user = userEvent.setup();
-    renderApp();
+    await renderApp();
     expect(document.documentElement.dataset.theme).toBe("light");
 
     await user.click(screen.getByRole("button", { name: "Chuyển sang nền tối" }));
@@ -27,11 +27,11 @@ describe("ThemeProvider", () => {
     expect(screen.getByRole("button", { name: "Chuyển sang nền sáng" })).toBeInTheDocument();
   });
 
-  it("đã lưu lựa chọn thì dùng lựa chọn đó, bỏ qua hệ điều hành", () => {
+  it("đã lưu lựa chọn thì dùng lựa chọn đó, bỏ qua hệ điều hành", async () => {
     mockMatchMedia(true);
     window.localStorage.setItem("confhub.theme", "light");
 
-    renderApp();
+    await renderApp();
 
     expect(document.documentElement.dataset.theme).toBe("light");
   });

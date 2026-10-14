@@ -16,6 +16,7 @@ export default defineConfig({
     // strictPort: cổng bận thì báo lỗi, không tự nhảy sang cổng khác.
     port: 5173,
     strictPort: true,
+    proxy: { "/api": "http://localhost:5065" },
   },
   test: {
     // jsdom: giả lập trình duyệt (DOM, localStorage) để chạy test component ngoài trình duyệt.

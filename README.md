@@ -13,13 +13,21 @@ dotnet ef database update --project src\ConfHub.Infrastructure --startup-project
 dotnet run --project src\ConfHub.Api
 ```
 
-Frontend (cửa sổ cmd khác):
+Giữ API chạy ở cửa sổ cmd thứ nhất. Mở frontend ở cửa sổ cmd thứ hai:
 
 ```cmd
 cd /d D:\Code\my-projects\confhub\fe
 npm install
 npm run dev
 ```
+
+Mở `http://localhost:5173`. Frontend gọi `/api/...` trên cùng địa chỉ; Vite chuyển tiếp tới
+`http://localhost:5065` theo `server.proxy`. Cookie refresh HttpOnly được trình duyệt tự gửi,
+access token chỉ nằm trong bộ nhớ. Khi triển khai thật, đặt FE và API sau cùng một tên miền.
+
+Thử `/register` → xem thư tại `http://localhost:5000` → xác thực → `/login`.
+Đăng nhập xong header hiện tên và menu Đăng xuất; tải lại trang sẽ khôi phục phiên bằng cookie.
+Thử Quên mật khẩu ở trang đăng nhập → mở thư → đặt mật khẩu mới.
 
 Kiểm tra frontend: `npm run lint`, `npm run typecheck`, `npm run test`, `npm run build`
 (`npm run format` để định dạng lại code).
@@ -62,6 +70,13 @@ sau khi đã chạy `dotnet ef database update`. Mật khẩu chung: `Confhub@12
 | `supplier@confhub.local`  | Nhà cung cấp       |
 | `staff@confhub.local`     | Nhân viên vận hành |
 | `admin@confhub.local`     | Quản trị viên      |
+
+- Đăng nhập trên web: `http://localhost:5173/login`.
+- Tài khoản thử tạo thêm khi chụp giao diện T1.2 (không dùng để đăng nhập): `demo.t12@confhub.local`
+  (đã xác thực, mật khẩu đã bị đổi), `demo.t12b@confhub.local` (đã xác thực, Người tham dự), `demo.t12c@confhub.local`
+  (Ban tổ chức, đã xác thực, chờ duyệt).
+- Không nhớ mật khẩu tài khoản nào: dùng "Quên mật khẩu" trên web, xem email trong smtp4dev
+  (`http://localhost:5000`).
 
 Đăng nhập: `POST /api/auth/login` trong Scalar → dán `accessToken` vào ô Bearer token để gọi các API
 cần đăng nhập.

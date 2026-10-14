@@ -15,5 +15,143 @@
     "title": "Không tìm thấy trang",
     "subtitle": "Đường dẫn bạn mở không tồn tại hoặc đã bị xóa.",
     "backHome": "Về trang chủ"
+  },
+  "auth": {
+    "loading": "Đang tải",
+    "userMenu": {
+      "label": "Tài khoản của {{name}}",
+      "logout": "Đăng xuất"
+    },
+    "resendCountdown": "Gửi lại email xác thực ({{seconds}}s)",
+    "verifyEmail": {
+      "title": "Xác thực email",
+      "successTitle": "Xác thực thành công",
+      "successDescription": "Tài khoản của bạn đã sẵn sàng. Đăng nhập để tiếp tục.",
+      "pendingTitle": "Đã xác thực email",
+      "pendingDescription": "Tài khoản đang chờ quản trị viên duyệt. Chúng tôi sẽ báo qua email.",
+      "invalidTitle": "Liên kết không còn hiệu lực",
+      "invalidDescription": "Liên kết đã hết hạn hoặc đã được dùng. Nhập email để nhận liên kết mới.",
+      "backHome": "Về trang chủ"
+    },
+    "register": {
+      "title": "Tạo tài khoản",
+      "subtitle": "Một tài khoản dùng cho mọi hội nghị trên ConfHub.",
+      "role": "Bạn là",
+      "approval": "Tài khoản Ban tổ chức / Nhà cung cấp cần quản trị viên duyệt sau khi bạn xác thực email.",
+      "submit": "Đăng ký",
+      "haveAccount": "Đã có tài khoản?"
+    },
+    "fields": {
+      "fullName": "Họ và tên",
+      "organization": "Đơn vị / công ty",
+      "email": "Email",
+      "password": "Mật khẩu",
+      "confirmPassword": "Nhập lại mật khẩu",
+      "newPassword": "Mật khẩu mới"
+    },
+    "placeholders": {
+      "fullName": "Nguyễn Văn Minh",
+      "organization": "Trường Đại học…",
+      "email": "ban@vidu.com",
+      "password": "Ít nhất 8 ký tự",
+      "confirmPassword": "Nhập lại mật khẩu"
+    },
+    "checkEmail": {
+      "title": "Kiểm tra email của bạn",
+      "sentTo": "Chúng tôi đã gửi liên kết xác thực tới",
+      "linkValidity": "Liên kết có hiệu lực trong 24 giờ.",
+      "resend": "Gửi lại email xác thực",
+      "resent": "Nếu email chưa được xác thực, chúng tôi đã gửi lại liên kết.",
+      "wrongEmail": "Nhập sai email?",
+      "registerAgain": "Đăng ký lại"
+    },
+    "login": {
+      "title": "Đăng nhập",
+      "subtitle": "Chào mừng bạn quay lại ConfHub.",
+      "forgotPassword": "Quên mật khẩu?",
+      "noAccount": "Chưa có tài khoản?"
+    },
+    "forgotPassword": {
+      "title": "Quên mật khẩu",
+      "subtitle": "Nhập email đã đăng ký, chúng tôi sẽ gửi liên kết đặt lại mật khẩu.",
+      "submit": "Gửi liên kết",
+      "backToLogin": "Quay lại đăng nhập",
+      "sent": "Nếu email tồn tại trong hệ thống, chúng tôi đã gửi hướng dẫn. Liên kết có hiệu lực 30 phút."
+    },
+    "resetPassword": {
+      "title": "Đặt lại mật khẩu",
+      "subtitle": "Sau khi đổi, bạn sẽ bị đăng xuất khỏi mọi thiết bị.",
+      "submit": "Đổi mật khẩu",
+      "successTitle": "Đã đổi mật khẩu",
+      "successDescription": "Hãy đăng nhập bằng mật khẩu mới.",
+      "invalidDescription": "Liên kết đã hết hạn (30 phút) hoặc đã được dùng.",
+      "requestAgain": "Gửi lại liên kết"
+    },
+    "header": {
+      "login": "Đăng nhập",
+      "register": "Đăng ký"
+    }
+  },
+  "role": {
+    "Attendee": {
+      "name": "Người tham dự",
+      "description": "Tìm và đăng ký hội nghị"
+    },
+    "Organizer": {
+      "name": "Ban tổ chức",
+      "description": "Tổ chức hội nghị, xếp lịch"
+    },
+    "Supplier": {
+      "name": "Nhà cung cấp",
+      "description": "Cung cấp suất ăn, thiết bị"
+    },
+    "Staff": {
+      "name": "Nhân viên vận hành",
+      "description": "Vận hành hội nghị tại chỗ"
+    },
+    "Admin": {
+      "name": "Quản trị viên",
+      "description": "Quản trị hệ thống và tài khoản"
+    }
+  },
+  "validation": {
+    "NotEmptyValidator": "Vui lòng nhập thông tin này.",
+    "MaximumLengthValidator": "Thông tin vượt quá độ dài cho phép.",
+    "LengthValidator": "Độ dài thông tin không hợp lệ.",
+    "MinimumLengthValidator": "Thông tin quá ngắn.",
+    "PredicateValidator": "Thông tin không hợp lệ.",
+    "NotNullValidator": "Vui lòng nhập thông tin này.",
+    "email": "Email không đúng định dạng",
+    "fullName": "Họ tên từ 2 đến 100 ký tự",
+    "confirm": "Mật khẩu nhập lại không khớp",
+    "password": "Mật khẩu chưa đúng yêu cầu bên dưới",
+    "passwordHint": "8–128 ký tự, có ít nhất 1 chữ cái và 1 chữ số",
+    "organization": "Đơn vị không được vượt quá 200 ký tự.",
+    "passwordMax": "Mật khẩu không được vượt quá 128 ký tự.",
+    "FullNameLength": "Họ tên từ 2 đến 100 ký tự",
+    "EmailValidator": "Email không đúng định dạng"
+  },
+  "errors": {
+    "Validation": "Vui lòng kiểm tra các thông tin đã nhập.",
+    "TokenInvalid": "Liên kết không còn hiệu lực.",
+    "Unauthorized": "Vui lòng đăng nhập để tiếp tục.",
+    "Forbidden": "Bạn không có quyền truy cập.",
+    "Network": "Không thể kết nối hoặc đọc phản hồi từ máy chủ. Vui lòng thử lại.",
+    "Unknown": "Có lỗi xảy ra. Vui lòng thử lại.",
+    "Internal": "Hệ thống gặp sự cố. Vui lòng thử lại sau.",
+    "NotFound": "Không tìm thấy dữ liệu yêu cầu.",
+    "Conflict": "Dữ liệu bị xung đột. Vui lòng kiểm tra lại.",
+    "RoleNotAllowed": "Chỉ Người tham dự, Ban tổ chức hoặc Nhà cung cấp được tự đăng ký.",
+    "OrganizationRequired": "Vui lòng nhập đơn vị / công ty.",
+    "PasswordNeedsLetterAndDigit": "Mật khẩu phải có ít nhất 1 chữ cái và 1 chữ số.",
+    "InvalidAccountStatus": "Trạng thái tài khoản không cho phép thao tác này.",
+    "TokenAlreadyUsed": "Liên kết đã được sử dụng.",
+    "EmailTaken": "Email đã được sử dụng.",
+    "InvalidCredentials": "Email hoặc mật khẩu không đúng.",
+    "AccountUnverified": "Email chưa được xác thực. Hãy mở liên kết trong email chúng tôi đã gửi.",
+    "AccountPending": "Tài khoản đang chờ quản trị viên duyệt. Bạn sẽ nhận email khi được duyệt.",
+    "AccountLocked": "Tài khoản đã bị khóa. Vui lòng liên hệ quản trị viên.",
+    "TooManyRequests": "Bạn thao tác quá nhanh. Vui lòng thử lại sau ít phút.",
+    "SessionExpired": "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại."
   }
 }
