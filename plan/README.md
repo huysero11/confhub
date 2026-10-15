@@ -5,10 +5,10 @@
 
 ## 0. Đang ở đâu
 
-- **Vừa xong:** T1.3 (khung frontend: Vite + React + antd, sáng/tối, vi/en, Shell B) — 2026-10-08
-- **Đang làm:** T1.2 — code đã review (format / lint / typecheck / build đạt, test 25/25), tag `ref/T1.2`; Huy gõ lại xong nhóm 1–3/6; nhóm 4–6 Huy chỉ đọc (không gõ lại). Còn: Huy chạy thử → commit + merge
-- **Tiếp theo:** T1.2 (FE tài khoản) → G1 xong; viết phần Tài khoản trên Overleaf
-- **Nhánh đang mở:** `task/T1.2-fe-auth`
+- **Vừa xong:** T1.2 (FE tài khoản) → **G1 Tài khoản xong** — merge `7e22264`, 2026-10-14
+- **Đang làm:** không — báo cáo G1 đã lên Overleaf (project "Khoa luan ConfHub")
+- **Tiếp theo:** nhóm kế tiếp theo bảng mục 3; Huy điền thông tin bìa trên Overleaf
+- **Nhánh đang mở:** không (đang ở `main`)
 
 ## 1. Quy trình một task
 
@@ -140,7 +140,7 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 | ID   | Việc                               | Phụ thuộc                | Trạng thái |
 |------|------------------------------------|--------------------------|------------|
 | T1.1 | BE: đăng ký, xác thực email        | D7, T0.2, T0.4, T0.5, D1 | done       |
-| T1.2 | FE: đăng ký / đăng nhập            | T1.3, T1.4               | retype     |
+| T1.2 | FE: đăng ký / đăng nhập            | T1.3, T1.4               | done       |
 | T1.3 | FE: khung frontend                 | T0.1                     | done       |
 | T1.4 | BE: đăng nhập, JWT, phân quyền     | T1.1                     | done       |
 
@@ -371,3 +371,5 @@ Chỉ chia task khi P1–P4 xong.
 - 2026-10-09 Quyết định (Huy): FE gọi API bằng **axios** (thay `fetch`). Sửa đặc tả T1.2 mục 3 trước, rồi Codex đổi `lib/apiClient.ts` (đối tượng `apiClient` + interceptor gắn token / làm mới phiên khi 401 / đổi lỗi thành `ApiError`), `features/auth/api.ts`, test dùng `axios-mock-adapter`. Ghim `axios@1.20.0`, `axios-mock-adapter@2.1.0`. Claude review + chạy lại: format / lint / typecheck / build đạt, test 25/25. Sửa mục 9 (#1, #6, #19), ghi vào PROJECT.md + AGENTS.md; gắn lại tag `ref/T1.2`.
 - 2026-10-11 T1.2: Huy gõ lại xong nhóm 1 (Claude sửa 2 lỗi: `setIsPending(true)`, thiếu `/` ở `"/auth/refresh"` làm treo khi refresh 401; sửa tên `boostrap`). Quy ước mới (Huy): **chia phần trong file** — hàm cùng việc đặt cạnh nhau, dòng comment tiêu đề mỗi phần (ghi CLAUDE.md, AGENTS.md); Codex áp vào 16 file T1.2. Chụp giao diện bằng Chrome cho báo cáo tuần → lộ 2 lỗi nhỏ, đã sửa: lỗi mật khẩu trùng chữ gợi ý (thêm khóa `validation.password`), nền thông báo thành công xám đục ở nền sáng (khai `colorSuccessBg` / `colorSuccessBorder`). Test 25/25. Báo cáo tuần G-1 phần 4 (T1.2). Gắn lại tag `ref/T1.2`.
 - 2026-10-14 T1.2: Huy gõ lại xong nhóm 2–3; Claude sửa lỗi bản gõ lại (`description?` của `AuthCard` làm hỏng typecheck; khóa i18n sai `auth.header.forgotPassword`, `auth.checkEmail.senTo`, `auth.checkMail.*`; thiếu khoảng trắng trước email; `confimPassword`; `==` → `===`). Quyết định (Huy): nhóm 4–6 chỉ đọc, không gõ lại. Quy ước comment: viết hoa chữ cái đầu mỗi ý (trừ khi mở đầu bằng tên trong code); dòng trống chia vùng trong hàm và JSX — Codex áp cho 28 file T1.2. format / lint / typecheck / build đạt, test 25/25.
+- 2026-10-14 T1.2 → `done`: Huy commit `6ac58d2` + merge `--no-ff` vào `main` (`7e22264`). **G1 hoàn thành.** Báo cáo tuần G-1 phần 4 (T1.2) đã viết.
+- 2026-10-15 Báo cáo khóa luận: tạo project Overleaf "Khoa luan ConfHub" (XeLaTeX, khung đủ chương). Viết phần G1 Tài khoản: mục 3.2 (UC01/UC02, BR01–BR15, biểu đồ hoạt động / trạng thái / tuần tự, ERD 3 bảng, API) + mục 4.2 (luồng BE, outbox, JWT + refresh, bảo mật, FE, 9 ảnh giao diện). Biểu đồ PNG ở `docs/diagrams/png/`, thêm `g1-erd-tai-khoan.puml`; ảnh ở `docs/screenshots/g1/`. Biên dịch trên Overleaf: 0 lỗi.

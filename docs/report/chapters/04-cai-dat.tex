@@ -1,0 +1,241 @@
+% 04-cai-dat.tex — Chương 4: cài đặt hệ thống.
+% 4.1 kiến trúc chung (viết dần), 4.2 trở đi: mỗi nhóm chức năng một mục.
+\chapter{Cài đặt hệ thống}
+
+\section{Kiến trúc tổng thể}
+
+Phía máy chủ được xây dựng trên .NET 10 theo kiến trúc phân lớp (Clean Architecture) gồm bốn dự án:
+\code{Domain} chứa thực thể và quy tắc nghiệp vụ, \code{Application} chứa các ca sử dụng dưới dạng
+lệnh và bộ xử lý, \code{Infrastructure} cài đặt truy cập cơ sở dữ liệu, gửi thư, hàng đợi, và
+\code{Api} nhận yêu cầu HTTP. Lớp trong không phụ thuộc lớp ngoài: \code{Application} chỉ khai báo
+giao diện (ví dụ \code{IEmailSender}), \code{Infrastructure} cài đặt và được đăng ký qua cơ chế tiêm
+phụ thuộc. Phía giao diện là ứng dụng React viết bằng TypeScript, dùng thư viện Ant Design.
+
+\chuaviet[Sơ đồ triển khai, cấu trúc thư mục và các thành phần hạ tầng (SQL Server, RabbitMQ, Redis,
+MinIO) sẽ được bổ sung.]
+
+% =====================================================================================
+\section{Cài đặt nhóm chức năng Tài khoản}
+\label{sec:cai-dat-tai-khoan}
+
+\subsection{Luồng xử lý một yêu cầu phía máy chủ}
+
+Mọi API của nhóm Tài khoản đi qua cùng một chuỗi lớp. Lấy chức năng đăng ký làm ví dụ:
+
+\begin{enumerate}
+  \item \code{AuthController} nhận yêu cầu \code{POST /api/auth/register}, chuyển nội dung thành lệnh
+  \code{RegisterCommand} và gửi qua thư viện MediatR. Bộ điều khiển không chứa logic nghiệp vụ.
+  \item Trước khi tới bộ xử lý, \code{ValidationBehavior} chạy các luật kiểm tra viết bằng FluentValidation
+  (BR01--BR05). Dữ liệu sai thì dừng ngay và trả lỗi 400 kèm mã lỗi theo từng trường.
+  \item \code{RegisterCommandHandler} kiểm tra email chưa tồn tại, băm mật khẩu và gọi phương thức
+  \code{User.Register} của thực thể. Thực thể tự đặt trạng thái chưa xác thực và ghi nhận sự kiện miền
+  \code{UserRegistered}.
+  \item Repository lưu thực thể. Ngay trước khi ghi xuống cơ sở dữ liệu, sự kiện miền được đổi thành
+  thông điệp \code{SendVerificationEmailMessage} và ghi vào bảng outbox trong cùng giao dịch.
+  \item Lỗi nghiệp vụ được ném dưới dạng ngoại lệ có mã; một middleware chung đổi chúng thành phản hồi
+  ProblemDetails với mã HTTP và trường \code{code} tương ứng (Bảng~\ref{tab:tk-ma-loi}).
+\end{enumerate}
+
+Cách tổ chức này giữ mỗi ca sử dụng trong một thư mục riêng (lệnh, luật kiểm tra, bộ xử lý, kết quả),
+dễ tìm và dễ kiểm thử độc lập. Truy vấn dữ liệu được viết bằng mẫu Specification (thư viện
+Ardalis.Specification), ví dụ \code{UserByEmailSpec}, để điều kiện truy vấn có tên và dùng lại được.
+
+\subsection{Gửi email bất đồng bộ qua outbox}
+
+Gửi thư là thao tác chậm và có thể lỗi, nên không được thực hiện trong yêu cầu đăng ký. Hệ thống dùng
+mẫu Transactional Outbox~\cite{outbox} do thư viện MassTransit cung cấp:
+
+\begin{itemize}
+  \item \textbf{Phía gửi:} thông điệp được ghi vào bảng \code{OutboxMessage} cùng giao dịch với tài
+  khoản mới. Hoặc cả hai cùng được lưu, hoặc không có gì được lưu; không xảy ra trường hợp tài khoản đã
+  tạo mà thông điệp bị mất. Một tiến trình nền đọc bảng outbox và đẩy thông điệp lên RabbitMQ.
+  \item \textbf{Phía nhận:} \code{SendVerificationEmailConsumer} nhận thông điệp và chuyển cho bộ xử lý
+  \code{SendVerificationEmailCommandHandler}. Bảng inbox ghi nhận thông điệp đã xử lý nên mỗi thông
+  điệp chỉ được xử lý một lần; lỗi thì thử lại sau 1, 5 và 15 giây.
+\end{itemize}
+
+Bộ xử lý gửi thư thực hiện năm bước: đọc lại tài khoản theo mã và bỏ qua nếu tài khoản không còn ở
+trạng thái chưa xác thực; bỏ qua nếu vừa gửi thư cùng loại trong 60 giây (BR08); đánh dấu các token cũ
+còn hiệu lực là đã dùng; sinh token mới gồm 32 byte ngẫu nhiên (mã hóa Base64Url), lưu bản băm SHA-256
+kèm thời hạn; cuối cùng gửi thư bằng thư viện MailKit, liên kết trong thư có dạng
+\code{<địa chỉ giao diện>/verify-email?token=<token gốc>}.
+
+Thông điệp chỉ mang mã người dùng, không mang token (BR07). Thông điệp nằm ở nhiều nơi ngoài tầm
+kiểm soát của ứng dụng: bảng outbox, hàng đợi RabbitMQ và hàng đợi lỗi (giữ lại vĩnh viễn nếu xử lý
+thất bại hết số lần thử). Nếu token nằm trong thông điệp, ai đọc được các nơi đó sẽ có liên kết xác
+thực hoặc đặt lại mật khẩu còn hạn. Sinh token ngay lúc gửi thư khiến chuỗi token gốc chỉ tồn tại trong
+email; cơ sở dữ liệu chỉ có bản băm, giống cách lưu mật khẩu.
+
+\subsection{Phiên đăng nhập: access token và refresh token}
+
+Sau khi đăng nhập thành công, hệ thống cấp hai loại token với vai trò khác nhau:
+
+\begin{itemize}
+  \item \textbf{Access token} là JWT~\cite{rfc7519} ký bằng HMAC-SHA256, hiệu lực 15 phút, chứa mã người
+  dùng, email, họ tên, vai trò và danh sách quyền. Giao diện gửi token này trong tiêu đề
+  \code{Authorization} của mỗi yêu cầu. Máy chủ kiểm tra chữ ký và thời hạn mà không cần truy vấn cơ sở
+  dữ liệu.
+  \item \textbf{Refresh token} là chuỗi ngẫu nhiên, hiệu lực 7 ngày, nằm trong cookie
+  \code{confhub\_refresh} với các thuộc tính \code{HttpOnly} (mã JavaScript không đọc được),
+  \code{Secure}, \code{SameSite=Strict} và \code{Path=/api/auth} (chỉ gửi kèm các API tài khoản).
+  Cơ sở dữ liệu chỉ lưu bản băm của token này.
+\end{itemize}
+
+Mỗi lần làm mới, refresh token cũ bị đánh dấu đã dùng và một token mới được cấp (xoay vòng, BR12).
+Nếu một token đã dùng lại được gửi lên, nhiều khả năng token đã bị đánh cắp và đang được hai bên cùng
+sử dụng; bộ xử lý \code{RefreshSessionCommandHandler} khi đó thu hồi toàn bộ refresh token của người
+dùng, buộc mọi thiết bị đăng nhập lại~\cite{owasp-session}.
+
+Phân quyền dựa trên danh sách quyền trong access token. Các API cần quyền được đánh dấu bằng thuộc
+tính \code{[MustHavePermission]}; một bộ cung cấp chính sách tự sinh chính sách kiểm tra quyền tương
+ứng. Mặc định mọi API đều yêu cầu đăng nhập; chỉ các API được đánh dấu riêng (đăng ký, đăng nhập, làm
+mới phiên, quên mật khẩu\ldots) mới cho phép truy cập khi chưa đăng nhập.
+
+\subsection{Các biện pháp bảo mật}
+
+\begin{itemize}
+  \item \textbf{Mật khẩu} được băm bằng \code{PasswordHasher} của ASP.NET Core (thuật toán PBKDF2 có
+  muối)~\cite{owasp-password}. Khi email không tồn tại, hệ thống vẫn thực hiện một lần băm giả để thời
+  gian phản hồi không để lộ email nào có tài khoản.
+  \item \textbf{Token trong email và refresh token} chỉ lưu bản băm SHA-256. Vì token là chuỗi ngẫu nhiên
+  256 bit nên không cần thuật toán băm chậm như mật khẩu.
+  \item \textbf{Không lộ thông tin tài khoản:} cùng thông báo cho sai email và sai mật khẩu; cùng phản
+  hồi cho gửi lại email và quên mật khẩu (BR09, BR10).
+  \item \textbf{Giới hạn tần suất} theo địa chỉ IP bằng bộ giới hạn có sẵn của ASP.NET Core, cửa sổ cố
+  định một phút (BR15); vượt giới hạn trả mã 429.
+  \item \textbf{Access token chỉ nằm trong bộ nhớ} của trang (không lưu \code{localStorage}), giảm
+  thiệt hại nếu trang bị chèn mã độc.
+\end{itemize}
+
+\subsection{Phía giao diện}
+
+Mã giao diện được chia theo nhóm chức năng (\code{features/auth}); trong mỗi nhóm, các lớp chỉ gọi lớp
+ngay dưới: trang (page) $\rightarrow$ thành phần giao diện (component) $\rightarrow$ hook
+$\rightarrow$ hàm gọi API $\rightarrow$ \code{apiClient}. Các hook dùng thư viện TanStack Query để quản
+lý trạng thái đang tải, lỗi và kết quả của mỗi lần gọi API.
+
+\textbf{Lớp gọi API dùng chung.} \code{apiClient} là một đối tượng axios với hai bộ chặn
+(interceptor). Bộ chặn yêu cầu tự gắn access token; bộ chặn phản hồi đổi mọi lỗi thành một kiểu thống
+nhất gồm mã HTTP, mã lỗi nghiệp vụ và lỗi theo từng trường. Khi một API trả 401 vì access token hết
+hạn, bộ chặn tự gọi làm mới phiên một lần rồi gửi lại yêu cầu; làm mới thất bại thì xóa phiên và đưa
+người dùng về trang đăng nhập kèm thông báo phiên đã hết hạn.
+
+\textbf{Khôi phục phiên khi tải lại trang.} Vì access token chỉ nằm trong bộ nhớ, tải lại trang sẽ làm
+mất token. Khi ứng dụng khởi động, thành phần \code{SessionBootstrap} hiển thị vòng chờ và gọi API làm
+mới phiên; trình duyệt tự gửi cookie refresh. Còn phiên thì nhận access token mới, không còn thì người
+dùng là khách. Trang chỉ được vẽ sau bước này, nên thanh tiêu đề hiển thị đúng trạng thái ngay từ đầu.
+
+\textbf{Chỉ một yêu cầu làm mới tại một thời điểm.} Do refresh token xoay vòng, hai yêu cầu làm mới gửi
+cùng lúc bằng cùng một cookie sẽ bị máy chủ coi là token bị đánh cắp (BR12). Tình huống này xảy ra khi
+nhiều API cùng nhận 401, hoặc khi React chạy hiệu ứng hai lần ở chế độ phát triển. Hàm
+\code{refreshSession} giữ lời gọi đang chạy trong một biến dùng chung: lời gọi thứ hai nhận lại đúng
+lời gọi đang chạy thay vì gửi yêu cầu mới. Ngoài ra, mỗi lần phiên thay đổi có một số đếm tăng lên;
+kết quả làm mới trả về muộn, sau khi người dùng đã đăng xuất hoặc đăng nhập tài khoản khác, sẽ bị bỏ qua.
+
+\textbf{Song ngữ và thông báo lỗi.} Toàn bộ chữ hiển thị nằm trong hai từ điển tiếng Việt và tiếng
+Anh. Mã lỗi máy chủ trả về (ví dụ \code{EmailTaken}) được dùng trực tiếp làm khóa tra từ điển, nên máy
+chủ không cần biết người dùng đang xem ngôn ngữ nào. Lỗi theo từng trường được gắn vào đúng ô nhập; khi
+người dùng đổi ngôn ngữ, các thông báo lỗi đang hiển thị cũng được dịch lại.
+
+\subsection{Giao diện chức năng}
+
+Các màn hình của nhóm Tài khoản nằm trong khung giao diện công khai, dạng thẻ ở giữa trang. Các hình
+dưới đây được chụp trên môi trường phát triển với máy chủ thật; thư được xem qua công cụ smtp4dev.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.48\textwidth]{screenshots/hinh-02-dang-ky-kiem-tra-du-lieu.png}
+  \caption{Màn hình đăng ký với vai trò Ban tổ chức}
+  \label{fig:gd-dang-ky}
+\end{figure}
+
+Hình~\ref{fig:gd-dang-ky} là màn hình đăng ký khi người dùng chọn vai trò Ban tổ chức và bấm ``Đăng
+ký'' mà chưa nhập thông tin. Ô ``Đơn vị / công ty'' và ghi chú cần quản trị viên duyệt chỉ xuất hiện với
+Ban tổ chức và Nhà cung cấp. Lỗi được báo ngay dưới từng ô; dưới ô mật khẩu có dòng gợi ý quy tắc mật
+khẩu (BR02).
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.62\textwidth]{screenshots/hinh-03-kiem-tra-email.png}
+  \caption{Màn hình kiểm tra email sau khi đăng ký}
+  \label{fig:gd-kiem-tra-email}
+\end{figure}
+
+Sau khi đăng ký thành công, người dùng được chuyển sang màn hình ở Hình~\ref{fig:gd-kiem-tra-email}.
+Màn hình hiển thị địa chỉ vừa đăng ký và nút gửi lại thư; nút bị khóa 60 giây kể từ khi vào trang và
+hiển thị số giây còn lại (BR08). Liên kết ``Đăng ký lại'' dành cho trường hợp nhập sai email.
+
+\begin{figure}[H]
+  \centering
+  \begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{screenshots/hinh-04-xac-thuc-thanh-cong.png}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{screenshots/hinh-05-xac-thuc-lien-ket-hong.png}
+  \end{minipage}
+  \caption{Kết quả xác thực email: thành công (trái) và liên kết đã dùng (phải)}
+  \label{fig:gd-xac-thuc}
+\end{figure}
+
+Hình~\ref{fig:gd-xac-thuc} là hai kết quả của trang xác thực email. Khi người dùng bấm liên kết trong
+thư, trang tự gửi token lên máy chủ và hiển thị kết quả máy chủ trả về. Bấm lại cùng liên kết lần thứ
+hai thì token đã được dùng, trang báo liên kết không còn hiệu lực và cho nhập email để nhận liên kết
+mới. Với tài khoản Ban tổ chức hoặc Nhà cung cấp, trang báo đã xác thực và đang chờ quản trị viên duyệt.
+
+\begin{figure}[H]
+  \centering
+  \begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{screenshots/hinh-06-dang-nhap-sai-thong-tin.png}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{screenshots/hinh-07-dang-nhap-tieng-anh.png}
+  \end{minipage}
+  \caption{Màn hình đăng nhập báo sai thông tin, tiếng Việt (trái) và tiếng Anh (phải)}
+  \label{fig:gd-dang-nhap}
+\end{figure}
+
+Hình~\ref{fig:gd-dang-nhap} là màn hình đăng nhập khi nhập sai mật khẩu. Thông báo không cho biết sai
+email hay sai mật khẩu (BR10). Khi người dùng chuyển sang tiếng Anh, toàn bộ chữ trên trang, kể cả
+thông báo lỗi do máy chủ trả về, được đổi ngôn ngữ mà không cần gửi lại yêu cầu.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.75\textwidth]{screenshots/hinh-01-header-menu-tai-khoan.png}
+  \caption{Thanh tiêu đề sau khi đăng nhập, mở menu tài khoản}
+  \label{fig:gd-menu}
+\end{figure}
+
+Sau khi đăng nhập, thanh tiêu đề thay hai nút ``Đăng nhập'', ``Đăng ký'' bằng tên người dùng
+(Hình~\ref{fig:gd-menu}). Bấm vào tên sẽ mở menu gồm email, vai trò và mục ``Đăng xuất''. Tải lại trang
+vẫn giữ trạng thái đăng nhập nhờ cơ chế khôi phục phiên đã trình bày ở trên.
+
+\begin{figure}[H]
+  \centering
+  \begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{screenshots/hinh-10-dat-lai-mat-khau-thanh-cong.png}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{screenshots/hinh-11-dang-nhap-nen-toi.png}
+  \end{minipage}
+  \caption{Đặt lại mật khẩu thành công (trái) và màn hình đăng nhập ở nền tối (phải)}
+  \label{fig:gd-khac}
+\end{figure}
+
+Hình~\ref{fig:gd-khac} bên trái là kết quả sau khi đặt mật khẩu mới từ liên kết trong thư; mọi phiên
+đăng nhập cũ của tài khoản đã bị thu hồi (BR14). Bên phải là giao diện ở nền tối: người dùng chọn
+nền sáng hoặc tối trên thanh tiêu đề, lựa chọn được lưu lại cho lần mở sau.
+
+\subsection{Kiểm thử}
+
+Mỗi ca sử dụng được kiểm thử tự động ở cả hai phía. Phía máy chủ có kiểm thử đơn vị cho bộ xử lý,
+luật kiểm tra dữ liệu, và kiểm thử tích hợp gọi trực tiếp các API, trong đó có các trường hợp: token hết hạn, token đã dùng, xoay vòng và phát hiện refresh token bị dùng lại, giới
+hạn tần suất. Phía giao diện kiểm thử lớp gọi API (đổi lỗi, làm mới phiên một lần, chỉ một yêu cầu làm
+mới) và các luồng màn hình chạy trên bộ định tuyến thật với máy chủ giả lập.
+
+\chuaviet[Bảng tổng hợp số trường hợp kiểm thử và kết quả sẽ được bổ sung khi hoàn thiện các nhóm chức năng.]

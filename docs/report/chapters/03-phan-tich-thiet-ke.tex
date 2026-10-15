@@ -1,0 +1,398 @@
+% 03-phan-tich-thiet-ke.tex — Chương 3: phân tích và thiết kế hệ thống.
+% Mỗi nhóm chức năng một mục (3.2 Tài khoản, các nhóm sau thêm 3.3, 3.4...).
+% Nguồn: docs/design/use-cases.md, docs/specs/<nhóm>.md, docs/diagrams/*.puml (ảnh: images/diagrams/).
+\chapter{Phân tích và thiết kế hệ thống}
+
+\section{Tổng quan về các ca sử dụng}
+
+Hệ thống có bảy tác nhân. \textit{Người dùng} là tác nhân chung, đại diện cho mọi người đã hoặc
+sắp có tài khoản; sáu tác nhân còn lại kế thừa từ tác nhân này: Người tham dự, Ban tổ chức, Diễn giả,
+Nhà cung cấp, Nhân viên vận hành và Quản trị viên. Danh sách ca sử dụng được chốt gồm 57 ca, đánh
+mã theo thứ tự ưu tiên: các ca có mã nhỏ nằm ở luồng lõi (từ tạo hội nghị đến công bố lịch) và được
+xây dựng trước.
+
+Khóa luận trình bày phần phân tích và thiết kế theo từng nhóm chức năng, đúng thứ tự xây dựng hệ
+thống. Mỗi nhóm gồm: phạm vi và tác nhân, quy tắc nghiệp vụ, đặc tả ca sử dụng, các biểu đồ hoạt
+động, tuần tự, trạng thái, thiết kế dữ liệu và thiết kế API.
+
+\chuaviet[Biểu đồ ca sử dụng tổng quát và danh sách 57 ca sử dụng sẽ được bổ sung.]
+
+% =====================================================================================
+\section{Nhóm chức năng Tài khoản}
+\label{sec:tai-khoan}
+
+\subsection{Phạm vi và tác nhân}
+
+Nhóm Tài khoản là điểm vào của mọi tác nhân: trước khi dùng bất kỳ chức năng nào, người dùng phải có
+tài khoản và đăng nhập. Nhóm gồm hai ca sử dụng của tác nhân Người dùng, được thể hiện trong
+Hình~\ref{fig:uc-nguoi-dung}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.55\textwidth]{diagrams/uc-nguoi-dung.png}
+  \caption{Biểu đồ ca sử dụng của tác nhân Người dùng}
+  \label{fig:uc-nguoi-dung}
+\end{figure}
+
+Hình~\ref{fig:uc-nguoi-dung} cho thấy sáu tác nhân cụ thể đều kế thừa tác nhân Người dùng, nên mọi
+tác nhân đều dùng chung cơ chế đăng ký và đăng nhập. Ca UC41 (quản lý hồ sơ cá nhân) thuộc nhóm hỗ
+trợ, được xây dựng ở giai đoạn sau. Hai ca UC01 và UC02 được chia thành các luồng con như
+Bảng~\ref{tab:tk-pham-vi}.
+
+\begin{table}[H]
+  \centering
+  \caption{Các ca sử dụng của nhóm Tài khoản}
+  \label{tab:tk-pham-vi}
+  \begin{tabularx}{\textwidth}{lp{4cm}L}
+    \toprule
+    \textbf{Mã} & \textbf{Tên} & \textbf{Luồng con} \\
+    \midrule
+    UC01 & Đăng ký tài khoản & Đăng ký; xác thực email; gửi lại email xác thực \\
+    UC02 & Đăng nhập / đăng xuất & Đăng nhập; làm mới phiên; đăng xuất; quên và đặt lại mật khẩu \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+``Làm mới phiên'' không phải thao tác của người dùng: giao diện tự thực hiện khi phiên làm việc hết
+hạn hoặc khi người dùng mở lại trang. Việc quản trị viên duyệt, khóa tài khoản (UC20) và quản lý vai
+trò, quyền thuộc các nhóm chức năng sau.
+
+Hệ thống có năm vai trò. Ba vai trò được tự đăng ký; hai vai trò còn lại do quản trị viên tạo
+(Bảng~\ref{tab:tk-vai-tro}). Diễn giả không phải một vai trò riêng: một người dùng bất kỳ trở thành
+diễn giả khi được Ban tổ chức mời trình bày ở một phiên.
+
+\begin{table}[H]
+  \centering
+  \caption{Vai trò và trạng thái sau khi xác thực email}
+  \label{tab:tk-vai-tro}
+  \begin{tabularx}{\textwidth}{lLcl}
+    \toprule
+    \textbf{Mã vai trò} & \textbf{Tên} & \textbf{Tự đăng ký} & \textbf{Sau xác thực email} \\
+    \midrule
+    \code{Attendee}  & Người tham dự      & Có    & Hoạt động (\code{Active}) \\
+    \code{Organizer} & Ban tổ chức        & Có    & Chờ duyệt (\code{PendingApproval}) \\
+    \code{Supplier}  & Nhà cung cấp       & Có    & Chờ duyệt (\code{PendingApproval}) \\
+    \code{Staff}     & Nhân viên vận hành & Không & -- \\
+    \code{Admin}     & Quản trị viên      & Không & -- \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+Ban tổ chức và Nhà cung cấp phải được quản trị viên duyệt vì hai vai trò này tạo dữ liệu ảnh hưởng
+tới người khác (hội nghị, đơn dịch vụ); Người tham dự được hoạt động ngay sau khi xác thực email.
+
+\subsection{Quy tắc nghiệp vụ}
+
+Các quy tắc của nhóm Tài khoản được đánh mã BR01--BR15 (Bảng~\ref{tab:tk-quy-tac}) và được kiểm tra
+ở cả giao diện lẫn máy chủ; máy chủ luôn kiểm tra lại, không tin dữ liệu gửi từ trình duyệt.
+
+\begin{longtable}{p{1.3cm}p{3.2cm}p{9.9cm}}
+  \caption{Quy tắc nghiệp vụ của nhóm Tài khoản}\label{tab:tk-quy-tac}\\
+  \toprule
+  \textbf{Mã} & \textbf{Nội dung} & \textbf{Quy tắc} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Mã} & \textbf{Nội dung} & \textbf{Quy tắc} \\
+  \midrule
+  \endhead
+  BR01 & Email & Bắt buộc, đúng định dạng, tối đa 256 ký tự; cắt khoảng trắng và đổi về chữ thường
+  trước khi lưu, so sánh; duy nhất trong hệ thống. \\
+  BR02 & Mật khẩu & 8--128 ký tự, có ít nhất một chữ cái và một chữ số. Chỉ lưu bản băm. \\
+  BR03 & Họ tên & Bắt buộc, 2--100 ký tự sau khi cắt khoảng trắng. \\
+  BR04 & Đơn vị & Tối đa 200 ký tự; bắt buộc với Ban tổ chức và Nhà cung cấp. \\
+  BR05 & Vai trò khi đăng ký & Chỉ nhận Người tham dự, Ban tổ chức, Nhà cung cấp. \\
+  BR06 & Token một lần & Token trong liên kết email là chuỗi ngẫu nhiên 32 byte; CSDL chỉ lưu
+  bản băm SHA-256. Token đã dùng, hết hạn hoặc đã có token mới hơn thì không còn hiệu lực. \\
+  BR07 & Token không đi qua hàng đợi & Sự kiện chỉ mang mã người dùng; token được sinh ngay lúc
+  gửi thư, chuỗi gốc chỉ nằm trong email. \\
+  BR08 & Gửi lại email & Cách lần gửi trước cùng loại ít nhất 60 giây; giao diện khóa nút trong
+  thời gian này. \\
+  BR09 & Không lộ email & Chức năng gửi lại email xác thực và quên mật khẩu luôn trả cùng một thông
+  báo, dù email có tồn tại hay không. \\
+  BR10 & Đăng nhập & Chỉ tài khoản đang hoạt động được cấp phiên. Sai email hoặc sai mật khẩu trả
+  cùng một thông báo; trạng thái chỉ được kiểm tra sau khi mật khẩu đúng. \\
+  BR11 & Token phiên & Access token (JWT) hiệu lực 15 phút, giao diện giữ trong bộ nhớ. Refresh token
+  hiệu lực 7 ngày, nằm trong cookie \code{HttpOnly}. \\
+  BR12 & Xoay vòng refresh token & Mỗi lần làm mới, token cũ bị đánh dấu đã dùng và cấp token mới.
+  Token đã dùng bị gửi lại thì thu hồi mọi phiên của người đó. \\
+  BR13 & Đăng xuất & Thu hồi refresh token hiện tại và xóa cookie. \\
+  BR14 & Đặt lại mật khẩu & Thành công thì thu hồi mọi refresh token (đăng xuất khỏi mọi thiết bị). \\
+  BR15 & Giới hạn tần suất & Theo địa chỉ IP: đăng nhập, đăng ký 5 lần/phút; gửi lại email xác thực,
+  quên mật khẩu 3 lần/phút. Không khóa tài khoản khi nhập sai nhiều lần. \\
+  \bottomrule
+\end{longtable}
+
+Hai quy tắc BR09 và BR10 nhằm chống dò tài khoản: kẻ tấn công không thể dựa vào thông báo trả về để
+biết một email đã đăng ký hay tài khoản đang ở trạng thái nào. Riêng chức năng đăng ký buộc phải báo
+``email đã được sử dụng'' để người dùng biết cách xử lý; rủi ro này được giảm bằng giới hạn tần suất
+BR15.
+
+\subsection{Đặc tả ca sử dụng UC01 -- Đăng ký tài khoản}
+
+\begin{table}[H]
+  \centering
+  \caption{Thông tin chung của UC01}
+  \label{tab:uc01}
+  \begin{tabularx}{\textwidth}{p{3.5cm}L}
+    \toprule
+    Tác nhân & Người dùng (chưa có tài khoản) \\
+    Mục tiêu & Tạo tài khoản Người tham dự, Ban tổ chức hoặc Nhà cung cấp \\
+    Tiền điều kiện & Chưa đăng nhập \\
+    Hậu điều kiện & Tài khoản ở trạng thái chưa xác thực; email xác thực đã được gửi \\
+    Kích hoạt & Bấm ``Đăng ký'' trên thanh tiêu đề hoặc trang đăng nhập \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\textbf{Luồng chính -- Đăng ký:}
+\begin{enumerate}
+  \item Người dùng mở trang đăng ký, chọn vai trò (mặc định Người tham dự). Nếu chọn Ban tổ chức hoặc
+  Nhà cung cấp, giao diện hiện thêm ô ``Đơn vị'' bắt buộc và ghi chú cần quản trị viên duyệt.
+  \item Người dùng nhập họ tên, email, mật khẩu, nhập lại mật khẩu (và đơn vị), bấm ``Đăng ký''.
+  \item Giao diện kiểm tra BR01--BR04; lỗi hiện ngay dưới ô nhập.
+  \item Hệ thống kiểm tra lại BR01--BR05 và kiểm tra email chưa tồn tại.
+  \item Hệ thống băm mật khẩu, tạo tài khoản chưa xác thực và ghi sự kiện ``gửi email xác thực'' trong
+  cùng một giao dịch.
+  \item Giao diện chuyển sang trang ``Kiểm tra email'', hiển thị địa chỉ vừa đăng ký.
+  \item Phía sau, hệ thống sinh token xác thực, lưu bản băm và gửi email chứa liên kết xác thực.
+\end{enumerate}
+
+\textbf{Luồng con -- Xác thực email:} người dùng bấm liên kết trong email; giao diện gửi token lên hệ
+thống. Hệ thống tìm token theo bản băm, kiểm tra đúng mục đích, chưa dùng, chưa hết hạn (BR06), đánh
+dấu token đã dùng rồi đổi trạng thái tài khoản theo vai trò (Bảng~\ref{tab:tk-vai-tro}).
+
+\textbf{Luồng con -- Gửi lại email xác thực:} ở trang ``Kiểm tra email'' hoặc khi đăng nhập bị báo chưa
+xác thực, người dùng bấm ``Gửi lại email''. Hệ thống áp dụng BR08 và làm token cũ hết hiệu lực khi
+tạo token mới; phản hồi luôn là ``Nếu email chưa xác thực, chúng tôi đã gửi lại liên kết'' (BR09).
+
+\textbf{Ngoại lệ:}
+\begin{itemize}
+  \item E1 -- Dữ liệu sai quy tắc: báo lỗi theo từng ô nhập.
+  \item E2 -- Email đã tồn tại: báo ``Email đã được sử dụng'', gợi ý đăng nhập hoặc lấy lại mật khẩu.
+  \item E3 -- Liên kết xác thực sai, hết hạn hoặc đã dùng: báo ``Liên kết không còn hiệu lực'' kèm ô
+  nhập email để nhận liên kết mới.
+  \item E4 -- Máy chủ thư lỗi: hệ thống tự gửi lại theo chính sách thử lại; việc đăng ký vẫn thành
+  công và người dùng có thể bấm ``Gửi lại''.
+  \item E5 -- Thao tác quá nhanh (vượt BR15): báo ``Thao tác quá nhanh, thử lại sau''.
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[height=0.72\textheight,keepaspectratio]{diagrams/g1-hd-dang-ky.png}
+  \caption{Biểu đồ hoạt động đăng ký, xác thực và gửi lại email}
+  \label{fig:hd-dang-ky}
+\end{figure}
+
+Hình~\ref{fig:hd-dang-ky} thể hiện ba luồng của UC01 trên hai làn Người dùng và Hệ thống. Vòng lặp
+đầu tiên là vòng nhập liệu: hệ thống chỉ tạo tài khoản khi dữ liệu hợp lệ và email chưa tồn tại. Vòng
+lặp thứ hai là vòng chờ email: mỗi lần người dùng bấm gửi lại, hệ thống chỉ gửi khi đã quá 60 giây
+nhưng luôn trả cùng một thông báo. Cuối cùng, nhánh rẽ theo vai trò quyết định tài khoản chuyển sang
+hoạt động ngay hay phải chờ quản trị viên duyệt.
+
+\subsection{Đặc tả ca sử dụng UC02 -- Đăng nhập / đăng xuất}
+
+\begin{table}[H]
+  \centering
+  \caption{Thông tin chung của UC02}
+  \label{tab:uc02}
+  \begin{tabularx}{\textwidth}{p{3.5cm}L}
+    \toprule
+    Tác nhân & Người dùng (cả sáu tác nhân kế thừa) \\
+    Mục tiêu & Vào hệ thống đúng quyền của vai trò; thoát an toàn \\
+    Tiền điều kiện & Đã có tài khoản \\
+    Hậu điều kiện & Đăng nhập: có phiên làm việc; đăng xuất: phiên bị thu hồi \\
+    Kích hoạt & Bấm ``Đăng nhập'', ``Đăng xuất'' hoặc mở trang cần đăng nhập \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\textbf{Luồng chính -- Đăng nhập:}
+\begin{enumerate}
+  \item Người dùng mở trang đăng nhập (hoặc bị chuyển tới, kèm địa chỉ trang muốn vào).
+  \item Người dùng nhập email, mật khẩu và bấm ``Đăng nhập''.
+  \item Hệ thống tìm tài khoản theo email, so mật khẩu với bản băm (BR10).
+  \item Hệ thống kiểm tra tài khoản đang hoạt động.
+  \item Hệ thống tạo access token kèm danh sách quyền của vai trò và refresh token; lưu bản băm
+  refresh token; trả access token trong nội dung phản hồi và refresh token trong cookie (BR11).
+  \item Giao diện giữ access token trong bộ nhớ và chuyển tới trang người dùng muốn vào, hoặc trang
+  đầu của vai trò.
+\end{enumerate}
+
+\textbf{Luồng con -- Làm mới phiên:} khi mở lại trang hoặc khi một yêu cầu bị từ chối vì access token
+hết hạn, giao diện gọi chức năng làm mới; trình duyệt tự gửi cookie. Hệ thống kiểm tra refresh token
+còn hiệu lực và tài khoản còn hoạt động, đánh dấu token cũ đã dùng, cấp cặp token mới (BR12); giao
+diện gửi lại yêu cầu vừa bị từ chối. Làm mới thất bại thì giao diện xóa phiên và đưa về trang đăng nhập.
+
+\textbf{Luồng con -- Đăng xuất:} hệ thống thu hồi refresh token trong cookie và xóa cookie (BR13);
+giao diện xóa access token, xóa dữ liệu tạm và về trang chủ.
+
+\textbf{Luồng con -- Quên mật khẩu:} người dùng nhập email. Tài khoản hoạt động hoặc chờ duyệt nhận
+thư đặt lại mật khẩu (hiệu lực 30 phút); tài khoản chưa xác thực nhận lại thư xác thực; tài khoản bị
+khóa hoặc không tồn tại không nhận gì. Phản hồi luôn là ``Nếu email tồn tại, chúng tôi đã gửi hướng
+dẫn'' (BR09). Đặt mật khẩu mới thành công thì mọi phiên bị thu hồi (BR14).
+
+\textbf{Ngoại lệ:}
+\begin{itemize}
+  \item E1 -- Sai email hoặc mật khẩu: ``Email hoặc mật khẩu không đúng''.
+  \item E2 -- Chưa xác thực email: thông báo kèm nút ``Gửi lại email xác thực''.
+  \item E3 -- Đang chờ duyệt: ``Tài khoản đang chờ quản trị viên duyệt''.
+  \item E4 -- Bị khóa: ``Tài khoản đã bị khóa, liên hệ quản trị viên''.
+  \item E5 -- Refresh token đã dùng bị gửi lại: thu hồi mọi phiên của tài khoản (BR12).
+  \item E6 -- Liên kết đặt lại mật khẩu không hợp lệ: ``Liên kết không còn hiệu lực''.
+  \item E7 -- Vượt giới hạn tần suất: ``Thao tác quá nhanh, thử lại sau''.
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.95\textwidth]{diagrams/g1-hd-dang-nhap.png}
+  \caption{Biểu đồ hoạt động đăng nhập}
+  \label{fig:hd-dang-nhap}
+\end{figure}
+
+Hình~\ref{fig:hd-dang-nhap} cho thấy thứ tự kiểm tra khi đăng nhập: hệ thống so mật khẩu trước, chỉ
+khi mật khẩu đúng mới xét trạng thái tài khoản. Nhờ vậy người không biết mật khẩu không dò được tài
+khoản đang chờ duyệt hay bị khóa. Ba trạng thái chưa xác thực, chờ duyệt, bị khóa đều dừng ở thông
+báo riêng; chỉ tài khoản hoạt động mới được cấp token.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[height=0.62\textheight,keepaspectratio]{diagrams/g1-hd-quen-mat-khau.png}
+  \caption{Biểu đồ hoạt động quên và đặt lại mật khẩu}
+  \label{fig:hd-quen-mat-khau}
+\end{figure}
+
+Trong Hình~\ref{fig:hd-quen-mat-khau}, bước phân nhánh theo trạng thái tài khoản xảy ra hoàn toàn
+phía máy chủ; người dùng luôn nhận cùng một thông báo. Ở bước đặt mật khẩu mới, hệ thống kiểm tra
+token trước khi lưu mật khẩu, và sau khi đổi thành công thì thu hồi mọi refresh token để phiên đăng
+nhập trên các thiết bị khác (có thể của kẻ đã chiếm tài khoản) không còn dùng được.
+
+\subsection{Trạng thái tài khoản}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.6\textwidth]{diagrams/g1-trang-thai-tai-khoan.png}
+  \caption{Biểu đồ trạng thái của tài khoản}
+  \label{fig:trang-thai-tai-khoan}
+\end{figure}
+
+Hình~\ref{fig:trang-thai-tai-khoan} mô tả vòng đời của một tài khoản qua bốn trạng thái. Tài khoản
+tự đăng ký bắt đầu ở trạng thái chưa xác thực; tài khoản do quản trị viên tạo (Nhân viên vận hành,
+Quản trị viên) bắt đầu ngay ở trạng thái hoạt động. Các chuyển trạng thái duyệt, từ chối, khóa và mở
+khóa do quản trị viên thực hiện ở UC20. Chỉ trạng thái hoạt động được phép đăng nhập.
+
+\subsection{Biểu đồ tuần tự}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{diagrams/g1-td-dang-ky.png}
+  \caption{Biểu đồ tuần tự đăng ký, gửi email và xác thực email}
+  \label{fig:td-dang-ky}
+\end{figure}
+
+Hình~\ref{fig:td-dang-ky} chia quá trình đăng ký thành ba đoạn. Đoạn ``Đăng ký'' kết thúc ở bước 10:
+máy chủ trả kết quả ngay sau khi lưu tài khoản và sự kiện vào cơ sở dữ liệu, chưa chờ gửi thư. Đoạn
+``Gửi email'' chạy nền: sự kiện được chuyển qua hàng đợi RabbitMQ tới bộ xử lý gửi thư; bộ xử lý này
+mới sinh token, lưu bản băm và gửi thư. Đoạn ``Xác thực email'' bắt đầu khi người dùng bấm liên kết;
+hệ thống chỉ cần so bản băm của token nhận được với bản băm đã lưu. Cách tách này giúp việc đăng ký
+không bị ảnh hưởng khi máy chủ thư chậm hoặc tạm ngừng.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[height=0.75\textheight,keepaspectratio]{diagrams/g1-td-dang-nhap.png}
+  \caption{Biểu đồ tuần tự đăng nhập, làm mới phiên và đăng xuất}
+  \label{fig:td-dang-nhap}
+\end{figure}
+
+Hình~\ref{fig:td-dang-nhap} gồm ba đoạn. Khi đăng nhập, access token được trả trong nội dung phản
+hồi còn refresh token nằm trong cookie \code{HttpOnly}, mã JavaScript không đọc được. Khi access token
+hết hạn, giao diện tự gọi làm mới và gửi lại yêu cầu vừa bị từ chối, người dùng không phải đăng nhập
+lại. Nhánh ``token đã dùng bị gửi lại'' là dấu hiệu refresh token bị đánh cắp: hệ thống thu hồi toàn bộ
+phiên của người dùng đó. Khi đăng xuất, refresh token bị đánh dấu đã dùng và cookie bị xóa.
+
+\subsection{Thiết kế dữ liệu}
+
+Nhóm Tài khoản dùng ba bảng (Hình~\ref{fig:erd-tai-khoan}). Mọi bảng có khóa chính kiểu
+\code{uniqueidentifier} và cột thời điểm tạo (không vẽ trong hình).
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.42\textwidth]{diagrams/g1-erd-tai-khoan.png}
+  \caption{Lược đồ dữ liệu nhóm Tài khoản}
+  \label{fig:erd-tai-khoan}
+\end{figure}
+
+Theo Hình~\ref{fig:erd-tai-khoan}, mỗi vai trò có nhiều người dùng, mỗi người dùng có nhiều token.
+Bảng \code{Role} lưu danh sách quyền của vai trò dưới dạng JSON; quyền này được đưa vào access token
+khi đăng nhập. Cột \code{Bio} dành cho hồ sơ diễn giả (UC41), chưa dùng ở nhóm này. Bảng
+\code{UserToken} dùng chung cho ba mục đích (Bảng~\ref{tab:tk-token}); cột \code{TokenHash} chỉ chứa
+bản băm, không bao giờ chứa chuỗi token gốc.
+
+\begin{table}[H]
+  \centering
+  \caption{Các mục đích của token}
+  \label{tab:tk-token}
+  \begin{tabularx}{\textwidth}{lcLL}
+    \toprule
+    \textbf{Mục đích} & \textbf{Hiệu lực} & \textbf{Tạo khi} & \textbf{Hết hiệu lực khi} \\
+    \midrule
+    \code{VerifyEmail}   & 24 giờ  & Đăng ký, gửi lại email & Đã dùng; có token mới hơn \\
+    \code{ResetPassword} & 30 phút & Quên mật khẩu & Đã dùng; có token mới hơn \\
+    \code{Refresh}       & 7 ngày  & Đăng nhập, làm mới phiên & Làm mới; đăng xuất; đặt lại mật khẩu \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\subsection{Thiết kế API}
+
+Mọi API của nhóm nằm dưới đường dẫn \code{/api/auth} (Bảng~\ref{tab:tk-api}). Lỗi được trả theo chuẩn
+ProblemDetails (RFC 9457) kèm trường \code{code} là mã lỗi nghiệp vụ (Bảng~\ref{tab:tk-ma-loi}); giao
+diện dùng mã này để hiển thị thông báo đúng ngôn ngữ người dùng đang chọn.
+
+\begin{table}[H]
+  \centering
+  \caption{Các API của nhóm Tài khoản}
+  \label{tab:tk-api}
+  \begin{tabularx}{\textwidth}{lp{4.2cm}cL}
+    \toprule
+    \textbf{Phương thức} & \textbf{Đường dẫn} & \textbf{Giới hạn} & \textbf{Kết quả thành công} \\
+    \midrule
+    POST & \code{/register}            & 5/phút & 201, email vừa đăng ký \\
+    POST & \code{/verify-email}        & --     & 200, trạng thái mới của tài khoản \\
+    POST & \code{/resend-verification} & 3/phút & 202 (luôn như nhau) \\
+    POST & \code{/forgot-password}     & 3/phút & 202 (luôn như nhau) \\
+    POST & \code{/reset-password}      & 5/phút & 204 \\
+    POST & \code{/login}               & 5/phút & 200, access token + người dùng; cookie refresh \\
+    POST & \code{/refresh}             & --     & 200, như đăng nhập; cookie mới \\
+    POST & \code{/logout}              & --     & 204; xóa cookie \\
+    GET  & \code{/me}                  & --     & 200, thông tin và quyền của người đang đăng nhập \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \caption{Mã lỗi nghiệp vụ của nhóm Tài khoản}
+  \label{tab:tk-ma-loi}
+  \begin{tabularx}{\textwidth}{lcL}
+    \toprule
+    \textbf{Mã lỗi} & \textbf{HTTP} & \textbf{Khi nào} \\
+    \midrule
+    \code{Validation}         & 400 & Dữ liệu sai quy tắc (kèm lỗi theo từng ô) \\
+    \code{EmailTaken}         & 409 & Email đã tồn tại \\
+    \code{TokenInvalid}       & 422 & Token trong liên kết email không hợp lệ hoặc hết hạn \\
+    \code{InvalidCredentials} & 401 & Sai email hoặc mật khẩu \\
+    \code{AccountUnverified}  & 403 & Chưa xác thực email \\
+    \code{AccountPending}     & 403 & Đang chờ quản trị viên duyệt \\
+    \code{AccountLocked}      & 403 & Tài khoản bị khóa \\
+    \code{SessionExpired}     & 401 & Refresh token không còn hiệu lực \\
+    \code{Unauthorized}       & 401 & Thiếu hoặc sai access token \\
+    \code{Forbidden}          & 403 & Đã đăng nhập nhưng thiếu quyền \\
+    \code{TooManyRequests}    & 429 & Vượt giới hạn tần suất \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+Các chức năng gửi lại email và quên mật khẩu luôn trả 202 với cùng nội dung, kể cả khi email không
+tồn tại hoặc đang trong 60 giây chờ; trả một mã khác cho trường hợp ``vui lòng chờ'' sẽ để lộ việc
+email đó có tài khoản (BR08, BR09).

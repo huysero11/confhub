@@ -1,0 +1,53 @@
+@startuml g1-erd-tai-khoan
+' ERD nhóm Tài khoản (3 bảng) — trích từ erd.puml mục 1. Nguồn: docs/design/erd.md
+
+skinparam defaultFontName "Times New Roman"
+skinparam linetype ortho
+skinparam nodesep 40
+skinparam ranksep 60
+skinparam shadowing false
+skinparam class {
+  BackgroundColor White
+  BorderColor #0E5A62
+  ArrowColor #5E6E75
+  HeaderBackgroundColor #E3EFF0
+}
+hide circle
+hide methods
+hide stereotypes
+
+skinparam linetype polyline
+
+package "Người dùng" {
+  entity Role {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * Code : nvarchar <<UQ>>
+    * Name : nvarchar
+    * Permissions : nvarchar (JSON)
+  }
+  entity User {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * Email : nvarchar <<UQ>>
+    * PasswordHash : nvarchar
+    * FullName : nvarchar
+    * RoleId : uniqueidentifier <<FK>>
+    Organization : nvarchar
+    Bio : nvarchar
+    * Status : nvarchar
+  }
+  entity UserToken {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * UserId : uniqueidentifier <<FK>>
+    * Purpose : nvarchar
+    * TokenHash : nvarchar
+    * ExpiresAt : datetime2
+    UsedAt : datetime2
+  }
+}
+
+Role ||--o{ User
+User ||--o{ UserToken
+@enduml

@@ -1,0 +1,33 @@
+% main.tex — Khóa luận tốt nghiệp: Hệ thống quản lý hội nghị ConfHub.
+% Biên dịch bằng XeLaTeX (Menu → Settings → Compiler: XeLaTeX).
+% Cấu trúc: preamble.tex (định dạng) + chapters/*.tex (nội dung từng chương).
+\documentclass[a4paper,12pt,oneside]{report}
+\input{preamble}
+
+\begin{document}
+
+\input{chapters/00-bia}
+
+\pagenumbering{roman}
+\input{chapters/00-loi-cam-on}
+\input{chapters/00-loi-cam-doan}
+\input{chapters/00-tom-tat}
+
+\tableofcontents
+\listoffigures
+\listoftables
+\input{chapters/00-tu-viet-tat}
+
+\cleardoublepage
+\pagenumbering{arabic}
+\input{chapters/00-mo-dau}
+\input{chapters/01-tong-quan}
+\input{chapters/02-co-so-ly-thuyet}
+\input{chapters/03-phan-tich-thiet-ke}
+\input{chapters/04-cai-dat}
+\input{chapters/05-xep-lich-thuc-nghiem}
+\input{chapters/06-ket-luan}
+
+\input{chapters/99-tai-lieu-tham-khao}
+
+\end{document}

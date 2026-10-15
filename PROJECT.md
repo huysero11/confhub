@@ -380,10 +380,12 @@ Làm đến nhóm chức năng nào thì tài liệu (đặc tả, biểu đồ)
 | Việc             | Công cụ                                                                                                     | Trạng thái                                    |
 |------------------|-------------------------------------------------------------------------------------------------------------|-----------------------------------------------|
 | Biểu đồ UML, ERD | **PlantUML** (đã test, tiếng Việt hiển thị đúng)                                                            | Sinh file `.puml` → xuất PNG/SVG chèn báo cáo |
-| Báo cáo          | **Overleaf** (LaTeX)                                                                                        | Tài khoản đã kết nối; tạo project mới được    |
+| Báo cáo          | **Overleaf** (LaTeX)                                                                                        | Project "Khoa luan ConfHub" (XeLaTeX)         |
 | Code             | **Codex MCP**                                                                                               | Giao phần triển khai đáng kể cho Codex        |
 | Giao diện        | Thiết kế từng nhóm bằng mockup HTML `docs/ui/<nhóm>.html` (cùng token màu/chữ với antd), rồi mới code React | Figma MCP chỉ đọc được thiết kế, không vẽ hộ  |
 | CSDL             | SQL Server local `127.0.0.1,1433`                                                                           |                                               |
+
+**Báo cáo trên Overleaf:** project "Khoa luan ConfHub" (https://www.overleaf.com/project/6ad0280960cd1aa3fdcbfb68), biên dịch **XeLaTeX**, phông TeX Gyre Termes (= Times New Roman). Cấu trúc: `main.tex` + `preamble.tex` (định dạng) + `chapters/*.tex` + `images/diagrams` (PNG xuất từ `docs/diagrams/*.puml`, bản lưu ở `docs/diagrams/png/`) + `images/screenshots` (ảnh giao diện, bản lưu ở `docs/screenshots/<nhóm>/`). **Overleaf là bản gốc**; `docs/report/` chỉ là bản chụp ban đầu (2026-10-15), không sửa ở đó. Mỗi nhóm chức năng viết: mục 3.x (phân tích, thiết kế) + mục 4.x (cài đặt, giao diện).
 
 **Hình thức báo cáo** (theo 3 khóa luận khóa trước cùng GVHD): Times New Roman, hình đánh số dạng "Hình 3.36", chú thích in nghiêng **dưới** hình, sau mỗi hình có đoạn diễn giải. Độ dài tham chiếu: 82–107 trang.
 
