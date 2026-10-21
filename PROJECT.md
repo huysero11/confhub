@@ -200,6 +200,20 @@ Quan tâm     danh sách cặp (NgườiId, PhiênId)  — lưu thưa
 
 Giai đoạn 2: đóng góp A=35, C=35, B=0, D=0 → chỉ thử A và C. Dời C sang 10h → hết phòng, loại (Q2). **Hoán đổi C↔B** → kiểm tra: B(39)→P102(40) vừa, Hoa rảnh 9h, C(21)→P101 → hợp lệ, **f = 5**, chấp nhận. Hoán đổi A↔D → A(42)→P102(40) vi phạm H4, bác bỏ. → **Kết quả: 9h có A+B, 10h có C+D, f = 5.**
 
+### 6.6. Quyết định mô hình (T2.1, chốt 2026-10-15)
+
+1. **Nhiều ngày + khung nghỉ** (khớp `ConferenceDay`, `BreakSlot`): không xếp phiên qua khung nghỉ hay qua ranh giới ngày.
+2. **Chồng giờ = hai khoảng thời gian giao nhau** (không phải "cùng giờ bắt đầu"); chạm đầu mút (kết thúc 10:00, bắt đầu 10:00) không chồng.
+3. **Giờ rảnh diễn giả:** chưa khai dòng nào = rảnh mọi lúc; đã khai thì chỉ các khoảng đã khai (ngày không khai coi như không rảnh); các khoảng liền nhau / chồng nhau được gộp.
+4. **Phòng có thể chưa gán** trong lời giải (giai đoạn 1 chọn giờ trước, Hungarian gán phòng sau): H3, H4, S chỉ tính phiên đã có phòng.
+5. **Quy mô phiên** (H4, S) = `ExpectedSize` nếu có, ngược lại số người quan tâm khác nhau.
+6. **Chuẩn hóa f theo cận cố định của bài toán:** `Cn = C / tổng đồng quan tâm`, `Bn = min(1, B / (số phòng / 2))` (bất đẳng thức Popoviciu: số phiên mỗi mốc trong [0, số phòng] nên độ lệch chuẩn không vượt số phòng / 2), `Sn = S / Smax` (Smax = mọi phiên vào phòng lớn nhất). Trọng số mặc định 0,7 / 0,2 / 0,1.
+7. **Mã định danh `int`** (tầng gọi cấp); T5.1 ánh xạ Guid ↔ int khi đọc CSDL.
+
+Số liệu ví dụ 6.5 tính bằng code: f(tham lam) = 0,7 x 35/40 + 0,1 x 164/284 = **0,6702465**; f(sau hoán đổi) = 0,7 x 5/40 + 0,1 x 164/284 = **0,1452465**.
+
+Bộ sinh dữ liệu (`ProblemGenerator`): diễn giả khai giờ rảnh chỉ được giữ khi mọi phiên của họ vẫn còn ít nhất một mốc đặt được (khoảng rảnh vắt qua nghỉ trưa có thể làm mất chỗ); không thì diễn giả đó bị bỏ khai (rảnh mọi lúc).
+
 ---
 
 ## 7. Phương pháp đánh giá
