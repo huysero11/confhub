@@ -6,9 +6,10 @@
 ## 0. Đang ở đâu
 
 - **Vừa xong:** T1.2 (FE tài khoản) → **G1 Tài khoản xong** — merge `7e22264`, 2026-10-14
-- **Đang làm:** không — báo cáo G1 đã lên Overleaf (project "Khoa luan ConfHub")
-- **Tiếp theo:** nhóm kế tiếp theo bảng mục 3; Huy điền thông tin bìa trên Overleaf
-- **Nhánh đang mở:** không (đang ở `main`)
+- **Đang làm:** T2.1 (G2, mô hình dữ liệu + ràng buộc + hàm f) — `retype`, nhánh
+  `task/T2.1-scheduling-model`, đặc tả + mục 9 trong `plan/tasks/T2.1.md`; tag `ref/T2.1` đã gắn
+- **Tiếp theo:** Huy chạy thử (`dotnet test`), gõ lại theo mục 9, báo Claude kiểm; Huy điền thông tin bìa trên Overleaf
+- **Nhánh đang mở:** `task/T2.1-scheduling-model`
 
 ## 1. Quy trình một task
 
@@ -154,13 +155,14 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 
 | ID   | Việc                                | Phụ thuộc | Trạng thái |
 |------|-------------------------------------|-----------|------------|
-| T2.1 | Mô hình dữ liệu + ràng buộc + hàm f | T0.2      | todo       |
+| T2.1 | Mô hình dữ liệu + ràng buộc + hàm f | T0.2      | retype     |
 | T2.2 | Giai đoạn 1 tham lam + Hungarian    | T2.1      | todo       |
 | T2.3 | Giai đoạn 2 cải thiện cục bộ        | T2.2      | todo       |
 | T2.4 | Chương trình thực nghiệm            | T2.3      | todo       |
 
 **Chi tiết:**
-- **T2.1** — Mô hình dữ liệu, tập mốc T, ma trận W, kiểm tra H1–H5, hàm f chuẩn hóa, bộ sinh dữ liệu có cụm chủ đề.
+- **T2.1** — Đặc tả: `plan/tasks/T2.1.md`. Mô hình dữ liệu, tập mốc T (nhiều ngày + khung nghỉ), ma trận W,
+  kiểm tra H1–H5, hàm f chuẩn hóa, bộ sinh dữ liệu có cụm chủ đề. Chỉ trong `ConfHub.Scheduling` + project test.
 - **T2.2** — Tham lam + Hungarian + M1, M2. Test ví dụ chạy tay f = 35.
 - **T2.3** — Q1–Q3, khởi động lại, mô phỏng luyện kim, phạt xáo trộn. Test ví dụ f = 5.
 - **T2.4** — M1–M4 × 3 quy mô → CSV chỉ số, phân tích độ nhạy.
@@ -373,3 +375,6 @@ Chỉ chia task khi P1–P4 xong.
 - 2026-10-14 T1.2: Huy gõ lại xong nhóm 2–3; Claude sửa lỗi bản gõ lại (`description?` của `AuthCard` làm hỏng typecheck; khóa i18n sai `auth.header.forgotPassword`, `auth.checkEmail.senTo`, `auth.checkMail.*`; thiếu khoảng trắng trước email; `confimPassword`; `==` → `===`). Quyết định (Huy): nhóm 4–6 chỉ đọc, không gõ lại. Quy ước comment: viết hoa chữ cái đầu mỗi ý (trừ khi mở đầu bằng tên trong code); dòng trống chia vùng trong hàm và JSX — Codex áp cho 28 file T1.2. format / lint / typecheck / build đạt, test 25/25.
 - 2026-10-14 T1.2 → `done`: Huy commit `6ac58d2` + merge `--no-ff` vào `main` (`7e22264`). **G1 hoàn thành.** Báo cáo tuần G-1 phần 4 (T1.2) đã viết.
 - 2026-10-15 Báo cáo khóa luận: tạo project Overleaf "Khoa luan ConfHub" (XeLaTeX, khung đủ chương). Viết phần G1 Tài khoản: mục 3.2 (UC01/UC02, BR01–BR15, biểu đồ hoạt động / trạng thái / tuần tự, ERD 3 bảng, API) + mục 4.2 (luồng BE, outbox, JWT + refresh, bảo mật, FE, 9 ảnh giao diện). Biểu đồ PNG ở `docs/diagrams/png/`, thêm `g1-erd-tai-khoan.puml`; ảnh ở `docs/screenshots/g1/`. Biên dịch trên Overleaf: 0 lỗi.
+- 2026-10-15 T2.1 → `spec`: viết `plan/tasks/T2.1.md`. Chốt (Huy): diễn giả **chưa khai giờ rảnh = rảnh mọi lúc**; đã khai thì chỉ các khoảng đã khai. Claude chọn: mô hình nhiều ngày + khung nghỉ (khớp ConferenceDay / BreakSlot); chồng giờ = hai khoảng thời gian giao nhau; phòng có thể chưa gán trong `Schedule`; quy mô phiên = `ExpectedSize` hoặc số người quan tâm; chuẩn hóa f theo cận cố định của bài toán (C / tổng đồng quan tâm, B / (số phòng / 2) theo bất đẳng thức Popoviciu, S / sức chứa lãng phí tối đa); id kiểu `int`. Ví dụ 6.5 làm test: C = 35 → 5, S = 164, f ≈ 0,670247 → 0,145247. Chờ Huy duyệt.
+- 2026-10-15 Huy duyệt đặc tả T2.1 → `codex`. Thêm `docs/design/scheduling-algorithm.md`: giải thích thuật toán theo giai đoạn 0–7 (dữ liệu, H1–H5, C / B / S, chuẩn hóa, tham lam + Hungarian, cải thiện cục bộ, luyện kim, xếp lại, cold start) với công thức và số liệu ví dụ 6.5.
+- 2026-10-15 T2.1: Codex lỗi (mọi lần giao đều `failed` ngay, kể cả yêu cầu trivial) → Huy đồng ý để Claude tự viết. Claude cài .NET SDK 10 trong môi trường làm việc, viết 22 file `ConfHub.Scheduling` + project test `ConfHub.Scheduling.Tests` (13 file, thêm vào `ConfHub.slnx`), build / chạy thử bằng bộ xUnit giả lập trước; sau đó Codex (đã chạy lại được) chạy `dotnet build ConfHub.slnx` (0 warning, có StyleCop + Roslynator) và `dotnet test tests/ConfHub.Scheduling.Tests` (88/88) trên máy Huy. Ví dụ 6.5: C = 35 / 5, S = 164, f = 0,6702465 / 0,1452465. Quyết định mô hình ghi ở PROJECT.md 6.6. T2.1 → `retype` (không có giao diện nên bỏ bước `ui-test`).
