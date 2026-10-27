@@ -7,6 +7,7 @@ public sealed record ObjectiveWeights
     private const double SumTolerance = 1e-6;
 
     // Dùng ở: tầng gọi muốn đổi trọng số (T2.4 phân tích độ nhạy), test.
+    // Dùng ở: InterestBlindScheduler.Weights (bỏ trọng số C, giữ tỉ lệ B : S cho M2).
     public ObjectiveWeights(double conflict, double load, double waste)
     {
         if (double.IsNaN(conflict) || double.IsNaN(load) || double.IsNaN(waste))

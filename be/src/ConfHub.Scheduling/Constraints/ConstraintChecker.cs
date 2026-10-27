@@ -11,6 +11,7 @@ public sealed class ConstraintChecker
     private readonly SchedulingProblem _problem;
 
     // Dùng ở: T2.2 / T2.3 (tạo một lần cho mỗi bài toán), test.
+    // Dùng ở: GreedyScheduler, FirstFitScheduler (constructor tạo bộ kiểm cho mỗi bài toán).
     public ConstraintChecker(SchedulingProblem problem)
     {
         ArgumentNullException.ThrowIfNull(problem);
@@ -21,6 +22,7 @@ public sealed class ConstraintChecker
     // Kiểm việc đặt phiên sessionId vào (slotIndex, roomId) cùng với phần còn lại của lịch.
     // Cần thời gian bắt đầu và kết thúc nên phải có PlacedSession do Placement chỉ lưu SlotIndex và RoomId
     // Dùng ở: T2.2 / T2.3 trước mỗi lần đặt / dời phiên; test (RandomScheduleBuilder).
+    // Dùng ở: GreedyScheduler.TryPlaceSession, FirstFitScheduler.TryPlaceSession (lọc H1, H2, H5 trước khi tìm phòng).
     public IReadOnlyList<ConstraintViolation> CheckPlacement(
         Schedule schedule,
         int sessionId,

@@ -214,6 +214,17 @@ Số liệu ví dụ 6.5 tính bằng code: f(tham lam) = 0,7 x 35/40 + 0,1 x 16
 
 Bộ sinh dữ liệu (`ProblemGenerator`): diễn giả khai giờ rảnh chỉ được giữ khi mọi phiên của họ vẫn còn ít nhất một mốc đặt được (khoảng rảnh vắt qua nghỉ trưa có thể làm mất chỗ); không thì diễn giả đó bị bỏ khai (rảnh mọi lúc).
 
+### 6.7. Quyết định giai đoạn 1 và số liệu đầu (T2.2, chốt 2026-10-21)
+
+1. **Độ ràng buộc** = số mốc bắt đầu hợp lệ của phiên − số phiên của diễn giả bận nhất; sắp tăng dần, bằng nhau giữ thứ tự nhập.
+2. **Chọn mốc**: f đầy đủ (`ObjectiveCalculator.Evaluate` trên bản sao lịch) cho từng mốc qua được H1 / H2 / H5 và gán phòng được; hòa thì lấy mốc sớm. Chưa tính f tăng dần (Large ~1,6 s bản Debug).
+3. **Hungarian theo nhóm cùng khoảng thời gian** (cùng ngày, giờ bắt đầu, giờ kết thúc): ứng viên = phòng nhóm đang giữ + phòng trống suốt khoảng; chi phí = lãng phí × 1000 (+1 nếu phiên cũ phải đổi phòng, để hòa thì giữ phòng cũ). Vì lãng phí = sức chứa − quy mô, Hungarian chọn tập phòng nhỏ nhất còn thỏa H4; ở giai đoạn 1 thường trùng "chọn phòng vừa nhất", giá trị chính là bảo đảm tối ưu và dùng lại ở T2.3.
+4. **Phiên chưa xếp được**: ghi số mốc bị chặn theo từng mã H1–H5 (Hungarian không khả thi: nhóm đông hơn phòng → H2, ngược lại H4).
+5. **M1** = thứ tự nhập + mốc / phòng đầu tiên hợp lệ; **M2** = tham lam với trọng số (0, 2/3, 1/3). Các phương pháp trả lịch + danh sách chưa xếp; tầng gọi chấm bằng cùng một bộ trọng số.
+6. **Bộ sinh phòng sửa lại**: sức chứa phòng k theo phân vị quy mô phiên (vị trí k × số phiên / số phòng, ×1,1). Bản cũ (tỉ lệ cố định của phòng lớn nhất) chỉ xếp được 35–60 % phiên vì thiếu phòng đủ lớn.
+
+Ví dụ 6.5: tham lam C = 35 (đúng bảng), M1 và M2 đều C = 5 (may mắn trên ví dụ nhỏ). Dữ liệu sinh, seed 1–3 (C trung bình): Small M1 386 / M2 348 / tham lam 232; Medium 494 / 491 / 249; Large 938 / 922 / 617. Tham lam xếp ≥ 98 % phiên (30/30, 59–60/60, 100/100), M1 93–100 %; mọi lịch 0 vi phạm.
+
 ---
 
 ## 7. Phương pháp đánh giá
