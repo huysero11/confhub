@@ -15,9 +15,6 @@ public static class ProblemGenerator
     private const double MaxLoadRatio = 0.9;
     private const double SpeakerPoolRatio = 0.7;
 
-    // Sức chứa phòng thứ k = phòng lớn nhất * tỉ lệ thứ k (phòng đầu là phòng lớn nhất).
-    private static readonly double[] _roomCapacityRatios = [1.0, 0.6, 0.4, 0.3, 0.25, 0.2];
-
     // Sinh một bài toán mô phỏng theo tùy chọn.
     // Dùng ở: T2.4 (chương trình thực nghiệm), test (dữ liệu Small / Medium / Large).
     public static GeneratedData Generate(GeneratorOptions options)
@@ -221,7 +218,9 @@ public static class ProblemGenerator
     }
 
     // ---------- PHÒNG ----------
-    // Phòng lớn nhất vừa phiên đông nhất (dư 10%, làm tròn lên bội của 10); các phòng sau nhỏ dần, tối thiểu 20 chỗ.
+    // Chia bậc sức chứa theo phân vị quy mô phiên để tránh dữ liệu thiếu phòng đủ lớn.
+    // Mỗi bậc ứng với khoảng SessionCount / RoomCount phiên; phòng đầu vừa phiên đông nhất.
+    // Mỗi phòng dư 10%, làm tròn lên bội của 10 và tối thiểu 10 chỗ.
     // Helper của Generate (cùng lớp).
     private static List<SchedulingRoom> BuildRooms(GeneratorOptions options, List<InterestEntry> interests)
     {
@@ -231,24 +230,19 @@ public static class ProblemGenerator
             interestCountBySession[interest.SessionId]++;
         }
 
-        var largestSessionSize = 0;
-        foreach (var interestCount in interestCountBySession)
+        var sizes = new int[options.SessionCount];
+        for (var sessionId = 1; sessionId <= options.SessionCount; sessionId++)
         {
-            largestSessionSize = Math.Max(largestSessionSize, interestCount);
+            sizes[sessionId - 1] = interestCountBySession[sessionId];
         }
 
-        var largestCapacity = Math.Max(10, RoundUpToTen(largestSessionSize * 1.1));
+        Array.Sort(sizes);
+        Array.Reverse(sizes);
 
         var rooms = new List<SchedulingRoom>();
         for (var index = 0; index < options.RoomCount; index++)
         {
-            var ratio = _roomCapacityRatios[Math.Min(index, _roomCapacityRatios.Length - 1)];
-            var capacity = largestCapacity;
-
-            if (index > 0)
-            {
-                capacity = Math.Max(20, RoundUpToTen(largestCapacity * ratio));
-            }
+            var capacity = Math.Max(10, RoundUpToTen(sizes[index * options.SessionCount / options.RoomCount] * 1.1));
 
             rooms.Add(new SchedulingRoom(index + 1, $"Phòng {index + 1}", capacity));
         }

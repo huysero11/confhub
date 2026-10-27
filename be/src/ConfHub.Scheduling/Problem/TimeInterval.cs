@@ -10,6 +10,7 @@ public readonly record struct TimeInterval(int StartMinute, int EndMinute)
     // Hai khoảng có giao nhau không (chạm đầu mút không tính là giao).
     // Dùng ở: Timeline.AddDaySlot (mốc chạm khung nghỉ), ConstraintChecker.IsTimeOverlapping (H1, H3),
     // ObjectiveCalculator.CalculateConflictCount (C).
+    // Dùng ở: RoomFinder.FindFreeRoomIds (loại phòng bị chiếm trong bất kỳ phần nào của khoảng).
     public bool Overlaps(TimeInterval other)
     {
         return StartMinute < other.EndMinute && EndMinute > other.StartMinute;

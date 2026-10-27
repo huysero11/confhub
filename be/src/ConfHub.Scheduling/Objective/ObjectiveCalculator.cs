@@ -15,6 +15,7 @@ public sealed class ObjectiveCalculator
     private readonly int _maxWastedSeats;
 
     // Dùng ở: T2.2 / T2.3 (tạo một lần cho mỗi bài toán), T2.4, test.
+    // Dùng ở: GreedyScheduler (constructor tạo bộ chấm điểm cho mọi mốc thử).
     public ObjectiveCalculator(SchedulingProblem problem, ObjectiveWeights weights)
     {
         ArgumentNullException.ThrowIfNull(problem);
@@ -27,6 +28,7 @@ public sealed class ObjectiveCalculator
 
     // Tính C, B, S, các giá trị chuẩn hóa và f của một lịch.
     // Dùng ở: T2.2 / T2.3 so sánh lịch trước và sau biến đổi; T2.4 ghi chỉ số; T5.1 lưu vào ScheduleVersion.
+    // Dùng ở: GreedyScheduler.TryPlaceSession (chấm cả bản sao sau khi gán phòng để chọn mốc).
     public ObjectiveResult Evaluate(Schedule schedule)
     {
         ArgumentNullException.ThrowIfNull(schedule);

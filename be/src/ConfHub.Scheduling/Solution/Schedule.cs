@@ -15,6 +15,7 @@ public sealed class Schedule
 
     // Thêm hoặc ghi đè vị trí của phiên.
     // Dùng ở: Clone (cùng lớp); T2.2 / T2.3 đặt và dời phiên; test dựng lịch mẫu.
+    // Dùng ở: GreedyScheduler.ApplyAssignment, FirstFitScheduler.TryPlaceSession (ghi mốc được chọn).
     // schedule.Place(1, 0, 101); // AI → 8:00, phòng 101
     public void Place(int sessionId, int slotIndex, int? roomId = null)
     {
@@ -27,7 +28,7 @@ public sealed class Schedule
     }
 
     // Gán hoặc đổi phòng cho phiên đã có giờ (giai đoạn 1 chọn giờ trước, gán phòng sau).
-    // Dùng ở: T2.2 sau khi Hungarian gán phòng cho các phiên cùng mốc.
+    // Dùng ở: GreedyScheduler.ApplyAssignment (áp dụng phòng cho cả nhóm sau Hungarian).
     public void SetRoom(int sessionId, int? roomId)
     {
         if (!_placements.TryGetValue(sessionId, out var placement))
@@ -57,6 +58,7 @@ public sealed class Schedule
 
     // Lấy vị trí của phiên (false nếu chưa đặt).
     // Dùng ở: ConstraintChecker (Validate, BuildPlacedSessions), ObjectiveCalculator.BuildPlacedSessions.
+    // Dùng ở: RoomFinder.FindFreeRoomIds, GroupRoomAssigner.BuildGroupSessionIds / BuildCosts (đọc khoảng và phòng cũ).
     /*
         schedule.Place(1, 0, 101);
 
@@ -73,6 +75,7 @@ public sealed class Schedule
 
     // Sao chép sâu: sửa bản sao không ảnh hưởng bản gốc (thử biến đổi rồi bỏ nếu không tốt hơn).
     // Dùng ở: T2.3 (thử biến đổi trên bản sao).
+    // Dùng ở: GreedyScheduler.TryPlaceSession (thử mốc và chấm f mà không sửa lịch đang giữ).
     public Schedule Clone()
     {
         var copy = new Schedule();
