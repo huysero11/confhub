@@ -9,6 +9,7 @@ namespace ConfHub.Scheduling.Rooms;
 public static class GroupRoomAssigner
 {
     // Dùng ở: GreedyScheduler.TryPlaceSession (thử chia phòng trước khi chấm f); T2.3 sau khi dời / hoán đổi.
+    // Dùng ở: NeighborhoodMoves.TryMove (gán phòng cho nhóm đích sau khi gỡ phiên khỏi vị trí cũ).
     public static RoomAssignment TryAssign(SchedulingProblem problem, Schedule schedule, int sessionId, int slotIndex)
     {
         ArgumentNullException.ThrowIfNull(problem);

@@ -16,6 +16,7 @@ public sealed class GreedyScheduler
     private readonly ObjectiveCalculator _calculator;
 
     // Dùng ở: InterestBlindScheduler.Run (M2); T2.3 / T2.4 và test (chạy tham lam với trọng số chọn trước).
+    // Dùng ở: LocalSearchScheduler, RestartScheduler, AnnealingScheduler (constructor tạo bước tham lam đầu).
     public GreedyScheduler(SchedulingProblem problem, ObjectiveWeights weights)
     {
         ArgumentNullException.ThrowIfNull(problem);
@@ -26,6 +27,7 @@ public sealed class GreedyScheduler
         _calculator = new ObjectiveCalculator(problem, weights);
     }
 
+    // Dùng ở: LocalSearchScheduler.Run, RestartScheduler.Run, AnnealingScheduler.Run (dựng lịch trước khi cải thiện).
     public SchedulingResult Run(IReadOnlyList<int>? sessionOrder = null)
     {
         var orderedSessionIds = sessionOrder ?? ConstraintDegree.OrderSessions(_problem);

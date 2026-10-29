@@ -13,6 +13,7 @@ public static class ConstraintDegree
             vị trí ban đầu
     */
     // Dùng ở: GreedyScheduler.Run (thứ tự mặc định khi không truyền sessionOrder).
+    // Dùng ở: RestartScheduler.Run (lấy thứ tự gốc trước khi xáo trộn các lần sau).
     public static IReadOnlyList<int> OrderSessions(SchedulingProblem problem)
     {
         ArgumentNullException.ThrowIfNull(problem);
