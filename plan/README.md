@@ -5,10 +5,10 @@
 
 ## 0. Đang ở đâu
 
-- **Vừa xong:** T2.2 (tham lam + Hungarian, M1, M2) — 2026-10-27
-- **Đang làm:** không
-- **Tiếp theo:** T2.3 (cải thiện cục bộ Q1–Q3, khởi động lại, luyện kim) — Claude viết `plan/tasks/T2.3.md`; Huy điền thông tin bìa trên Overleaf
-- **Nhánh đang mở:** không (sau khi Huy merge `task/T2.2-greedy-hungarian`)
+- **Vừa xong:** T2.2 (tham lam + Hungarian, M1, M2) — merge `8130a83`, 2026-10-27
+- **Đang làm:** —
+- **Tiếp theo:** Huy commit + merge T2.3; Claude viết đặc tả T2.5 (xếp lại hạn chế xáo trộn); Huy điền thông tin bìa trên Overleaf
+- **Nhánh đang mở:** không (đang ở `main`)
 
 ## 1. Quy trình một task
 
@@ -156,15 +156,17 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 |------|-------------------------------------|-----------|------------|
 | T2.1 | Mô hình dữ liệu + ràng buộc + hàm f | T0.2      | done       |
 | T2.2 | Giai đoạn 1 tham lam + Hungarian    | T2.1      | done       |
-| T2.3 | Giai đoạn 2 cải thiện cục bộ        | T2.2      | todo       |
-| T2.4 | Chương trình thực nghiệm            | T2.3      | todo       |
+| T2.3 | Giai đoạn 2 cải thiện cục bộ        | T2.2      | done       |
+| T2.4 | Chương trình thực nghiệm            | T2.3, T2.5 | todo      |
+| T2.5 | Xếp lại hạn chế xáo trộn (thư viện) | T2.3      | todo       |
 
 **Chi tiết:**
 - **T2.1** — Đặc tả: `plan/tasks/T2.1.md`. Mô hình dữ liệu, tập mốc T (nhiều ngày + khung nghỉ), ma trận W,
   kiểm tra H1–H5, hàm f chuẩn hóa, bộ sinh dữ liệu có cụm chủ đề. Chỉ trong `ConfHub.Scheduling` + project test.
 - **T2.2** — Đặc tả: `plan/tasks/T2.2.md`. Tham lam + Hungarian + M1, M2. Test ví dụ chạy tay f = 35.
-- **T2.3** — Q1–Q3, khởi động lại, mô phỏng luyện kim, phạt xáo trộn. Test ví dụ f = 5.
-- **T2.4** — M1–M4 × 3 quy mô → CSV chỉ số, phân tích độ nhạy.
+- **T2.3** — Đặc tả: `plan/tasks/T2.3.md`. Q1–Q3, khởi động lại (M3R), mô phỏng luyện kim (M4). Test ví dụ C = 5.
+- **T2.4** — M1–M4 (+ M3R) × 3 quy mô → CSV chỉ số, phân tích độ nhạy.
+- **T2.5** — Tách từ T2.3 (2026-10-27): lịch gốc đã công bố, gỡ phiên hết hợp lệ, xếp lại phần bị gỡ, cải thiện với `f + w₄·D/n`; T5.4 dùng lại.
 
 #### G3 — Hội nghị, phòng, phiên, diễn giả (P1: UC03–UC08)
 
@@ -384,3 +386,9 @@ Chỉ chia task khi P1–P4 xong.
 - 2026-10-21 T2.2: Codex làm lượt 1 (142 test pass, ví dụ 6.5 khớp: tham lam C = 35, M1 / M2 C = 5) nhưng mọi phương pháp chỉ xếp 35–60 % phiên. Claude phân tích: lỗi ở **bộ sinh phòng T2.1** (quy mô phiên tập trung 40–75, phòng chia tỉ lệ cố định → phần lớn phiên chỉ vừa 1 phòng; Large có 4 phòng không phiên nào vừa). Đổi phạm vi (đặc tả 3.5): sức chứa phòng theo phân vị quy mô; đổi `Infeasible` của Hungarian 10^18 → 10^9 (tránh tràn long). Claude chạy thử trước rồi giao Codex lượt 2: build 0 warning, test 147/147; tham lam xếp ≥ 98 %, C trung bình thấp hơn M1 ~35–50 %. Ghi PROJECT.md 6.7. Viết mục 9 (bản đồ + luồng nhóm + điểm debug), gắn tag `ref/T2.2`. T2.2 → `retype`.
 - 2026-10-24 T2.2 mục 9: đổi thứ tự nhóm — nhóm 1 là người điều phối `GreedyScheduler`, nhóm 2 gán phòng (`Rooms/`), nhóm 3 M1 / M2 + bộ sinh (Huy: học người điều phối trước, chi tiết sau). Từ nay mục 9 xếp nhóm điều phối lên đầu.
 - 2026-10-27 T2.2 → `done`: Huy gõ lại nhóm 1–2 (nhóm 3 M1 / M2 + bộ sinh giữ bản tham khảo, Claude chỉnh `FirstFitScheduler` theo cách viết của Huy). Claude kiểm bằng diff với `ref/T2.2` + chạy lại: sửa 4 lỗi bản gõ lại — `BuildGroupSessionIds` lấy khoảng giờ của phiên đang thử thay vì phiên đã đặt (sinh 1 vi phạm H3 ở Medium seed 1), `ValidateSessionOrder` duyệt nhầm tập vừa dựng thay vì `sessionOrder`, `HungarianAlgorithm.Solve` thiếu kiểm null, `p` / `way` kiểu `long` → `int`; giữ tên `CalculateDegree` của Huy (sửa test theo). Build 0 warning, test 147/147. Báo cáo tuần G-2 phần 2 ở `scratch/bao-cao-tuan-G2-phan2-T2.2.md`.
+- 2026-10-27 Huy commit `5ca6cd9` + merge `--no-ff` vào `main` (`8130a83`), đã push.
+- 2026-10-27 T2.3 → `spec`: viết `plan/tasks/T2.3.md`. Claude chọn: Q1 lấy K = 3 phiên đóng góp cao nhất; dời dùng lại kiểm + Hungarian của tham lam; hoán đổi đổi cả mốc lẫn phòng với phiên không chồng giờ (khớp bảng 6.5: C ↔ B nhận, A ↔ D bị H4); leo đồi chọn bước tốt nhất; khởi động lại 10 lần (giữ lịch nhiều phiên nhất rồi f nhỏ nhất); luyện kim Θ₀ = 0,05, α = 0,95 mỗi 20 bước, dừng Θ < 1e-4 rồi leo đồi; thêm M3R. **Tách** xếp lại + phạt xáo trộn sang task mới **T2.5** (T2.4 phụ thuộc thêm T2.5). Chờ Huy duyệt.
+- 2026-10-27 Huy duyệt đặc tả T2.3 → `codex`.
+- 2026-10-27 T2.3: Codex viết đủ 9 file + 8 file test rồi lỗi (các lần giao sau đều `failed` ngay). Claude review code (khớp đặc tả; 9 file cũ chỉ thêm comment "Dùng ở:"), build + chạy đủ test bằng bản giả lập xUnit: pass hết (~220 trường hợp, ~1 phút). Ví dụ 6.5: leo đồi đúng 1 bước C ↔ B, C = 35 → 5. Đo Small / Medium / Large seed 1–3 (mục 6.1 đặc tả): M3 giảm C 20–32 % so với tham lam, M3R 33–43 %, M4 mặc định thường trùng M3 (dò tham số ở T2.4). Ghi PROJECT.md 6.8, viết mục 9. Chưa gắn `ref/T2.3`: cần build có StyleCop trên máy Huy. T2.3 → `retype`.
+- 2026-10-27 T2.3: Huy build trên máy báo SA1515 (`Schedule.cs`, comment "Dùng ở:" ngay sau khối `/* */`) → Claude chuyển dòng lên trên, bỏ 2 dòng "Dùng ở: T2.3" chung chung, đổi các file mới / dòng Codex chèn từ LF sang CRLF. Huy chạy lại: build 0 warning, test pass.
+- 2026-10-29 T2.3 → `done`: Huy gõ lại `ConflictContribution`, `NeighborhoodMoves`, `LocalSearch`, `SimulatedAnnealing`, `RestartScheduler` (các file khác giữ bản tham khảo; không gắn `ref/T2.3`, Claude so với bản đã review). Claude sửa 6 lỗi bản gõ lại: `Calculate` đổi thành private `CalculateContributions` (test và T2.4 gọi `Calculate` → lỗi biên dịch); `TryMove` thiếu chặn phiên chưa đặt / dời về mốc cũ (phiên chưa xếp bị thêm vào lịch); luyện kim chấm `currentSchedule` thay vì lịch lân cận và so Δ với f tốt nhất thay vì f hiện tại (M4 thành bước ngẫu nhiên không có tiêu chí Metropolis); `temperature >` thay `>=`; M3R chạy `RestartCount + 1` lần và không cập nhật `bestPlacedCount` khi gặp lần tốt hơn; bổ sung comment "Dùng ở / Helper của". Chạy lại: 220/220 pass (bản Huy trước khi sửa: 4 test fail).

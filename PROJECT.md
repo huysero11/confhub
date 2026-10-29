@@ -225,6 +225,16 @@ Bộ sinh dữ liệu (`ProblemGenerator`): diễn giả khai giờ rảnh chỉ
 
 Ví dụ 6.5: tham lam C = 35 (đúng bảng), M1 và M2 đều C = 5 (may mắn trên ví dụ nhỏ). Dữ liệu sinh, seed 1–3 (C trung bình): Small M1 386 / M2 348 / tham lam 232; Medium 494 / 491 / 249; Large 938 / 922 / 617. Tham lam xếp ≥ 98 % phiên (30/30, 59–60/60, 100/100), M1 93–100 %; mọi lịch 0 vi phạm.
 
+### 6.8. Quyết định giai đoạn 2 và số liệu (T2.3, chốt 2026-10-27)
+
+1. **Chọn ứng viên (Q1)**: đóng góp xung đột của phiên = tổng W với các phiên chồng giờ cùng ngày; mỗi vòng lấy K = 3 phiên đóng góp > 0 cao nhất (hòa theo thứ tự nhập).
+2. **Dời (Q2)**: gỡ phiên khỏi bản sao, kiểm H1 / H2 / H5 rồi chia lại phòng cả nhóm đích bằng Hungarian của T2.2. **Hoán đổi (Q3)**: hai phiên không chồng giờ đổi cả mốc lẫn phòng, kiểm lại cả hai (ví dụ 6.5: C ↔ B nhận, A ↔ D bị H4).
+3. **Leo đồi chọn bước tốt nhất** (duyệt hết dời + hoán đổi của K ứng viên rồi nhận bước f nhỏ nhất; dừng khi không còn bước giảm f, tối đa 200 vòng). Chỉ cải thiện phiên đã xếp, giữ danh sách chưa xếp của tham lam.
+4. **M3R** = M3 chạy 10 lần (lần 1 theo độ ràng buộc, các lần sau xáo trộn Fisher–Yates theo Seed); giữ lần xếp được nhiều phiên nhất, rồi f nhỏ nhất. **M4** = luyện kim Θ₀ = 0,05, α = 0,95 mỗi 20 bước, dừng Θ < 1e-4, mỗi bước 50 % dời / 50 % hoán đổi ngẫu nhiên, giữ lịch tốt nhất rồi leo đồi trên nó. Mọi phương pháp tất định theo Seed.
+5. Xếp lại hạn chế xáo trộn (phạt D) **tách sang T2.5**.
+
+Ví dụ 6.5: M3, M3R, M4 đều C = 5 (đúng 1 bước C ↔ B, f = 0,1452465). Dữ liệu sinh, seed 1–3 (C trung bình): Small tham lam 232 / M3 185 / M3R 132 / M4 178; Medium 249 / 170 / 158 / 172; Large 617 / 502 / 411 / 502. M3 giảm C 20–32 % so với tham lam, M3R 33–43 %; thời gian Release Large: M3 ≤ 0,3 s, M3R ≤ 2,2 s, M4 ≤ 0,4 s. M4 với tham số mặc định thường trùng M3 — dò tham số ở T2.4.
+
 ---
 
 ## 7. Phương pháp đánh giá

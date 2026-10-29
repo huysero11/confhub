@@ -125,6 +125,7 @@ public sealed class SchedulingProblem
     // Dùng ở: ConstraintChecker.BuildPlacedSession, ObjectiveCalculator.BuildPlacedSessions
     // (đổi mốc bắt đầu thành khoảng thời gian để so chồng giờ).
     // Dùng ở: GroupRoomAssigner.TryAssign / BuildGroupSessionIds, RoomFinder.FindFreeRoomIds, FirstFitScheduler.TryPlaceSession (xác định khoảng chiếm phòng).
+    // Dùng ở: ConflictContribution.Calculate, NeighborhoodMoves.TrySwap, SimulatedAnnealing.TryRandomSwap (so chồng giờ theo khoảng và ngày).
     public (int DayIndex, TimeInterval Interval) GetSessionInterval(int sessionId, int slotIndex)
     {
         var session = GetSession(sessionId);
@@ -143,6 +144,7 @@ public sealed class SchedulingProblem
     // Dùng ở: ProblemGenerator.BuildProblemWithPlaceableSessions (phát hiện phiên hết chỗ đặt);
     // T2.2 duyệt danh sách này để chọn mốc cho phiên.
     // Dùng ở: ConstraintDegree.Calculate (đếm mốc), GreedyScheduler.TryPlaceSession, FirstFitScheduler.TryPlaceSession (duyệt mốc thỏa H5).
+    // Dùng ở: LocalSearch.Improve, SimulatedAnnealing.TryRandomMove (chọn mốc dời thỏa H5).
     public IReadOnlyList<int> GetValidStartSlots(int sessionId)
     {
         if (!_validStartSlotsBySession.TryGetValue(sessionId, out var validSlots))

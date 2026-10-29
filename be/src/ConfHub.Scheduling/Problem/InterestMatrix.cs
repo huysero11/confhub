@@ -40,6 +40,7 @@ public sealed class InterestMatrix
     // Tra W[a][b] theo mã phiên; Get(a, a) = số người quan tâm phiên a.
     // Dùng ở: SchedulingProblem.GetSessionSize (đường chéo), ObjectiveCalculator.CalculateConflictCount (C);
     // T2.2 dùng khi chọn mốc ít xung đột.
+    // Dùng ở: ConflictContribution.Calculate (cộng W vào đóng góp của hai phiên chồng giờ).
     public int Get(int firstSessionId, int secondSessionId)
     {
         var firstIndex = GetIndex(firstSessionId);
