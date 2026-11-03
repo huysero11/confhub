@@ -13,7 +13,6 @@ public sealed class AnnealingScheduler
     private readonly GreedyScheduler _greedyScheduler;
     private readonly SimulatedAnnealing _annealing;
 
-    // Dùng ở: T2.4 và test (tạo phương pháp M4 với lịch nhiệt và Seed đã chọn).
     public AnnealingScheduler(SchedulingProblem problem, ImprovementOptions? options = null, ObjectiveWeights? weights = null)
     {
         var selectedWeights = weights ?? ObjectiveWeights.Default;
@@ -21,7 +20,7 @@ public sealed class AnnealingScheduler
         _annealing = new SimulatedAnnealing(problem, selectedWeights, options ?? new ImprovementOptions());
     }
 
-    // Dùng ở: T2.4 và test (chạy trọn luồng M4, trả lịch tốt nhất sau cục bộ).
+    // Chạy trọn luồng M4, trả lịch tốt nhất sau cục bộ.
     public SchedulingResult Run()
     {
         var greedyResult = _greedyScheduler.Run();

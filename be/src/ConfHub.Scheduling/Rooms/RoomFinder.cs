@@ -7,7 +7,6 @@ namespace ConfHub.Scheduling.Rooms;
 // Hungarian bỏ qua nhóm đang gán lại; M1 chỉ tìm phòng cho phiên mới.
 public static class RoomFinder
 {
-    // Dùng ở: GroupRoomAssigner.TryAssign, FirstFitScheduler.TryPlaceSession (lọc phòng đang bị chiếm).
     // Tìm những phiên đã được đặt trong lịch xem phiên nào có interval overlaps với session đang xét, đóng còn lại sẽ thỏa mãn
     public static IReadOnlyList<int> FindFreeRoomIds(
         SchedulingProblem problem,

@@ -1,7 +1,6 @@
 // ShellBHeader.tsx — thanh trên cùng của Shell B (trang công khai / người tham dự).
 // Chứa: tên ứng dụng (link về trang chủ) bên trái; nút đổi ngôn ngữ và đổi nền bên phải.
 // Component chọn nút Đăng nhập / Đăng ký hoặc menu theo phiên trong bộ nhớ.
-// Dùng ở: layouts/ShellB/ShellB.tsx.
 import { Flex, Layout, theme } from "antd";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";

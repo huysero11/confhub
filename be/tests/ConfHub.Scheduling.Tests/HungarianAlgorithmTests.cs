@@ -5,7 +5,7 @@ namespace ConfHub.Scheduling.Tests;
 // Kiểm phân công tối ưu, ma trận chữ nhật và ô cấm độc lập với thuật toán xếp lịch.
 public class HungarianAlgorithmTests
 {
-    // Dùng ở: dotnet test (đối chiếu nhóm A, C của ví dụ 6.5).
+    // Đối chiếu nhóm A, C của ví dụ 6.5.
     [Fact]
     public void ExampleAssignsAToP101AndCToP102WithCost77()
     {
@@ -15,7 +15,7 @@ public class HungarianAlgorithmTests
         Assert.Equal(77, costs[0][assignment[0]] + costs[1][assignment[1]]);
     }
 
-    // Dùng ở: dotnet test (đáp án khác cách chọn cột rẻ nhất từng hàng).
+    // Đáp án khác cách chọn cột rẻ nhất từng hàng.
     [Fact]
     public void ThreeByThreeFindsGlobalMinimum()
     {
@@ -25,21 +25,21 @@ public class HungarianAlgorithmTests
         Assert.Equal(5, costs[0][assignment[0]] + costs[1][assignment[1]] + costs[2][assignment[2]]);
     }
 
-    // Dùng ở: dotnet test (số phòng nhiều hơn số phiên).
+    // Số phòng nhiều hơn số phiên.
     [Fact]
     public void RectangularMatrixMayLeaveColumnsUnused()
     {
         Assert.Equal([2, 1], HungarianAlgorithm.Solve([[8, 7, 1], [6, 2, 5]]));
     }
 
-    // Dùng ở: dotnet test (tránh ô cấm khi còn phép ghép khả thi).
+    // Tránh ô cấm khi còn phép ghép khả thi.
     [Fact]
     public void ForbiddenCellsAreAvoidedWhenPossible()
     {
         Assert.Equal([1, 0], HungarianAlgorithm.Solve([[HungarianAlgorithm.Infeasible, 4], [2, 1]]));
     }
 
-    // Dùng ở: dotnet test (trường hợp nhỏ nhất và ô cấm bắt buộc để người gọi phát hiện).
+    // Trường hợp nhỏ nhất và ô cấm bắt buộc để người gọi phát hiện.
     [Fact]
     public void SingleCellAndEmptyMatrixAreSupported()
     {
@@ -48,7 +48,7 @@ public class HungarianAlgorithmTests
         Assert.Empty(HungarianAlgorithm.Solve([]));
     }
 
-    // Dùng ở: dotnet test (đầu vào không đúng hợp đồng bị từ chối).
+    // Đầu vào không đúng hợp đồng bị từ chối.
     [Fact]
     public void InvalidMatricesAreRejected()
     {

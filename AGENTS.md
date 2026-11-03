@@ -13,6 +13,7 @@
 - **Đơn giản nhưng không kém chất lượng**: đơn giản ở cách viết, KHÔNG cắt bớt logic, xử lý lỗi/trường hợp biên, best practice (Clean Architecture, DI, async/await đúng, validate, bảo mật) hay test.
 - Cách viết thẳng, dễ hiểu hơn cách viết ngắn/"hay". `if`/`foreach` rõ ràng thay vì chuỗi LINQ dài; không lồng quá sâu.
 - Không thêm lớp trừu tượng, generic, reflection, source generator, pattern khi file task không yêu cầu.
+- **Comment hàm** (Huy chốt 2026-11-03): ghi hàm làm gì / ý tưởng chính; hàm private ghi `Helper của <Hàm> (cùng lớp): ...`. **Không ghi "Dùng ở: ..."** (chỗ gọi hàm), trừ khi đó là thông tin quan trọng để hiểu đúng (vd một cấu hình dùng ở 2 nơi phải khớp nhau).
 - Dùng pattern/cơ chế chuẩn của .NET khi nó làm code chắc hơn (Options pattern cho nhóm cấu hình + `ValidateOnStart`, `GetConnectionString` cho chuỗi kết nối); comment ghi **tên pattern + mục đích**.
 - Analyzer ép cách viết phức tạp (chủ yếu luật tối ưu hiệu năng nhỏ) → **dừng lại, ghi vào báo cáo** cho Claude quyết định; không tự làm code rối để né luật.
 - File nhỏ, một trách nhiệm. Tên rõ nghĩa, tiếng Anh; tên hàm nói đúng việc nó làm (`MapExceptionToProblem`, `BuildProblem`). Không dùng overload (cùng tên, khác tham số) cho hai việc khác nhau.
@@ -44,7 +45,7 @@
 - Mọi chữ hiển thị qua `react-i18next` (`vi.json`/`en.json`), không hardcode.
 - Gọi API qua TanStack Query; HTTP dùng **axios** — chỉ qua đối tượng `apiClient` trong `src/lib/apiClient.ts` (interceptor gắn token, làm mới phiên khi 401, đổi lỗi thành `ApiError`); test giả response bằng `axios-mock-adapter` (`src/test/apiMock.ts`).
 - Kiến trúc: chia theo nhóm chức năng `src/features/<nhóm>/`, các lớp `page → component → hook → api → lib/apiClient`, kiểu ở `types.ts`; lớp trên chỉ gọi lớp ngay dưới. **Không có lớp `service` riêng** giữa api và hook (hook TanStack Query đã lo); logic không gắn React đặt ở `src/lib/`. Thứ dùng chung: `components/`, `layouts/`, `theme/`, `i18n/`. Chi tiết: `plan/tasks/T1.3.md` mục "Kiến trúc frontend".
-- **Comment đầu file bắt buộc** (mọi file trong `fe/src`): 2–5 dòng tiếng Việt — file là gì, chứa gì, ai dùng, thuộc lớp nào.
+- **Comment đầu file bắt buộc** (mọi file trong `fe/src`): 2–5 dòng tiếng Việt — file là gì, chứa gì, thuộc lớp nào (không ghi file nào dùng nó).
 - **Chia phần trong file:** hàm / phần cùng một việc đặt cạnh nhau; file .ts có ≥ 2 nhóm hàm thì mở mỗi nhóm bằng dòng `// ---------- TÊN PHẦN ----------`; component dài thì comment một dòng trước mỗi khối logic và `{/* Tên khối */}` trước mỗi khối JSX lớn. File ngắn một việc thì không cần.
 - Component: 1 file 1 component, `export function` có tên (không `export default`), props có kiểu rõ ràng; không `any`.
 

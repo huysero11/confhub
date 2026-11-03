@@ -8,7 +8,7 @@ namespace ConfHub.Scheduling.Improvement;
 public static class ConflictContribution
 {
     // ---------- CHỌN ỨNG VIÊN ----------
-    // Dùng ở: LocalSearch.Improve (chỉ thử tối đa K phiên có đóng góp dương mỗi vòng).
+    // Chỉ thử tối đa K phiên có đóng góp dương mỗi vòng.
     public static IReadOnlyList<int> RankCandidates(SchedulingProblem problem, Schedule schedule, int candidateCount, IReadOnlySet<int>? excludedSessionIds = null)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(candidateCount);
@@ -48,7 +48,6 @@ public static class ConflictContribution
 
     // ---------- TÍNH ĐÓNG GÓP ----------
     // Kết quả dạng map: contributions[A] = 35 nghĩa là A đang trùng giờ với 35 lượt người muốn dự.
-    // Dùng ở: RankCandidates (cùng lớp, tính điểm Q1); test và T2.4 (giải thích phiên gây xung đột).
     public static IReadOnlyDictionary<int, int> Calculate(SchedulingProblem problem, Schedule schedule)
     {
         ArgumentNullException.ThrowIfNull(problem);

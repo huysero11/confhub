@@ -8,7 +8,7 @@ namespace ConfHub.Scheduling.Tests;
 // Kiểm phòng trống theo khoảng nửa mở và theo ngày, không chỉ cùng mốc bắt đầu.
 public class RoomFinderTests
 {
-    // Dùng ở: dotnet test (phiên bắt đầu trước khoảng đang hỏi vẫn chiếm phòng).
+    // Phiên bắt đầu trước khoảng đang hỏi vẫn chiếm phòng.
     [Fact]
     public void OverlappingSessionOccupiesItsRoom()
     {
@@ -18,7 +18,7 @@ public class RoomFinderTests
         Assert.Equal([ExampleProblem.RoomP102], freeRoomIds);
     }
 
-    // Dùng ở: dotnet test (chạm đầu mút không chồng; khác ngày không chiếm).
+    // Chạm đầu mút không chồng; khác ngày không chiếm.
     [Theory]
     [InlineData(0, 600, 660)]
     [InlineData(0, 480, 540)]
@@ -32,7 +32,7 @@ public class RoomFinderTests
         Assert.Equal([ExampleProblem.RoomP101, ExampleProblem.RoomP102], freeRoomIds);
     }
 
-    // Dùng ở: dotnet test (phiên chưa gán phòng và phiên loại trừ không giữ phòng).
+    // Phiên chưa gán phòng và phiên loại trừ không giữ phòng.
     [Fact]
     public void UnassignedAndExcludedSessionsDoNotOccupyRooms()
     {
@@ -44,7 +44,7 @@ public class RoomFinderTests
         Assert.Equal([ExampleProblem.RoomP101, ExampleProblem.RoomP102], freeRoomIds);
     }
 
-    // Dùng ở: dotnet test (M1 cần thứ tự nhập, không sắp phòng theo mã hay sức chứa).
+    // M1 cần thứ tự nhập, không sắp phòng theo mã hay sức chứa.
     [Fact]
     public void RoomInputOrderIsPreserved()
     {

@@ -17,7 +17,6 @@ public sealed class Rescheduler
     private readonly ObjectiveWeights _weights;
     private readonly ConstraintChecker _checker;
 
-    // Dùng ở: test, chương trình đo và T5.4 (tạo bộ xếp lại cho bài toán đã chứa biến động).
     public Rescheduler(SchedulingProblem problem, RescheduleOptions? options = null, ObjectiveWeights? weights = null)
     {
         ArgumentNullException.ThrowIfNull(problem);
@@ -29,7 +28,7 @@ public sealed class Rescheduler
     }
 
     // ---------- ĐIỀU PHỐI BỐN BƯỚC ----------
-    // Dùng ở: test, chương trình đo và T5.4 (xếp lại từ lịch đã công bố, không sửa lịch gốc).
+    // Xếp lại từ lịch đã công bố, không sửa lịch gốc.
     public RescheduleResult Run(Schedule baseSchedule, IReadOnlySet<int>? lockedSessionIds = null)
     {
         ArgumentNullException.ThrowIfNull(baseSchedule);

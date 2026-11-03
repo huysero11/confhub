@@ -15,7 +15,6 @@ public sealed class SimulatedAnnealing
     private readonly ConstraintChecker _checker;
     private readonly ObjectiveCalculator _calculator;
 
-    // Dùng ở: AnnealingScheduler.Run (tạo bộ luyện kim); T2.4 / T2.5 (cải thiện một lịch có sẵn).
     public SimulatedAnnealing(SchedulingProblem problem, ObjectiveWeights weights, ImprovementOptions options)
     {
         ArgumentNullException.ThrowIfNull(problem);
@@ -30,7 +29,7 @@ public sealed class SimulatedAnnealing
     }
 
     // ---------- ĐIỀU PHỐI LỊCH NHIỆT ----------
-    // Dùng ở: AnnealingScheduler.Run (luyện kim rồi leo đồi trên lịch tốt nhất, giữ nguyên lịch đầu vào).
+    // Luyện kim rồi leo đồi trên lịch tốt nhất, giữ nguyên lịch đầu vào.
     public ImprovementResult Improve(Schedule start)
     {
         ArgumentNullException.ThrowIfNull(start);

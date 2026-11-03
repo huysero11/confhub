@@ -7,7 +7,7 @@ namespace ConfHub.Scheduling.Generation;
 public static class ChangeScenario
 {
     // ---------- MẤT PHÒNG ----------
-    // Dùng ở: ReschedulerTests và chương trình đo (mô phỏng một phòng không còn dùng được).
+    // Mô phỏng một phòng không còn dùng được.
     public static SchedulingProblem RemoveRoom(GeneratedData data, int roomId)
     {
         ValidateData(data);
@@ -26,7 +26,7 @@ public static class ChangeScenario
     }
 
     // ---------- DIỄN GIẢ BẬN MỘT NGÀY ----------
-    // Dùng ở: ReschedulerTests và chương trình đo (loại ngày bận khỏi giờ rảnh của diễn giả).
+    // Loại ngày bận khỏi giờ rảnh của diễn giả.
     public static SchedulingProblem MakeSpeakerUnavailable(GeneratedData data, int speakerId, int dayIndex)
     {
         ValidateData(data);

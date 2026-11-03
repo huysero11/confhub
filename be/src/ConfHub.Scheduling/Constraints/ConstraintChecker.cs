@@ -10,10 +10,6 @@ public sealed class ConstraintChecker
 {
     private readonly SchedulingProblem _problem;
 
-    // Dùng ở: T2.2 / T2.3 (tạo một lần cho mỗi bài toán), test.
-    // Dùng ở: GreedyScheduler, FirstFitScheduler (constructor tạo bộ kiểm cho mỗi bài toán).
-    // Dùng ở: LocalSearch, SimulatedAnnealing (constructor tạo bộ lọc cho các phép biến đổi).
-    // Dùng ở: Rescheduler constructor (kiểm vị trí cũ và các lần thử nhường chỗ).
     public ConstraintChecker(SchedulingProblem problem)
     {
         ArgumentNullException.ThrowIfNull(problem);
@@ -23,10 +19,6 @@ public sealed class ConstraintChecker
     // ---------- KIỂM MỘT VỊ TRÍ DỰ ĐỊNH ----------
     // Kiểm việc đặt phiên sessionId vào (slotIndex, roomId) cùng với phần còn lại của lịch.
     // Cần thời gian bắt đầu và kết thúc nên phải có PlacedSession do Placement chỉ lưu SlotIndex và RoomId
-    // Dùng ở: T2.2 / T2.3 trước mỗi lần đặt / dời phiên; test (RandomScheduleBuilder).
-    // Dùng ở: GreedyScheduler.TryPlaceSession, FirstFitScheduler.TryPlaceSession (lọc H1, H2, H5 trước khi tìm phòng).
-    // Dùng ở: NeighborhoodMoves.TryMove / TrySwap (lọc vị trí mới trước khi tính f).
-    // Dùng ở: Rescheduler.KeepValidSessions / TryPlaceDisplacedSession (giữ lịch hợp lệ qua từng bước).
     public IReadOnlyList<ConstraintViolation> CheckPlacement(
         Schedule schedule,
         int sessionId,
@@ -78,8 +70,6 @@ public sealed class ConstraintChecker
 
     // ---------- KIỂM CẢ LỊCH ----------
     // Viết độc lập với CheckPlacement: duyệt từng phiên, từng cặp phiên, từng mốc.
-    // Dùng ở: test (trọng tài cho mọi thuật toán); T2.4 kiểm lịch kết quả trước khi ghi chỉ số.
-    // Dùng ở: LocalSearch.ValidateStart, SimulatedAnnealing.ValidateStart (từ chối lịch đầu vi phạm).
     public IReadOnlyList<ConstraintViolation> Validate(Schedule schedule)
     {
         ArgumentNullException.ThrowIfNull(schedule);

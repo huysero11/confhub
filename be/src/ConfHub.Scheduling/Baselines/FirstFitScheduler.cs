@@ -12,7 +12,6 @@ public sealed class FirstFitScheduler
     private readonly SchedulingProblem _problem;
     private readonly ConstraintChecker _checker;
 
-    // Dùng ở: T2.4 và test (tạo phương pháp đối chứng M1 cho một bài toán).
     public FirstFitScheduler(SchedulingProblem problem)
     {
         ArgumentNullException.ThrowIfNull(problem);
@@ -21,7 +20,7 @@ public sealed class FirstFitScheduler
     }
 
     // ---------- CHẠY M1 ----------
-    // Dùng ở: T2.4 và test (xếp lịch M1, tầng gọi chấm điểm để so với tham lam).
+    // Xếp lịch M1, tầng gọi chấm điểm để so với tham lam.
     public SchedulingResult Run()
     {
         // Khác tham lam: giữ thứ tự nhập, không sắp theo độ ràng buộc

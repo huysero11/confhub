@@ -12,7 +12,7 @@ namespace ConfHub.Scheduling.Tests;
 public class LocalSearchTests
 {
     // ---------- GHIM VÀ PHẠT XÁO TRỘN ----------
-    // Dùng ở: dotnet test (ghim C chặn hoán đổi C ↔ B, cả mốc và phòng đều giữ nguyên).
+    // Ghim C chặn hoán đổi C ↔ B, cả mốc và phòng đều giữ nguyên.
     [Fact]
     public void LockedCKeepsExampleConflictAtThirtyFive()
     {
@@ -27,7 +27,7 @@ public class LocalSearchTests
         AssertSameSchedule(search.Improve(start).Schedule, search.Improve(start, null).Schedule);
     }
 
-    // Dùng ở: dotnet test (leo đồi dùng f', có thể từ chối hoán đổi giảm f nhưng gây xáo trộn quá lớn).
+    // Leo đồi dùng f', có thể từ chối hoán đổi giảm f nhưng gây xáo trộn quá lớn.
     [Fact]
     public void DisruptionPenaltyCanRejectOtherwiseImprovingSwap()
     {
@@ -41,7 +41,7 @@ public class LocalSearchTests
     }
 
     // ---------- VÍ DỤ VÀ ĐIỀU KIỆN DỪNG ----------
-    // Dùng ở: dotnet test / Debug Test (vòng 1 chỉ nhận C ↔ B; vòng 2 dừng ở C = 5).
+    // Vòng 1 chỉ nhận C ↔ B; vòng 2 dừng ở C = 5.
     [Fact]
     public void ExampleAcceptsOnlySwapCBThenStopsOnSecondIteration()
     {
@@ -59,7 +59,7 @@ public class LocalSearchTests
         Assert.Equal((0.7 * 5.0 / 40.0) + (0.1 * 164.0 / 284.0), improvementResult.Value, 12);
     }
 
-    // Dùng ở: dotnet test (giới hạn vòng chính xác; lịch rỗng không mất phiên hoặc sinh bước giả).
+    // Giới hạn vòng chính xác; lịch rỗng không mất phiên hoặc sinh bước giả.
     [Fact]
     public void IterationLimitAndEmptyScheduleAreHandled()
     {
@@ -77,7 +77,7 @@ public class LocalSearchTests
         Assert.Equal(0, emptyResult.Value);
     }
 
-    // Dùng ở: dotnet test (Q1 cố ý dừng khi C = 0, dù thành phần tải còn có thể giảm).
+    // Q1 cố ý dừng khi C = 0, dù thành phần tải còn có thể giảm.
     [Fact]
     public void ZeroContributionsDoNotCreateCandidatesForLoadOnlyImprovement()
     {
@@ -94,7 +94,7 @@ public class LocalSearchTests
         AssertSameSchedule(start, improvementResult.Schedule);
     }
 
-    // Dùng ở: dotnet test (lịch đầu vi phạm hoặc thiếu phòng phải báo lỗi trước khi tìm kiếm).
+    // Lịch đầu vi phạm hoặc thiếu phòng phải báo lỗi trước khi tìm kiếm.
     [Fact]
     public void InvalidOrRoomlessStartIsRejected()
     {
@@ -108,7 +108,7 @@ public class LocalSearchTests
     }
 
     // ---------- DỮ LIỆU SINH ----------
-    // Dùng ở: dotnet test (lịch hợp lệ, không mất phiên, f không tăng, lặp lại cho cùng kết quả).
+    // Lịch hợp lệ, không mất phiên, f không tăng, lặp lại cho cùng kết quả.
     [Theory]
     [InlineData(1)]
     [InlineData(2)]
@@ -143,7 +143,7 @@ public class LocalSearchTests
         }
     }
 
-    // Dùng ở: dotnet test (chạy từng vòng độc lập để kiểm mọi bước nhận đều giảm f quá sai số).
+    // Chạy từng vòng độc lập để kiểm mọi bước nhận đều giảm f quá sai số.
     [Fact]
     public void EveryAcceptedStepStrictlyDecreasesObjective()
     {
@@ -176,7 +176,7 @@ public class LocalSearchTests
     }
 
     // ---------- SO SÁNH LỊCH DÙNG CHUNG ----------
-    // Dùng ở: các test Improvement/Methods (so từng vị trí, độc lập với thứ tự lưu trong Schedule).
+    // So từng vị trí, độc lập với thứ tự lưu trong Schedule.
     internal static void AssertSameSchedule(Schedule expectedSchedule, Schedule actualSchedule)
     {
         Assert.Equal(expectedSchedule.PlacedSessionIds.Count, actualSchedule.PlacedSessionIds.Count);

@@ -12,7 +12,7 @@ namespace ConfHub.Scheduling.Tests;
 public class InterestBlindSchedulerTests
 {
     // ---------- VÍ DỤ VÀ TRỌNG SỐ ----------
-    // Dùng ở: dotnet test / Debug Test (đối chiếu kết quả M2 Claude tính tay).
+    // Đối chiếu kết quả M2 Claude tính tay.
     [Fact]
     public void ExampleMatchesInterestBlindPlacementsAndConflict5()
     {
@@ -34,7 +34,7 @@ public class InterestBlindSchedulerTests
         Assert.Equal((0.7 * 5.0 / 40.0) + (0.1 * 164.0 / 284.0), objective.Value, 10);
     }
 
-    // Dùng ở: dotnet test (C bị bỏ, B : S giữ tỉ lệ 2 : 1).
+    // C bị bỏ, B : S giữ tỉ lệ 2 : 1.
     [Fact]
     public void WeightsIgnoreConflictAndPreserveLoadToWasteRatio()
     {
@@ -44,7 +44,7 @@ public class InterestBlindSchedulerTests
     }
 
     // ---------- DỮ LIỆU SINH ----------
-    // Dùng ở: dotnet test (ba quy mô seed 1–5; kết quả hợp lệ, đủ trạng thái và tất định).
+    // Ba quy mô seed 1–5; kết quả hợp lệ, đủ trạng thái và tất định.
     [Theory]
     [InlineData(1)]
     [InlineData(2)]

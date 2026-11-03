@@ -23,8 +23,7 @@ public sealed record ImprovementOptions
     public double MinTemperature { get; init; } = 1e-4;
 
     // ---------- KIỂM TRA ----------
-    // Dùng ở: LocalSearch, SimulatedAnnealing, RestartScheduler (constructor loại tùy chọn sai trước khi chạy).
-    // Dùng ở: RescheduleOptions.Validate (kiểm tùy chọn leo đồi khi xếp lại).
+    // Kiểm tùy chọn; sai thì báo ArgumentException.
     public void Validate()
     {
         if (CandidateCount <= 0 || MaxIterations <= 0 || RestartCount <= 0 || StepsPerTemperature <= 0)

@@ -8,7 +8,7 @@ namespace ConfHub.Scheduling.Tests;
 public class ChangeScenarioTests
 {
     // ---------- MẤT PHÒNG ----------
-    // Dùng ở: dotnet test (phòng chỉ bị xóa ở bài toán mới, W và mọi dữ liệu khác giữ nguyên).
+    // Phòng chỉ bị xóa ở bài toán mới, W và mọi dữ liệu khác giữ nguyên.
     [Fact]
     public void RemoveRoomKeepsOtherDataAndOriginalProblem()
     {
@@ -22,7 +22,7 @@ public class ChangeScenarioTests
         AssertUnchangedCore(data.Problem, changedProblem);
     }
 
-    // Dùng ở: dotnet test (không bỏ qua mã phòng lạ; bài toán vẫn phải có ít nhất một phòng).
+    // Không bỏ qua mã phòng lạ; bài toán vẫn phải có ít nhất một phòng.
     [Fact]
     public void MissingOrLastRoomCannotBeRemoved()
     {
@@ -32,7 +32,7 @@ public class ChangeScenarioTests
     }
 
     // ---------- GIỜ RẢNH DIỄN GIẢ ----------
-    // Dùng ở: dotnet test (giữ nguyên mọi khoảng cũ ở ngày khác, không đổi giờ rảnh của diễn giả khác).
+    // Giữ nguyên mọi khoảng cũ ở ngày khác, không đổi giờ rảnh của diễn giả khác.
     [Fact]
     public void DeclaredAvailabilityOnlyLosesRequestedDay()
     {
@@ -56,7 +56,7 @@ public class ChangeScenarioTests
         AssertUnchangedCore(data.Problem, changedProblem);
     }
 
-    // Dùng ở: dotnet test (diễn giả chưa khai được khai tường minh cả ngày còn lại).
+    // Diễn giả chưa khai được khai tường minh cả ngày còn lại.
     [Fact]
     public void UndeclaredAvailabilityBecomesAllOtherDays()
     {
@@ -72,7 +72,7 @@ public class ChangeScenarioTests
         AssertUnchangedCore(data.Problem, changedProblem);
     }
 
-    // Dùng ở: dotnet test (không thể dùng danh sách rỗng để biểu diễn diễn giả bận hết mọi ngày).
+    // Không thể dùng danh sách rỗng để biểu diễn diễn giả bận hết mọi ngày.
     [Fact]
     public void NoRemainingAvailabilityAndInvalidIdentifiersAreRejected()
     {

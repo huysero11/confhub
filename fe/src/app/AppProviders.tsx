@@ -1,6 +1,5 @@
 // AppProviders.tsx — gom mọi provider bọc ngoài cùng ứng dụng, theo đúng thứ tự.
 // Chứa: TanStack Query, ThemeProvider, App antd và khôi phục phiên trước khi vẽ router.
-// Dùng ở: main.tsx và test/renderApp.tsx.
 import { type ReactNode, useState } from "react";
 import { App } from "antd";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";

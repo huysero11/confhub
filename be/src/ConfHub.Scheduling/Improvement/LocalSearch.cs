@@ -15,8 +15,6 @@ public sealed class LocalSearch
     private readonly ObjectiveCalculator _calculator;
     private readonly ImprovementOptions _options;
 
-    // Dùng ở: LocalSearchScheduler, RestartScheduler, SimulatedAnnealing (tạo bộ cải thiện theo cùng trọng số).
-    // Dùng ở: Rescheduler.Run (tạo bước cải thiện có phạt xáo trộn).
     public LocalSearch(SchedulingProblem problem, ObjectiveWeights weights, ImprovementOptions options, DisruptionPenalty? disruption = null)
     {
         ArgumentNullException.ThrowIfNull(problem);
@@ -32,8 +30,7 @@ public sealed class LocalSearch
     }
 
     // ---------- ĐIỀU PHỐI TỪNG VÒNG ----------
-    // Dùng ở: LocalSearchScheduler.Run, RestartScheduler.Run, SimulatedAnnealing.Improve (giảm f đến khi hết bước tốt hơn).
-    // Dùng ở: Rescheduler.Run (bước 4 giảm f' và giữ nguyên phiên ghim).
+    // Giảm f đến khi hết bước tốt hơn.
     public ImprovementResult Improve(Schedule start, IReadOnlySet<int>? lockedSessionIds = null)
     {
         ArgumentNullException.ThrowIfNull(start);

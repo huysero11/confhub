@@ -12,7 +12,7 @@ namespace ConfHub.Scheduling.Tests;
 public class SimulatedAnnealingTests
 {
     // ---------- VÍ DỤ VÀ LỊCH NHIỆT ----------
-    // Dùng ở: dotnet test / Debug Test (ví dụ 6.5 đạt C = 5 và không sửa lịch đầu).
+    // Ví dụ 6.5 đạt C = 5 và không sửa lịch đầu.
     [Fact]
     public void ExampleReachesConflictFiveAndPreservesInput()
     {
@@ -26,7 +26,7 @@ public class SimulatedAnnealingTests
         LocalSearchTests.AssertSameSchedule(ExampleProblem.CreateGreedySchedule(), start);
     }
 
-    // Dùng ở: dotnet test (phép bất khả thi vẫn đếm bước; cuối lịch nhiệt luôn có vòng cục bộ).
+    // Phép bất khả thi vẫn đếm bước; cuối lịch nhiệt luôn có vòng cục bộ.
     [Fact]
     public void InvalidAttemptsStillCountAndCoolingStopsAtMinimum()
     {
@@ -40,7 +40,7 @@ public class SimulatedAnnealingTests
         LocalSearchTests.AssertSameSchedule(start, improvementResult.Schedule);
     }
 
-    // Dùng ở: dotnet test (luyện kim không dùng Q1 nên có thể dời phiên có đóng góp 0 để giảm tải).
+    // Luyện kim không dùng Q1 nên có thể dời phiên có đóng góp 0 để giảm tải.
     [Fact]
     public void AnnealingCanImproveLoadWhenEveryConflictContributionIsZero()
     {
@@ -59,7 +59,7 @@ public class SimulatedAnnealingTests
         Assert.Empty(new ConstraintChecker(problem).Validate(improvementResult.Schedule));
     }
 
-    // Dùng ở: dotnet test (lịch rỗng vẫn chạy cục bộ cuối; lịch đầu sai bị loại).
+    // Lịch rỗng vẫn chạy cục bộ cuối; lịch đầu sai bị loại.
     [Fact]
     public void EmptyAndInvalidStartsAreHandled()
     {
@@ -76,7 +76,7 @@ public class SimulatedAnnealingTests
     }
 
     // ---------- DỮ LIỆU SINH ----------
-    // Dùng ở: dotnet test (cùng Seed ra cùng lịch; lịch tốt nhất không tệ hơn lịch tham lam đầu vào).
+    // Cùng Seed ra cùng lịch; lịch tốt nhất không tệ hơn lịch tham lam đầu vào.
     [Theory]
     [InlineData(1)]
     [InlineData(2)]
@@ -111,7 +111,7 @@ public class SimulatedAnnealingTests
         }
     }
 
-    // Dùng ở: dotnet test (Seed khác được phép cho lịch khác, nhưng vẫn phải giữ các bất biến).
+    // Seed khác được phép cho lịch khác, nhưng vẫn phải giữ các bất biến.
     [Theory]
     [InlineData(7)]
     [InlineData(19)]

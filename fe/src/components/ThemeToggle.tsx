@@ -1,7 +1,6 @@
 // ThemeToggle.tsx — nút đổi nền sáng / tối.
 // Chứa: một Button của antd, icon mặt trời / mặt trăng theo chế độ đang dùng.
 // Là một chỗ dùng context của useThemeMode
-// Dùng ở: layouts/ShellB/ShellBHeader.tsx.
 import { MoonOutlined, SunOutlined } from "@ant-design/icons";
 import { Button } from "antd";
 import { useThemeMode } from "@/theme/useThemeMode";

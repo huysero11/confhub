@@ -1,5 +1,5 @@
 // SessionBootstrap.tsx — component chờ khôi phục phiên từ cookie xong mới vẽ ứng dụng.
-// Trong lúc chờ (useSessionBootstrap) hiện Spin phủ toàn trang. Dùng ở: AppProviders.
+// Trong lúc chờ (useSessionBootstrap) hiện Spin phủ toàn trang.
 import type { ReactNode } from "react";
 import { Flex, Spin } from "antd";
 import { useTranslation } from "react-i18next";

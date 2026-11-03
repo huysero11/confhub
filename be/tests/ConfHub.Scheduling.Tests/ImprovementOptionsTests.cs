@@ -9,7 +9,7 @@ namespace ConfHub.Scheduling.Tests;
 public class ImprovementOptionsTests
 {
     // ---------- MẶC ĐỊNH ----------
-    // Dùng ở: dotnet test (giữ đúng các hằng số của đặc tả 3.1).
+    // Giữ đúng các hằng số của đặc tả 3.1.
     [Fact]
     public void DefaultsAreValidAndMatchSpecification()
     {
@@ -26,7 +26,7 @@ public class ImprovementOptionsTests
     }
 
     // ---------- ĐIỀU KIỆN SAI ----------
-    // Dùng ở: dotnet test (từng số đếm không dương đều bị từ chối).
+    // Từng số đếm không dương đều bị từ chối.
     [Theory]
     [InlineData(0)]
     [InlineData(-1)]
@@ -38,7 +38,7 @@ public class ImprovementOptionsTests
         Assert.Throws<ArgumentException>(() => new ImprovementOptions { StepsPerTemperature = invalidCount }.Validate());
     }
 
-    // Dùng ở: dotnet test (NaN/vô cực không được lọt qua các phép so sánh nhiệt độ).
+    // NaN/vô cực không được lọt qua các phép so sánh nhiệt độ.
     [Theory]
     [InlineData(0.0)]
     [InlineData(-1.0)]
@@ -51,7 +51,7 @@ public class ImprovementOptionsTests
         Assert.Throws<ArgumentException>(() => new ImprovementOptions { MinTemperature = invalidTemperature }.Validate());
     }
 
-    // Dùng ở: dotnet test (hệ số hạ nhiệt phải nằm hẳn trong khoảng 0–1).
+    // Hệ số hạ nhiệt phải nằm hẳn trong khoảng 0–1.
     [Theory]
     [InlineData(0.0)]
     [InlineData(1.0)]
@@ -65,7 +65,7 @@ public class ImprovementOptionsTests
         Assert.Throws<ArgumentException>(() => new ImprovementOptions { CoolingRate = invalidRate }.Validate());
     }
 
-    // Dùng ở: dotnet test (cận nhiệt và tất cả điểm vào đều kiểm tùy chọn).
+    // Cận nhiệt và tất cả điểm vào đều kiểm tùy chọn.
     [Fact]
     public void ReversedTemperatureBoundsAndInvalidConstructorOptionsAreRejected()
     {

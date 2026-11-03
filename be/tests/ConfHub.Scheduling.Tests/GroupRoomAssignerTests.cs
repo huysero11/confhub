@@ -8,7 +8,7 @@ namespace ConfHub.Scheduling.Tests;
 // Kiểm Hungarian theo nhóm, giữ phòng khi hòa và không đụng phiên ngoài nhóm.
 public class GroupRoomAssignerTests
 {
-    // Dùng ở: dotnet test (một phiên chọn phòng vừa nhất).
+    // Một phiên chọn phòng vừa nhất.
     [Fact]
     public void SingleSessionChoosesLeastWaste()
     {
@@ -18,7 +18,7 @@ public class GroupRoomAssignerTests
         Assert.Equal(ExampleProblem.RoomP102, assignment.RoomBySession[ExampleProblem.SessionD]);
     }
 
-    // Dùng ở: dotnet test (bước xếp B lúc 10h của ví dụ 6.5).
+    // Bước xếp B lúc 10h của ví dụ 6.5.
     [Fact]
     public void ExampleKeepsDInP102AndAssignsBToP101()
     {
@@ -31,7 +31,7 @@ public class GroupRoomAssignerTests
         Assert.False(schedule.IsPlaced(ExampleProblem.SessionB));
     }
 
-    // Dùng ở: dotnet test (nhóm ba phiên chỉ có hai phòng).
+    // Nhóm ba phiên chỉ có hai phòng.
     [Fact]
     public void ExampleCannotAddCAtTenBecauseOfH2()
     {
@@ -44,7 +44,7 @@ public class GroupRoomAssignerTests
         Assert.Empty(assignment.RoomBySession);
     }
 
-    // Dùng ở: dotnet test (đủ số phòng nhưng không ghép được vì sức chứa).
+    // Đủ số phòng nhưng không ghép được vì sức chứa.
     [Fact]
     public void OversizedSessionFailsWithH4()
     {
@@ -58,7 +58,7 @@ public class GroupRoomAssignerTests
         Assert.Empty(assignment.RoomBySession);
     }
 
-    // Dùng ở: dotnet test (phiên nhỏ nhường phòng lớn cho phiên mới cùng khoảng).
+    // Phiên nhỏ nhường phòng lớn cho phiên mới cùng khoảng.
     [Fact]
     public void SmallSessionMovesToMakeRoomForLargeSession()
     {
@@ -72,7 +72,7 @@ public class GroupRoomAssignerTests
         Assert.Equal(ExampleProblem.RoomP101, originalPlacement.RoomId);
     }
 
-    // Dùng ở: dotnet test (chồng một phần không được lấy phòng của phiên ngoài nhóm).
+    // Chồng một phần không được lấy phòng của phiên ngoài nhóm.
     [Theory]
     [InlineData(90, 0)]
     [InlineData(60, 1)]
@@ -91,7 +91,7 @@ public class GroupRoomAssignerTests
         Assert.Equal(1, originalPlacement.RoomId);
     }
 
-    // Dùng ở: dotnet test (hai phiên lớn không thể dùng chung phòng lớn dù mỗi hàng đều có ô khả thi).
+    // Hai phiên lớn không thể dùng chung phòng lớn dù mỗi hàng đều có ô khả thi.
     [Fact]
     public void HallConflictFailsWithH4()
     {
@@ -107,7 +107,7 @@ public class GroupRoomAssignerTests
     }
 
     // ---------- GIỮ PHÒNG PHIÊN GHIM ----------
-    // Dùng ở: dotnet test (D ghim phòng lớn; B chỉ còn phòng nhỏ, kiểm cả vừa và không vừa).
+    // D ghim phòng lớn; B chỉ còn phòng nhỏ, kiểm cả vừa và không vừa.
     [Theory]
     [InlineData(39, true)]
     [InlineData(41, false)]

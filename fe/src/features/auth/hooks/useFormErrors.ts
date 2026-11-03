@@ -1,7 +1,6 @@
 // useFormErrors.ts — hook giữ lỗi trên form tài khoản luôn đúng (lớp hook).
 // Chứa: (1) gán lỗi backend vào đúng ô — ApiError.fieldErrors, EmailTaken → ô email;
 //       (2) Đổi ngôn ngữ thì kiểm tra lại các ô đã chạm để lỗi hiện bằng ngôn ngữ mới.
-// Dùng ở: RegisterForm, LoginForm, ResetPasswordForm, ResendVerificationForm, ForgotPasswordForm.
 import { useEffect, useRef } from "react";
 import type { FormInstance } from "antd";
 import { useTranslation } from "react-i18next";

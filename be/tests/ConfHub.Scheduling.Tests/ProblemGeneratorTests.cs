@@ -6,7 +6,7 @@ namespace ConfHub.Scheduling.Tests;
 public class ProblemGeneratorTests
 {
     // ---------- NGUYỆN VỌNG ĐỂ DỰNG LẠI ----------
-    // Dùng ở: dotnet test (Interests chính là dữ liệu đã dùng sinh W và quy mô phiên).
+    // Interests chính là dữ liệu đã dùng sinh W và quy mô phiên.
     [Fact]
     public void ReturnedInterestsRebuildIdenticalInterestMatrix()
     {

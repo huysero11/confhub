@@ -1,6 +1,6 @@
 // i18n.ts — khởi tạo song ngữ vi / en cho chữ của ứng dụng (thư viện i18next).
 // Chứa: kiểu AppLanguage, chọn ngôn ngữ ban đầu, hàm đổi ngôn ngữ (có lưu lại).
-// Dùng ở: main.tsx import 1 lần để khởi tạo; component lấy chữ qua hook useTranslation().
+// main.tsx import 1 lần để khởi tạo; component lấy chữ qua hook useTranslation().
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import en from "@/i18n/locales/en.json";
