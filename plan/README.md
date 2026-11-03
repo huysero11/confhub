@@ -6,8 +6,8 @@
 ## 0. Đang ở đâu
 
 - **Vừa xong:** T2.2 (tham lam + Hungarian, M1, M2) — merge `8130a83`, 2026-10-27
-- **Đang làm:** —
-- **Tiếp theo:** Huy commit + merge T2.5; Claude viết đặc tả T2.4 (chương trình thực nghiệm); Huy điền thông tin bìa trên Overleaf
+- **Đang làm:** T2.6 (M4 100 bước + gán lại phòng toàn lịch) — `codex`, nhánh `task/T2.6-room-reassign`
+- **Tiếp theo:** Claude review T2.6 → mục 9 (gồm cả file gõ lại của T2.4) → tag `ref/T2.6`; Huy điền thông tin bìa trên Overleaf
 - **Nhánh đang mở:** không (đang ở `main`)
 
 ## 1. Quy trình một task
@@ -157,8 +157,9 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 | T2.1 | Mô hình dữ liệu + ràng buộc + hàm f | T0.2      | done       |
 | T2.2 | Giai đoạn 1 tham lam + Hungarian    | T2.1      | done       |
 | T2.3 | Giai đoạn 2 cải thiện cục bộ        | T2.2      | done       |
-| T2.4 | Chương trình thực nghiệm            | T2.3, T2.5 | todo      |
+| T2.4 | Chương trình thực nghiệm            | T2.3, T2.5 | done      |
 | T2.5 | Xếp lại hạn chế xáo trộn (thư viện) | T2.3      | done       |
+| T2.6 | M4 100 bước + gán lại phòng         | T2.4      | codex      |
 
 **Chi tiết:**
 - **T2.1** — Đặc tả: `plan/tasks/T2.1.md`. Mô hình dữ liệu, tập mốc T (nhiều ngày + khung nghỉ), ma trận W,
@@ -167,6 +168,7 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 - **T2.3** — Đặc tả: `plan/tasks/T2.3.md`. Q1–Q3, khởi động lại (M3R), mô phỏng luyện kim (M4). Test ví dụ C = 5.
 - **T2.4** — M1–M4 (+ M3R) × 3 quy mô → CSV chỉ số, phân tích độ nhạy.
 - **T2.5** — Tách từ T2.3 (2026-10-27): lịch gốc đã công bố, gỡ phiên hết hợp lệ, xếp lại phần bị gỡ, cải thiện với `f + w₄·D/n`; T5.4 dùng lại.
+- **T2.6** — Tách từ kết quả T2.4 (2026-11-03): M4 mặc định 100 bước mỗi mức nhiệt; gán lại phòng toàn lịch (2 thứ tự best-fit, nhận nếu f / f' giảm) ở cuối leo đồi; chạy lại thực nghiệm ra `docs/experiments/T2.6/`.
 
 #### G3 — Hội nghị, phòng, phiên, diễn giả (P1: UC03–UC08)
 
@@ -277,7 +279,7 @@ Chỉ chia task khi P1–P4 xong.
 
 | ID    | Việc                                  | Phụ thuộc  | Trạng thái |
 |-------|---------------------------------------|------------|------------|
-| T11.1 | Thực nghiệm M1–M4 cho chương đánh giá | T2.4, T5.4 | todo       |
+| T11.1 | Thực nghiệm M1–M4 cho chương đánh giá | T2.6, T5.4 | todo       |
 
 **Chi tiết:**
 - **T11.1** — 11 chỉ số, phân tích độ nhạy; bảng + biểu đồ.
@@ -398,3 +400,9 @@ Chỉ chia task khi P1–P4 xong.
 - 2026-10-29 T2.5: Codex viết 6 file mới + sửa 16 file cũ (7 file chỉ thêm comment "Dùng ở") + 4 file test mới, thêm test vào 7 file test cũ; build 0 warning, test 268/268 (Debug 3 phút 9 giây, Release 1 phút 7 giây). Ví dụ 3.6 khớp đúng số. Claude review code (khớp đặc tả) và sửa nhỏ: `ChangeScenario` từ chối dữ liệu không kèm nguyện vọng (trước đó im lặng dựng ma trận rỗng), gom dòng "Dùng ở" của `Schedule.TryGetPlacement` lên trên khối ví dụ, giảm `RestartSchedulerTests` dữ liệu sinh từ seed 1–5 xuống 1–3 (phần chậm nhất của bộ test). Chạy lại bằng xUnit giả lập: 266/266, ~40 giây Release. Đo (mục 6.1): mất phòng → xếp lại dời 12–19 phiên so với chạy lại M3 27–97. Ghi PROJECT.md 6.9, viết mục 9. Codex lỗi ở lần build kiểm cuối nên chưa gắn `ref/T2.5`. T2.5 → `retype`.
 - 2026-11-03 T2.5 → `done`: Huy gõ lại `Rescheduler` (các file khác giữ bản tham khảo; không gắn `ref/T2.5`, Claude so với bản đã review). Claude sửa 1 lỗi bản gõ lại: `KeepValidSessions` thiếu `continue` sau khi ghi phiên bị gỡ, nên phiên hết hợp lệ vẫn bị đặt vào lịch giữ lại (14/17 test `ReschedulerTests` fail: lịch đầu vi phạm, phòng không tồn tại); bổ sung comment "Dùng ở / Helper của" + tiêu đề phần, sửa comment nói `KeepValidSessions` phụ thuộc `ChangeScenario`. Chạy lại: 266/266 pass.
 - 2026-11-03 Huy commit + merge T2.5 vào `main` (`6a001b1`). Quy ước mới (Huy): bỏ comment "Dùng ở" (chỗ gọi hàm), chỉ ghi nội dung hàm hoặc "Helper của …"; ghi CLAUDE.md + AGENTS.md. Claude xóa "Dùng ở" trong `ConfHub.Scheduling` + test (50 file; hàm chỉ có "Dùng ở" thì đổi phần mô tả trong ngoặc thành comment nội dung, constructor bỏ hẳn) và 22 file `fe/src` (giữ ý quan trọng, vd StrictMode, BR08); giữ `JwtOptions` (cấu hình dùng ở 2 nơi phải khớp).
+- 2026-11-03 Huy commit + merge bỏ "Dùng ở" (`def0e60`). T2.4 → `spec`: viết `plan/tasks/T2.4.md` (nhánh `task/T2.4-experiments`). Claude chọn: chỉ số tính trên dữ liệu sinh 1–8, 10 (9 và 11 cần dữ liệu thật → T11.1); thư viện `Evaluation/` (MetricsCalculator, gán phòng tham lam làm mốc cho chỉ số 10) để T11.1 dùng lại; console `be/tools/ConfHub.Experiments` chạy 5 thực nghiệm (phương pháp, trọng số, lưới Θ₀ × bước của M4, xếp lại × w₄, phòng) × 3 quy mô × seed 1–10, ghi CSV + `summary.md` (trung bình ± độ lệch chuẩn) vào `docs/experiments/T2.4/`. Chờ Huy duyệt.
+- 2026-11-03 Huy duyệt đặc tả T2.4 → `codex`. Báo cáo tuần G-2 phần 4 (T2.5) ở `scratch/bao-cao-tuan-G2-phan4-T2.5.md`.
+- 2026-11-03 T2.4: Codex làm lượt 1 (build 0 warning, 283/283 test, số mục 3.4 khớp; methods / weights / annealing / rooms chạy đủ 10 seed, 0 vi phạm) nhưng dừng ở kịch bản "diễn giả bận ngày 0": Small seed 1 chọn diễn giả chỉ rảnh ngày 0 → `ChangeScenario` từ chối. Claude sửa đặc tả 3.1 ý 4: chỉ chọn diễn giả còn giờ rảnh ở ngày khác, không còn ai thì `skipped`. Giao Codex lượt 2.
+- 2026-11-03 T2.4: Codex lượt 2 chọn diễn giả còn ngày rảnh khác; chạy đủ 5 thực nghiệm seed 1–10 (110 s, 0 ca `skipped`), build 0 warning, 283/283 test. Claude review code (`Evaluation/` khớp đặc tả; console chỉ điều phối), chạy lại 17 test mới bằng bản giả lập: pass. Kết luận ghi PROJECT.md 6.10: giả thuyết đạt (M3 giảm C 48–54 % so với M1, 0 vi phạm); M4 mặc định ≈ M3, 100 bước mỗi mức nhiệt tốt hơn rõ; xếp lại dời 12–18 phiên so với 28–89 khi chạy lại; **gán phòng tham lam toàn lịch cho S nhỏ hơn phòng của M3** (Hungarian chỉ tối ưu trong nhóm cùng khoảng + hoán đổi Q3 đổi luôn phòng). Hai đề xuất chờ Huy chốt. Viết mục 9. T2.4 → `retype`.
+- 2026-11-03 Huy chốt làm cả 2 đề xuất của T2.4 → task mới **T2.6** (phụ thuộc T2.4; T11.1 đổi phụ thuộc T2.4 → T2.6). T2.6 → `spec`: viết `plan/tasks/T2.6.md`. Claude chọn: gán lại phòng chạy một lần ở cuối `LocalSearch.Improve` (nên M3, M3R, M4, xếp lại đều có; tham lam đứng riêng không), 2 thứ tự (giờ bắt đầu; quy mô giảm dần) mỗi phiên lấy phòng nhỏ nhất đủ chỗ, phiên ghim giữ phòng, chấm bằng bộ chấm của leo đồi (f hoặc f'), chỉ nhận khi giảm; tách phần best-fit dùng chung với `GreedyRoomBaseline`. Chờ Huy duyệt.
+- 2026-11-03 T2.4 → `done` không gõ lại riêng (Huy): phần gõ của T2.4 (`Program`, `MethodExperiment`, `MetricsCalculator`, `GreedyRoomBaseline`) gộp vào mục 9 của T2.6, vì T2.6 sửa `GreedyRoomBaseline`; không gắn `ref/T2.4`. Huy duyệt T2.6 → `codex` sau khi T2.4 merge.

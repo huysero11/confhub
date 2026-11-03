@@ -244,6 +244,18 @@ Ví dụ 6.5: M3, M3R, M4 đều C = 5 (đúng 1 bước C ↔ B, f = 0,1452465)
 
 Ví dụ 6.5 (Hoa chỉ rảnh 10h): B bị gỡ (H5), C nhường chỗ → D = 2, f' = 0,9202465; ghim C → B chưa xếp (H2), f' = 0,2823944. Dữ liệu sinh, seed 1–3, lịch gốc = M3: mất phòng nhỏ nhất → xếp lại dời 12–19 phiên, chạy lại M3 từ đầu dời 27–97; diễn giả bận một ngày → 0–1 so với 0–60. Xếp lại Large ≤ 0,1 s.
 
+### 6.10. Kết quả thực nghiệm trên dữ liệu sinh (T2.4, 2026-11-03)
+
+Seed 1–10 × Small / Medium / Large, bản Release, toàn bộ chạy 110 s; số gốc và bảng ở `docs/experiments/T2.4/`. Mọi lịch của mọi phương pháp **0 vi phạm ràng buộc cứng**.
+
+1. **Giả thuyết đạt.** C trung bình (Small / Medium / Large): M1 335 / 467 / 966 · M2 304 / 467 / 903 · tham lam 219 / 290 / 589 · **M3 165 / 210 / 500** · M3R 127 / 194 / 459 · M4 166 / 204 / 501. M3 giảm C **48–54 %** so với M1 và **44–54 %** so với M2 (tính từng seed). Tỷ lệ người không mất phiên nào: M1 0,23–0,32 → M3 0,58–0,67 → M3R 0,63–0,70. M1 chỉ xếp được 94 % phiên, các phương pháp khác 99–100 %.
+2. **M3R tốt nhất** nhưng chậm ~8–10 lần M3 (Large 1,75 s so với 0,24 s).
+3. **M4 với tham số mặc định (Θ₀ = 0,05, 20 bước) gần như trùng M3.** Lưới Θ₀ × số bước: **100 bước mỗi mức nhiệt** giảm rõ C (Θ₀ = 0,05: Small 166 → 134, Large 501 → 457; Medium ít thay đổi 204 → 202), thời gian ×2–3. *Huy chốt 2026-11-03: đổi mặc định `StepsPerTemperature` 20 → 100 (làm ở T2.6).*
+4. **Độ nhạy trọng số:** (1; 0; 0) giảm C mạnh nhất (Large 257 so với 500 của bộ mặc định) nhưng B tăng gấp đôi (1,36 so với 0,59); ba bộ có w₁ 0,34–0,7 cho C, B gần nhau; (0,9; 0,05; 0,05) cân bằng tốt (Large C 409, B 0,67). Giữ mặc định (0,7; 0,2; 0,1); báo cáo nêu đánh đổi C – B.
+5. **Xếp lại (chỉ số 8):** mất phòng nhỏ nhất → xếp lại dời 12 / 18 / 18 phiên so với chạy lại M3 từ đầu 28 / 55 / 89, **và xếp được nhiều phiên hơn** (Medium 54,4 so với 49,6). Diễn giả bận ngày 0 → 3–5 so với 20 / 38 / 69. w₄ từ 0,5 trở lên gần như không đổi kết quả; w₄ = 0,1 dời thêm ~1 phiên.
+6. **Gán phòng (chỉ số 10) — kết quả ngược kỳ vọng:** gán lại toàn lịch M3 bằng tham lam "phòng nhỏ nhất đủ chỗ theo giờ bắt đầu" cho **S nhỏ hơn** phòng của chính lịch M3 (Medium 738 so với 791, Large 1045 so với 1117), chỉ 0–0,2 phiên / seed gán thất bại (Small, Medium). Nguyên nhân: Hungarian chỉ tối ưu trong **nhóm cùng khoảng thời gian** lúc đặt phiên, còn phép hoán đổi Q3 đổi luôn phòng nên phiên nhỏ có thể giữ phòng lớn. *Huy chốt 2026-11-03: thêm bước gán lại phòng toàn lịch ở cuối leo đồi (làm ở T2.6).*
+7. Chỉ số 9 và 11 cần dữ liệu thật → T11.1.
+
 ---
 
 ## 7. Phương pháp đánh giá
