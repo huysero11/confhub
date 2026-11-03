@@ -12,8 +12,10 @@ public static class ConstraintDegree
         - Sort theo mảng degrees đấy. Tuy nhiên trong c# những cái bằng nhau không tự theo thứ tự, nên phải có mảng
             vị trí ban đầu
     */
+
     // Dùng ở: GreedyScheduler.Run (thứ tự mặc định khi không truyền sessionOrder).
     // Dùng ở: RestartScheduler.Run (lấy thứ tự gốc trước khi xáo trộn các lần sau).
+    // Dùng ở: Rescheduler.Run (sắp các phiên còn thiếu trước khi xếp tiếp).
     public static IReadOnlyList<int> OrderSessions(SchedulingProblem problem)
     {
         ArgumentNullException.ThrowIfNull(problem);

@@ -5,6 +5,23 @@ namespace ConfHub.Scheduling.Tests;
 
 public class ProblemGeneratorTests
 {
+    // ---------- NGUYỆN VỌNG ĐỂ DỰNG LẠI ----------
+    // Dùng ở: dotnet test (Interests chính là dữ liệu đã dùng sinh W và quy mô phiên).
+    [Fact]
+    public void ReturnedInterestsRebuildIdenticalInterestMatrix()
+    {
+        var data = ProblemGenerator.Generate(GeneratorOptions.Small);
+        Assert.NotEmpty(data.Interests);
+        var rebuiltMatrix = new InterestMatrix(data.Problem.Sessions, data.Interests);
+        foreach (var firstSession in data.Problem.Sessions)
+        {
+            foreach (var secondSession in data.Problem.Sessions)
+            {
+                Assert.Equal(data.Problem.InterestMatrix.Get(firstSession.Id, secondSession.Id), rebuiltMatrix.Get(firstSession.Id, secondSession.Id));
+            }
+        }
+    }
+
     // ---------- LẶP LẠI ĐƯỢC (SEED) ----------
     [Fact]
     public void SameSeedGivesIdenticalData()

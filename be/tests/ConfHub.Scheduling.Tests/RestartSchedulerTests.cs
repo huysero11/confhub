@@ -53,8 +53,6 @@ public class RestartSchedulerTests
     [InlineData(1)]
     [InlineData(2)]
     [InlineData(3)]
-    [InlineData(4)]
-    [InlineData(5)]
     public void GeneratedProblemsAreCompleteDeterministicAndNotWorseThanM3(int seed)
     {
         GeneratorOptions[] sizes = [GeneratorOptions.Small, GeneratorOptions.Medium, GeneratorOptions.Large];

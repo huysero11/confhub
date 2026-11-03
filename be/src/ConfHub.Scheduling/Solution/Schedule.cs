@@ -18,6 +18,7 @@ public sealed class Schedule
     // Dùng ở: GreedyScheduler.ApplyAssignment, FirstFitScheduler.TryPlaceSession (ghi mốc được chọn).
     // schedule.Place(1, 0, 101); // AI → 8:00, phòng 101
     // Dùng ở: NeighborhoodMoves.TryMove / TrySwap (ghi vị trí mới trên bản sao).
+    // Dùng ở: Rescheduler.KeepValidSessions / TryPlaceDisplacedSession (ghi vị trí giữ lại hoặc đặt thử).
     public void Place(int sessionId, int slotIndex, int? roomId = null)
     {
         if (!_placedSessionIds.Contains(sessionId))
@@ -31,6 +32,7 @@ public sealed class Schedule
     // Gán hoặc đổi phòng cho phiên đã có giờ (giai đoạn 1 chọn giờ trước, gán phòng sau).
     // Dùng ở: GreedyScheduler.ApplyAssignment (áp dụng phòng cho cả nhóm sau Hungarian).
     // Dùng ở: NeighborhoodMoves.TryMove (áp dụng đề xuất phòng của nhóm đích).
+    // Dùng ở: Rescheduler.TryPlaceDisplacedSession (áp dụng phòng Hungarian cho nhóm).
     public void SetRoom(int sessionId, int? roomId)
     {
         if (!_placements.TryGetValue(sessionId, out var placement))
@@ -43,6 +45,7 @@ public sealed class Schedule
 
     // Bỏ phiên khỏi lịch.
     // Dùng ở: NeighborhoodMoves.TryMove (gỡ phiên khỏi bản sao trước khi thử mốc mới).
+    // Dùng ở: Rescheduler.TryDisplace (gỡ phiên nhường chỗ khỏi bản sao).
     public void Remove(int sessionId)
     {
         if (_placements.Remove(sessionId))
@@ -54,6 +57,7 @@ public sealed class Schedule
     // Phiên đã có giờ chưa.
     // Dùng ở: T2.2 / T2.3 (bỏ qua phiên đã xếp), test.
     // Dùng ở: SimulatedAnnealing.BuildPlacedSessionIds (chỉ bốc các phiên đã xếp).
+    // Dùng ở: DisruptionPenalty constructor, GreedyScheduler.ValidateCompletion, Rescheduler.Run / ValidateBaseSchedule / TryDisplace (kiểm phiên đã có trong lịch).
     public bool IsPlaced(int sessionId)
     {
         return _placements.ContainsKey(sessionId);
@@ -63,6 +67,7 @@ public sealed class Schedule
     // Dùng ở: ConstraintChecker (Validate, BuildPlacedSessions), ObjectiveCalculator.BuildPlacedSessions.
     // Dùng ở: RoomFinder.FindFreeRoomIds, GroupRoomAssigner.BuildGroupSessionIds / BuildCosts (đọc khoảng và phòng cũ).
     // Dùng ở: ConflictContribution.Calculate, NeighborhoodMoves.TryMove / TrySwap, LocalSearch.ValidateStart, SimulatedAnnealing.ValidateStart / TryRandomMove / TryRandomSwap (đọc vị trí hiện tại).
+    // Dùng ở: DisruptionPenalty.IsDisrupted, Rescheduler.ValidateBaseSchedule / KeepValidSessions / TryDisplace (đọc vị trí cũ hoặc hiện tại).
     /*
         schedule.Place(1, 0, 101);
 
@@ -80,6 +85,7 @@ public sealed class Schedule
     // Sao chép sâu: sửa bản sao không ảnh hưởng bản gốc (thử biến đổi rồi bỏ nếu không tốt hơn).
     // Dùng ở: GreedyScheduler.TryPlaceSession (thử mốc và chấm f mà không sửa lịch đang giữ).
     // Dùng ở: NeighborhoodMoves.TryMove / TrySwap, LocalSearch.Improve, SimulatedAnnealing.Improve (giữ nguyên lịch đầu vào).
+    // Dùng ở: DisruptionPenalty constructor, GreedyScheduler.Complete, Rescheduler.TryDisplace (giữ nguyên lịch đầu vào).
     public Schedule Clone()
     {
         var copy = new Schedule();

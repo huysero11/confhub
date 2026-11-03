@@ -7,7 +7,7 @@ using ConfHub.Scheduling.Solution;
 namespace ConfHub.Scheduling.Greedy;
 
 // Giai đoạn 1: duyệt phiên theo độ ràng buộc, chọn mốc cho f nhỏ nhất sau khi gán phòng.
-// Mỗi lần Run tạo lịch mới; T2.3 có thể truyền thứ tự khác để khởi động lại.
+// Run tạo lịch mới; Complete xếp tiếp trên bản sao, có thể phạt xáo trộn và giữ phiên ghim.
 public sealed class GreedyScheduler
 {
     private const double ScoreTolerance = 1e-12;
@@ -17,29 +17,40 @@ public sealed class GreedyScheduler
 
     // Dùng ở: InterestBlindScheduler.Run (M2); T2.3 / T2.4 và test (chạy tham lam với trọng số chọn trước).
     // Dùng ở: LocalSearchScheduler, RestartScheduler, AnnealingScheduler (constructor tạo bước tham lam đầu).
-    public GreedyScheduler(SchedulingProblem problem, ObjectiveWeights weights)
+    // Dùng ở: Rescheduler.Run (tạo bộ xếp tiếp có phạt xáo trộn).
+    public GreedyScheduler(SchedulingProblem problem, ObjectiveWeights weights, DisruptionPenalty? disruption = null)
     {
         ArgumentNullException.ThrowIfNull(problem);
         ArgumentNullException.ThrowIfNull(weights);
 
         _problem = problem;
         _checker = new ConstraintChecker(problem);
-        _calculator = new ObjectiveCalculator(problem, weights);
+        _calculator = new ObjectiveCalculator(problem, weights, disruption);
     }
 
+    // ---------- ĐIỀU PHỐI XẾP PHIÊN ----------
     // Dùng ở: LocalSearchScheduler.Run, RestartScheduler.Run, AnnealingScheduler.Run (dựng lịch trước khi cải thiện).
     public SchedulingResult Run(IReadOnlyList<int>? sessionOrder = null)
     {
         var orderedSessionIds = sessionOrder ?? ConstraintDegree.OrderSessions(_problem);
         ValidateSessionOrder(orderedSessionIds);
 
-        // Bắt đầu thử đặt các session vào lịch theo thứ tự ràng buộc
-        var schedule = new Schedule();
+        return Complete(new Schedule(), orderedSessionIds);
+    }
+
+    // Dùng ở: Run (cùng lớp), Rescheduler.Run / TryDisplace (xếp tiếp đúng danh sách trên bản sao).
+    public SchedulingResult Complete(Schedule start, IReadOnlyList<int> sessionIds, IReadOnlySet<int>? lockedSessionIds = null)
+    {
+        ArgumentNullException.ThrowIfNull(start);
+        ArgumentNullException.ThrowIfNull(sessionIds);
+        ValidateCompletion(start, sessionIds);
+
+        var schedule = start.Clone();
         var unplacedSessions = new List<UnplacedSession>();
-        foreach (var sessionId in orderedSessionIds)
+        foreach (var sessionId in sessionIds)
         {
             var blockedSlotCounts = new Dictionary<ConstraintCode, int>(); // đếm lỗi theo mã {H5, 4} là có 4 slot bị lỗi H5
-            if (!TryPlaceSession(schedule, sessionId, blockedSlotCounts))
+            if (!TryPlaceSession(schedule, sessionId, blockedSlotCounts, lockedSessionIds))
             {
                 unplacedSessions.Add(UnplacedSession.Create(sessionId, blockedSlotCounts));
             }
@@ -48,6 +59,7 @@ public sealed class GreedyScheduler
         return new SchedulingResult(schedule, unplacedSessions);
     }
 
+    // ---------- GÁN PHÒNG VÀ GHI LÝ DO ----------
     // Helper của TryPlaceSession (cùng lớp): một mã chỉ tính một lần ở mỗi mốc dù có nhiều vi phạm.
     private static void CountBlockedSlot(Dictionary<ConstraintCode, int> blockedSlotCounts, IReadOnlyList<ConstraintViolation> violations)
     {
@@ -66,6 +78,7 @@ public sealed class GreedyScheduler
         }
     }
 
+    // Helper của TryPlaceSession (cùng lớp): áp dụng mốc mới và phòng của cả nhóm.
     private static void ApplyAssignment(Schedule schedule, int sessionId, int slotIndex, RoomAssignment roomAssignment)
     {
         schedule.Place(sessionId, slotIndex);
@@ -76,7 +89,8 @@ public sealed class GreedyScheduler
         }
     }
 
-    // helper của Run
+    // ---------- KIỂM DANH SÁCH PHIÊN ----------
+    // Helper của Run (cùng lớp): thứ tự phải chứa mọi phiên đúng một lần.
     /*
         - Validate mảng sessionOrder sau khi sắp xếp theo độ ràng buộc
         - Cách làm:
@@ -106,7 +120,23 @@ public sealed class GreedyScheduler
         }
     }
 
-    private bool TryPlaceSession(Schedule schedule, int sessionId, Dictionary<ConstraintCode, int> blockedSlotCounts)
+    // Helper của Complete (cùng lớp): chỉ nhận mã tồn tại, chưa đặt và không trùng trong danh sách.
+    private void ValidateCompletion(Schedule start, IReadOnlyList<int> sessionIds)
+    {
+        var seenSessionIds = new HashSet<int>();
+        foreach (var sessionId in sessionIds)
+        {
+            _problem.GetSession(sessionId);
+            if (!seenSessionIds.Add(sessionId) || start.IsPlaced(sessionId))
+            {
+                throw new ArgumentException("Phiên bị trùng hoặc đã có trong lịch đầu.", nameof(sessionIds));
+            }
+        }
+    }
+
+    // ---------- CHỌN MỐC TỐT NHẤT ----------
+    // Helper của Complete (cùng lớp): thử các mốc, chấm f hoặc f' sau khi gán phòng.
+    private bool TryPlaceSession(Schedule schedule, int sessionId, Dictionary<ConstraintCode, int> blockedSlotCounts, IReadOnlySet<int>? lockedSessionIds)
     {
         var validSlots = _problem.GetValidStartSlots(sessionId);
         if (validSlots.Count == 0)
@@ -130,7 +160,7 @@ public sealed class GreedyScheduler
             }
 
             // Qua được thì thử chia phòng cho cả nhóm cùng khoảng (H3, H4); kết quả mới là đề xuất.
-            var assignment = GroupRoomAssigner.TryAssign(_problem, schedule, sessionId, slotIndex);
+            var assignment = GroupRoomAssigner.TryAssign(_problem, schedule, sessionId, slotIndex, lockedSessionIds);
             if (!assignment.IsFeasible)
             {
                 var failureCode = assignment.FailureCode!.Value;

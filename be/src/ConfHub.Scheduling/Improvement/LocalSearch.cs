@@ -16,7 +16,8 @@ public sealed class LocalSearch
     private readonly ImprovementOptions _options;
 
     // Dùng ở: LocalSearchScheduler, RestartScheduler, SimulatedAnnealing (tạo bộ cải thiện theo cùng trọng số).
-    public LocalSearch(SchedulingProblem problem, ObjectiveWeights weights, ImprovementOptions options)
+    // Dùng ở: Rescheduler.Run (tạo bước cải thiện có phạt xáo trộn).
+    public LocalSearch(SchedulingProblem problem, ObjectiveWeights weights, ImprovementOptions options, DisruptionPenalty? disruption = null)
     {
         ArgumentNullException.ThrowIfNull(problem);
         ArgumentNullException.ThrowIfNull(weights);
@@ -27,12 +28,13 @@ public sealed class LocalSearch
         _problem = problem;
         _options = options;
         _checker = new ConstraintChecker(problem);
-        _calculator = new ObjectiveCalculator(problem, weights);
+        _calculator = new ObjectiveCalculator(problem, weights, disruption);
     }
 
     // ---------- ĐIỀU PHỐI TỪNG VÒNG ----------
     // Dùng ở: LocalSearchScheduler.Run, RestartScheduler.Run, SimulatedAnnealing.Improve (giảm f đến khi hết bước tốt hơn).
-    public ImprovementResult Improve(Schedule start)
+    // Dùng ở: Rescheduler.Run (bước 4 giảm f' và giữ nguyên phiên ghim).
+    public ImprovementResult Improve(Schedule start, IReadOnlySet<int>? lockedSessionIds = null)
     {
         ArgumentNullException.ThrowIfNull(start);
         ValidateStart(start);
@@ -51,20 +53,20 @@ public sealed class LocalSearch
             Schedule? bestSchedule = null;
 
             // Lấy các phiên gây xung đột nhiều nhất để thử dời hoặc hoán đổi.
-            var candidateIds = ConflictContribution.RankCandidates(_problem, currentSchedule, _options.CandidateCount);
+            var candidateIds = ConflictContribution.RankCandidates(_problem, currentSchedule, _options.CandidateCount, lockedSessionIds);
             foreach (var candidateId in candidateIds)
             {
                 // Thử dời sang từng mốc hợp lệ khác.
                 foreach (var slotIndex in _problem.GetValidStartSlots(candidateId))
                 {
-                    var movedSchedule = NeighborhoodMoves.TryMove(_problem, _checker, currentSchedule, candidateId, slotIndex);
+                    var movedSchedule = NeighborhoodMoves.TryMove(_problem, _checker, currentSchedule, candidateId, slotIndex, lockedSessionIds);
                     ConsiderCandidate(movedSchedule, ref bestSchedule, ref bestScore);
                 }
 
                 // Thử hoán đổi với từng phiên khác.
                 foreach (var otherSession in _problem.Sessions)
                 {
-                    var swappedSchedule = NeighborhoodMoves.TrySwap(_problem, _checker, currentSchedule, candidateId, otherSession.Id);
+                    var swappedSchedule = NeighborhoodMoves.TrySwap(_problem, _checker, currentSchedule, candidateId, otherSession.Id, lockedSessionIds);
                     ConsiderCandidate(swappedSchedule, ref bestSchedule, ref bestScore);
                 }
             }

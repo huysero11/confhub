@@ -11,14 +11,15 @@ public static class NeighborhoodMoves
 {
     // ---------- DỜI MỘT PHIÊN ----------
     // Dùng ở: LocalSearch.Improve, SimulatedAnnealing.TryRandomMove (thử mốc khác và lọc H1–H5 trước khi chấm f).
-    public static Schedule? TryMove(SchedulingProblem problem, ConstraintChecker checker, Schedule schedule, int sessionId, int slotIndex)
+    public static Schedule? TryMove(SchedulingProblem problem, ConstraintChecker checker, Schedule schedule, int sessionId, int slotIndex, IReadOnlySet<int>? lockedSessionIds = null)
     {
         ArgumentNullException.ThrowIfNull(problem);
         ArgumentNullException.ThrowIfNull(checker);
         ArgumentNullException.ThrowIfNull(schedule);
 
         // Phiên chưa đặt thì không có gì để dời; dời về chính mốc cũ không phải bước mới.
-        if (!schedule.TryGetPlacement(sessionId, out var placement) || placement.SlotIndex == slotIndex)
+        if (lockedSessionIds?.Contains(sessionId) == true
+            || !schedule.TryGetPlacement(sessionId, out var placement) || placement.SlotIndex == slotIndex)
         {
             return null;
         }
@@ -34,7 +35,7 @@ public static class NeighborhoodMoves
         }
 
         // Qua được kiểm tra thì chia lại phòng cho cả nhóm ở mốc mới.
-        var roomAssignment = GroupRoomAssigner.TryAssign(problem, candidateSchedule, sessionId, slotIndex);
+        var roomAssignment = GroupRoomAssigner.TryAssign(problem, candidateSchedule, sessionId, slotIndex, lockedSessionIds);
         if (!roomAssignment.IsFeasible)
         {
             return null;
@@ -52,13 +53,15 @@ public static class NeighborhoodMoves
 
     // ---------- HOÁN ĐỔI HAI PHIÊN ----------
     // Dùng ở: LocalSearch.Improve, SimulatedAnnealing.TryRandomSwap (đổi cả mốc lẫn phòng của hai phiên không chồng giờ).
-    public static Schedule? TrySwap(SchedulingProblem problem, ConstraintChecker checker, Schedule schedule, int firstSessionId, int secondSessionId)
+    public static Schedule? TrySwap(SchedulingProblem problem, ConstraintChecker checker, Schedule schedule, int firstSessionId, int secondSessionId, IReadOnlySet<int>? lockedSessionIds = null)
     {
         ArgumentNullException.ThrowIfNull(problem);
         ArgumentNullException.ThrowIfNull(checker);
         ArgumentNullException.ThrowIfNull(schedule);
 
-        if (firstSessionId == secondSessionId
+        if (lockedSessionIds?.Contains(firstSessionId) == true
+            || lockedSessionIds?.Contains(secondSessionId) == true
+            || firstSessionId == secondSessionId
             || !schedule.TryGetPlacement(firstSessionId, out var firstPlacement)
             || !schedule.TryGetPlacement(secondSessionId, out var secondPlacement)
             || !firstPlacement.RoomId.HasValue || !secondPlacement.RoomId.HasValue)

@@ -235,6 +235,15 @@ Ví dụ 6.5: tham lam C = 35 (đúng bảng), M1 và M2 đều C = 5 (may mắn
 
 Ví dụ 6.5: M3, M3R, M4 đều C = 5 (đúng 1 bước C ↔ B, f = 0,1452465). Dữ liệu sinh, seed 1–3 (C trung bình): Small tham lam 232 / M3 185 / M3R 132 / M4 178; Medium 249 / 170 / 158 / 172; Large 617 / 502 / 411 / 502. M3 giảm C 20–32 % so với tham lam, M3R 33–43 %; thời gian Release Large: M3 ≤ 0,3 s, M3R ≤ 2,2 s, M4 ≤ 0,4 s. M4 với tham số mặc định thường trùng M3 — dò tham số ở T2.4.
 
+### 6.9. Xếp lại hạn chế xáo trộn (T2.5, chốt 2026-10-29)
+
+1. **D** = số phiên có ở cả lịch gốc và bài toán mới mà ở lịch mới chưa xếp, khác mốc hoặc khác phòng (đổi phòng cũng tính). **f' = f + w₄·D/n**, n = số phiên đó, **w₄ = 0,5** (đổi hết mọi phiên phạt 0,5, lớn hơn hẳn f thường gặp).
+2. **Bốn bước**: giữ phiên còn hợp lệ (phiên ghim trước, thứ tự nhập; phòng mất → H4) → tham lam xếp tiếp trên lịch đang giữ (`GreedyScheduler.Complete`, chọn mốc theo f') → **nhường chỗ một bậc** (gỡ một phiên không ghim chồng giờ, chỉ nhận khi xếp được cả hai, chọn f' nhỏ nhất; xếp đủ phiên ưu tiên hơn f') → leo đồi T2.3 với f'.
+3. **Phiên ghim** không bị dời, không bị Hungarian đổi phòng, không là ứng viên / đối tác hoán đổi; ghim hết hợp lệ thì bị gỡ, mất ghim và được báo.
+4. Thư viện giả định bài toán mới giữ nguyên ngày và độ dài mốc; đổi giờ thật ↔ mốc là việc của T5.4. `ChangeScenario` (mất phòng, diễn giả bận một ngày) dùng cho test và T2.4.
+
+Ví dụ 6.5 (Hoa chỉ rảnh 10h): B bị gỡ (H5), C nhường chỗ → D = 2, f' = 0,9202465; ghim C → B chưa xếp (H2), f' = 0,2823944. Dữ liệu sinh, seed 1–3, lịch gốc = M3: mất phòng nhỏ nhất → xếp lại dời 12–19 phiên, chạy lại M3 từ đầu dời 27–97; diễn giả bận một ngày → 0–1 so với 0–60. Xếp lại Large ≤ 0,1 s.
+
 ---
 
 ## 7. Phương pháp đánh giá

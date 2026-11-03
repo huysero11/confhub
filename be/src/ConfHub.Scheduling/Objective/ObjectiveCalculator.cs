@@ -7,23 +7,27 @@ namespace ConfHub.Scheduling.Objective;
 //   C = số xung đột nguyện vọng, B = độ lệch chuẩn tải theo mốc, S = chỗ ngồi lãng phí.
 // Mỗi thành phần chia cho một cận trên cố định của bài toán (không phụ thuộc lịch đang xét)
 // nên so sánh được giữa các lịch, kể cả lịch chưa xếp đủ phiên.
-// Chỉ xét phiên đã đặt. Chưa tối ưu hiệu năng: mỗi lần tính lại toàn bộ.
+// C, B, S chỉ xét phiên đã đặt; phạt xáo trộn còn tính cả phiên bị bỏ khỏi lịch gốc.
+// Chưa tối ưu hiệu năng: mỗi lần tính lại toàn bộ.
 public sealed class ObjectiveCalculator
 {
     private readonly SchedulingProblem _problem;
     private readonly ObjectiveWeights _weights;
+    private readonly DisruptionPenalty? _disruption;
     private readonly int _maxWastedSeats;
 
     // Dùng ở: T2.2 / T2.3 (tạo một lần cho mỗi bài toán), T2.4, test.
     // Dùng ở: GreedyScheduler (constructor tạo bộ chấm điểm cho mọi mốc thử).
     // Dùng ở: LocalSearch, SimulatedAnnealing (constructor tạo bộ chấm cùng trọng số với tham lam).
-    public ObjectiveCalculator(SchedulingProblem problem, ObjectiveWeights weights)
+    // Dùng ở: Rescheduler.Run (chấm f' sau biến động).
+    public ObjectiveCalculator(SchedulingProblem problem, ObjectiveWeights weights, DisruptionPenalty? disruption = null)
     {
         ArgumentNullException.ThrowIfNull(problem);
         ArgumentNullException.ThrowIfNull(weights);
 
         _problem = problem;
         _weights = weights;
+        _disruption = disruption;
         _maxWastedSeats = CalculateMaxWastedSeats();
     }
 
@@ -31,6 +35,7 @@ public sealed class ObjectiveCalculator
     // Dùng ở: T2.2 / T2.3 so sánh lịch trước và sau biến đổi; T2.4 ghi chỉ số; T5.1 lưu vào ScheduleVersion.
     // Dùng ở: GreedyScheduler.TryPlaceSession (chấm cả bản sao sau khi gán phòng để chọn mốc).
     // Dùng ở: LocalSearch.Improve / ConsiderCandidate, SimulatedAnnealing.Improve (so f của lịch hiện tại và ứng viên).
+    // Dùng ở: Rescheduler.TryDisplace (chọn cách nhường chỗ có f' nhỏ nhất).
     public ObjectiveResult Evaluate(Schedule schedule)
     {
         ArgumentNullException.ThrowIfNull(schedule);
@@ -59,9 +64,17 @@ public sealed class ObjectiveCalculator
             normalizedWaste = wastedSeats / (double)_maxWastedSeats;
         }
 
+        var disruptedCount = _disruption?.CountDisrupted(schedule) ?? 0;
+        var normalizedDisruption = 0.0;
+        if (_disruption is not null && _disruption.BaseSessionCount > 0)
+        {
+            normalizedDisruption = disruptedCount / (double)_disruption.BaseSessionCount;
+        }
+
         var value = (_weights.Conflict * normalizedConflict)
             + (_weights.Load * normalizedLoad)
-            + (_weights.Waste * normalizedWaste);
+            + (_weights.Waste * normalizedWaste)
+            + ((_disruption?.Weight ?? 0.0) * normalizedDisruption);
 
         return new ObjectiveResult(
             conflictCount,
@@ -70,7 +83,9 @@ public sealed class ObjectiveCalculator
             normalizedConflict,
             normalizedLoad,
             normalizedWaste,
-            value);
+            value,
+            disruptedCount,
+            normalizedDisruption);
     }
 
     // ---------- CẬN CHUẨN HÓA ----------

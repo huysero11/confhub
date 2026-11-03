@@ -1,7 +1,7 @@
 namespace ConfHub.Scheduling.Objective;
 
 // Kết quả đánh giá một lịch. Ba số thô khớp các cột ConflictCount, LoadStdDev, WastedSeats,
-// còn Value (f) khớp cột Objective của bảng ScheduleVersion.
+// Value là f, hoặc f' khi có phạt; hai chỉ số xáo trộn bằng 0 nếu không truyền phạt.
 public sealed record ObjectiveResult(
     int ConflictCount,
     double LoadStdDev,
@@ -9,4 +9,6 @@ public sealed record ObjectiveResult(
     double NormalizedConflict,
     double NormalizedLoad,
     double NormalizedWaste,
-    double Value);
+    double Value,
+    int DisruptedCount = 0,
+    double NormalizedDisruption = 0);
