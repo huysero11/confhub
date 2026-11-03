@@ -9,7 +9,7 @@ public sealed record RescheduleOptions
 
     public ImprovementOptions Improvement { get; init; } = new();
 
-    // Dùng ở: Rescheduler constructor (loại tùy chọn sai trước khi chạy).
+    // Loại tùy chọn sai trước khi chạy.
     public void Validate()
     {
         if (!double.IsFinite(DisruptionWeight) || DisruptionWeight < 0)

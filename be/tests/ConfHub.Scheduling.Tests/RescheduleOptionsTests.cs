@@ -7,7 +7,7 @@ namespace ConfHub.Scheduling.Tests;
 // Kiểm tùy chọn xếp lại và việc constructor kiểm tra cả tùy chọn leo đồi.
 public class RescheduleOptionsTests
 {
-    // Dùng ở: dotnet test (mặc định đúng 0,5 và cho phép tắt phạt bằng 0).
+    // Mặc định đúng 0,5 và cho phép tắt phạt bằng 0.
     [Fact]
     public void DefaultsAndZeroWeightAreValid()
     {
@@ -18,7 +18,7 @@ public class RescheduleOptionsTests
         (options with { DisruptionWeight = 0 }).Validate();
     }
 
-    // Dùng ở: dotnet test (chặn trọng số sai trước khi thuật toán chạy).
+    // Chặn trọng số sai trước khi thuật toán chạy.
     [Theory]
     [InlineData(-1)]
     [InlineData(double.NaN)]
@@ -31,7 +31,7 @@ public class RescheduleOptionsTests
         Assert.Throws<ArgumentException>(() => new Rescheduler(ExampleProblem.Create(), options));
     }
 
-    // Dùng ở: dotnet test (kiểm lồng Improvement, kể cả null được truyền từ tầng gọi).
+    // Kiểm lồng Improvement, kể cả null được truyền từ tầng gọi.
     [Fact]
     public void InvalidImprovementIsRejected()
     {

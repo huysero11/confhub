@@ -1,6 +1,5 @@
 // useThemeMode.ts — hook để component đọc và đổi chế độ sáng / tối, là useContext custom.
 // Chứa: ThemeModeContext (nơi ThemeProvider đặt giá trị vào) và hook useThemeMode (nơi lấy ra).
-// Dùng ở: ThemeToggle và bất kỳ component nào cần biết đang ở nền nào.
 import { createContext, useContext } from "react";
 import type { ThemeMode } from "@/theme/themeTokens";
 

@@ -15,9 +15,6 @@ public sealed class GreedyScheduler
     private readonly ConstraintChecker _checker;
     private readonly ObjectiveCalculator _calculator;
 
-    // Dùng ở: InterestBlindScheduler.Run (M2); T2.3 / T2.4 và test (chạy tham lam với trọng số chọn trước).
-    // Dùng ở: LocalSearchScheduler, RestartScheduler, AnnealingScheduler (constructor tạo bước tham lam đầu).
-    // Dùng ở: Rescheduler.Run (tạo bộ xếp tiếp có phạt xáo trộn).
     public GreedyScheduler(SchedulingProblem problem, ObjectiveWeights weights, DisruptionPenalty? disruption = null)
     {
         ArgumentNullException.ThrowIfNull(problem);
@@ -29,7 +26,7 @@ public sealed class GreedyScheduler
     }
 
     // ---------- ĐIỀU PHỐI XẾP PHIÊN ----------
-    // Dùng ở: LocalSearchScheduler.Run, RestartScheduler.Run, AnnealingScheduler.Run (dựng lịch trước khi cải thiện).
+    // Xếp cả lịch từ lịch rỗng theo thứ tự truyền vào (mặc định theo độ ràng buộc).
     public SchedulingResult Run(IReadOnlyList<int>? sessionOrder = null)
     {
         var orderedSessionIds = sessionOrder ?? ConstraintDegree.OrderSessions(_problem);
@@ -38,7 +35,7 @@ public sealed class GreedyScheduler
         return Complete(new Schedule(), orderedSessionIds);
     }
 
-    // Dùng ở: Run (cùng lớp), Rescheduler.Run / TryDisplace (xếp tiếp đúng danh sách trên bản sao).
+    // Xếp tiếp đúng danh sách phiên (theo thứ tự đó) lên bản sao của lịch có sẵn.
     public SchedulingResult Complete(Schedule start, IReadOnlyList<int> sessionIds, IReadOnlySet<int>? lockedSessionIds = null)
     {
         ArgumentNullException.ThrowIfNull(start);

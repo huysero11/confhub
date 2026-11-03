@@ -13,7 +13,7 @@ namespace ConfHub.Scheduling.Tests;
 public class GreedySchedulerTests
 {
     // ---------- XẾP TIẾP TRÊN LỊCH CÓ SẴN ----------
-    // Dùng ở: dotnet test (chỉ xếp danh sách yêu cầu; Hungarian được đổi phòng phiên cũ không ghim).
+    // Chỉ xếp danh sách yêu cầu; Hungarian được đổi phòng phiên cũ không ghim.
     [Fact]
     public void CompletePlacesOnlyRequestedSessionsAndDoesNotMutateStart()
     {
@@ -35,7 +35,7 @@ public class GreedySchedulerTests
         LocalSearchTests.AssertSameSchedule(start, emptyCompletion.Schedule);
     }
 
-    // Dùng ở: dotnet test (danh sách được xếp đúng thứ tự truyền vào, không sắp lại theo độ ràng buộc).
+    // Danh sách được xếp đúng thứ tự truyền vào, không sắp lại theo độ ràng buộc.
     [Fact]
     public void CompleteHonorsRequestedOrder()
     {
@@ -49,7 +49,7 @@ public class GreedySchedulerTests
         Assert.Equal(1, Assert.Single(completion.UnplacedSessions).SessionId);
     }
 
-    // Dùng ở: dotnet test (mã lạ, lặp hoặc đã xếp bị từ chối trước khi sửa bản sao).
+    // Mã lạ, lặp hoặc đã xếp bị từ chối trước khi sửa bản sao.
     [Fact]
     public void CompleteRejectsInvalidSessionLists()
     {
@@ -62,7 +62,7 @@ public class GreedySchedulerTests
         Assert.Single(start.PlacedSessionIds);
     }
 
-    // Dùng ở: dotnet test (phạt đổi phòng làm chọn mốc khác; ghim cũng bảo vệ phòng qua Hungarian).
+    // Phạt đổi phòng làm chọn mốc khác; ghim cũng bảo vệ phòng qua Hungarian.
     [Fact]
     public void CompleteUsesDisruptionAndKeepsLockedRooms()
     {
@@ -83,7 +83,7 @@ public class GreedySchedulerTests
     }
 
     // ---------- VÍ DỤ VÀ THỨ TỰ ----------
-    // Dùng ở: dotnet test / Debug Test (đi từng bước A, D, B, C của ví dụ 6.5).
+    // Đi từng bước A, D, B, C của ví dụ 6.5.
     [Fact]
     public void ExampleMatchesEveryPlacementAndObjective()
     {
@@ -106,7 +106,7 @@ public class GreedySchedulerTests
         Assert.Equal((0.7 * 35.0 / 40.0) + (0.1 * 164.0 / 284.0), objective.Value, 10);
     }
 
-    // Dùng ở: dotnet test (thứ tự khởi động lại của T2.3 thực sự được áp dụng).
+    // Thứ tự khởi động lại của T2.3 thực sự được áp dụng.
     [Fact]
     public void CustomOrderProducesAnotherValidSchedule()
     {
@@ -132,7 +132,7 @@ public class GreedySchedulerTests
         Assert.True(hasDifferentPlacement);
     }
 
-    // Dùng ở: dotnet test (không bỏ sót, lặp hoặc nhận mã lạ trong sessionOrder).
+    // Không bỏ sót, lặp hoặc nhận mã lạ trong sessionOrder.
     [Fact]
     public void InvalidSessionOrdersAreRejected()
     {
@@ -144,7 +144,7 @@ public class GreedySchedulerTests
     }
 
     // ---------- PHIÊN CHƯA XẾP VÀ PHÁ HÒA ----------
-    // Dùng ở: dotnet test (diễn giả khai rảnh ngoài giờ tổ chức thì chỉ báo H5).
+    // Diễn giả khai rảnh ngoài giờ tổ chức thì chỉ báo H5.
     [Fact]
     public void NoAvailableStartReportsOnlyH5()
     {
@@ -162,7 +162,7 @@ public class GreedySchedulerTests
         AssertCompleteAndValid(problem, schedulingResult);
     }
 
-    // Dùng ở: dotnet test (không phòng nào đủ lớn, số mốc H4 phải chính xác).
+    // Không phòng nào đủ lớn, số mốc H4 phải chính xác.
     [Fact]
     public void OversizedSessionReportsH4AtEveryValidSlot()
     {
@@ -179,7 +179,7 @@ public class GreedySchedulerTests
         AssertCompleteAndValid(problem, schedulingResult);
     }
 
-    // Dùng ở: dotnet test (hai diễn giả cùng bận vẫn chỉ là một mốc bị H1 chặn).
+    // Hai diễn giả cùng bận vẫn chỉ là một mốc bị H1 chặn.
     [Fact]
     public void SharedSpeakersCountH1OnlyOncePerSlot()
     {
@@ -197,7 +197,7 @@ public class GreedySchedulerTests
         AssertCompleteAndValid(problem, schedulingResult);
     }
 
-    // Dùng ở: dotnet test (H2 lặp qua nhiều mốc trong một phiên dài chỉ đếm một lần cho vị trí thử).
+    // H2 lặp qua nhiều mốc trong một phiên dài chỉ đếm một lần cho vị trí thử.
     [Fact]
     public void ConcurrencyViolationsCountOncePerCandidateSlot()
     {
@@ -213,7 +213,7 @@ public class GreedySchedulerTests
         AssertCompleteAndValid(problem, schedulingResult);
     }
 
-    // Dùng ở: dotnet test (không có phòng trống suốt khoảng dù H2 vẫn hợp lệ ở từng mốc).
+    // Không có phòng trống suốt khoảng dù H2 vẫn hợp lệ ở từng mốc.
     [Fact]
     public void FragmentedRoomsReportH2FromAssignment()
     {
@@ -230,7 +230,7 @@ public class GreedySchedulerTests
         AssertCompleteAndValid(problem, schedulingResult);
     }
 
-    // Dùng ở: dotnet test (khi f hòa, lấy mốc sớm hơn).
+    // Khi f hòa, lấy mốc sớm hơn.
     [Fact]
     public void EqualScoresChooseEarliestSlot()
     {
@@ -245,7 +245,7 @@ public class GreedySchedulerTests
     }
 
     // ---------- DỮ LIỆU SINH VÀ SO SÁNH ----------
-    // Dùng ở: dotnet test (15 bài toán; kiểm lịch hợp lệ, đủ trạng thái và tất định cả khi dùng lại scheduler).
+    // 15 bài toán; kiểm lịch hợp lệ, đủ trạng thái và tất định cả khi dùng lại scheduler.
     [Theory]
     [InlineData(1)]
     [InlineData(2)]
@@ -280,7 +280,7 @@ public class GreedySchedulerTests
         }
     }
 
-    // Dùng ở: dotnet test (phòng theo phân vị giúp tham lam xếp ít nhất 95% phiên ở cả ba quy mô).
+    // Phòng theo phân vị giúp tham lam xếp ít nhất 95% phiên ở cả ba quy mô.
     [Theory]
     [InlineData(1)]
     [InlineData(2)]
@@ -301,7 +301,7 @@ public class GreedySchedulerTests
         }
     }
 
-    // Dùng ở: dotnet test (giữ nguyên tiêu chí tổng C tham lam <= M1 trên Medium seed 1–5).
+    // Giữ nguyên tiêu chí tổng C tham lam <= M1 trên Medium seed 1–5.
     [Fact]
     public void MediumTotalGreedyConflictDoesNotExceedFirstFit()
     {

@@ -1,5 +1,5 @@
 // ResendVerificationForm.tsx — component nhập email để lấy link mới khi link xác thực hỏng.
-// Dùng ở VerifyEmailResult và CheckEmailNotice thiếu email; lỗi theo ô qua hook, khóa gửi lại theo BR08.
+// Hiện khi link xác thực hỏng hoặc thiếu email; lỗi theo ô qua hook, khóa gửi lại theo BR08.
 import { RESEND_COOLDOWN_MS } from "../resendCooldown";
 import { useState } from "react";
 import { Alert, App, Flex, Form, Input } from "antd";

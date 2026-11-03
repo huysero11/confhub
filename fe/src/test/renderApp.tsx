@@ -1,6 +1,6 @@
 // renderApp.tsx — vẽ cả ứng dụng (provider + router) trong test, mở sẵn ở một địa chỉ.
 // Chứa: hàm renderApp(path) dùng createMemoryRouter (địa chỉ nằm trong bộ nhớ, không cần trình duyệt).
-// Dùng ở: các file *.test.tsx cần đi qua route thật. Bọc StrictMode như main.tsx để bắt lỗi gọi API 2 lần.
+// Bọc StrictMode như main.tsx để bắt lỗi gọi API 2 lần.
 import { render, screen, waitFor } from "@testing-library/react";
 import { StrictMode } from "react";
 import { QueryClient } from "@tanstack/react-query";

@@ -11,7 +11,7 @@ namespace ConfHub.Scheduling.Tests;
 public class AnnealingSchedulerTests
 {
     // ---------- VÍ DỤ VÀ PHIÊN CHƯA XẾP ----------
-    // Dùng ở: dotnet test (M4 trên ví dụ 6.5 đạt C = 5).
+    // M4 trên ví dụ 6.5 đạt C = 5.
     [Fact]
     public void ExampleReturnsConflictFive()
     {
@@ -22,7 +22,7 @@ public class AnnealingSchedulerTests
         Assert.Equal(5, new ObjectiveCalculator(problem, ObjectiveWeights.Default).Evaluate(schedulingResult.Schedule).ConflictCount);
     }
 
-    // Dùng ở: dotnet test (M4 không thử xếp phiên quá lớn trong bước cải thiện).
+    // M4 không thử xếp phiên quá lớn trong bước cải thiện.
     [Fact]
     public void UnplaceableSessionKeepsGreedyReason()
     {
@@ -40,7 +40,7 @@ public class AnnealingSchedulerTests
     }
 
     // ---------- DỮ LIỆU SINH ----------
-    // Dùng ở: dotnet test (M4 bảo toàn trạng thái từng phiên và tất định kể cả dùng lại scheduler).
+    // M4 bảo toàn trạng thái từng phiên và tất định kể cả dùng lại scheduler.
     [Theory]
     [InlineData(1)]
     [InlineData(2)]
@@ -70,7 +70,7 @@ public class AnnealingSchedulerTests
         }
     }
 
-    // Dùng ở: dotnet test (tiêu chí tổng C của M4 trên Medium seed 1–5, không thay bằng so sánh f).
+    // Tiêu chí tổng C của M4 trên Medium seed 1–5, không thay bằng so sánh f.
     [Fact]
     public void MediumTotalConflictDoesNotExceedGreedy()
     {

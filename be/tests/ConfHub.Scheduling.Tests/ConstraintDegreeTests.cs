@@ -6,7 +6,7 @@ namespace ConfHub.Scheduling.Tests;
 // Kiểm công thức độ ràng buộc và thứ tự ổn định khi hòa.
 public class ConstraintDegreeTests
 {
-    // Dùng ở: dotnet test (đối chiếu thứ tự A, D, B, C của ví dụ 6.5).
+    // Đối chiếu thứ tự A, D, B, C của ví dụ 6.5.
     [Fact]
     public void ExampleDegreesAndOrderMatchSpecification()
     {
@@ -18,7 +18,7 @@ public class ConstraintDegreeTests
         Assert.Equal([1, 2, 3, 4], ConstraintDegree.OrderSessions(problem));
     }
 
-    // Dùng ở: dotnet test (không diễn giả thì trừ 0; hòa giữ thứ tự nhập không theo mã).
+    // Không diễn giả thì trừ 0; hòa giữ thứ tự nhập không theo mã.
     [Fact]
     public void NoSpeakersSubtractsZeroAndTiesPreserveInputOrder()
     {
@@ -31,7 +31,7 @@ public class ConstraintDegreeTests
         Assert.Equal([9, 2], ConstraintDegree.OrderSessions(problem));
     }
 
-    // Dùng ở: dotnet test (lấy số phiên lớn nhất của một diễn giả, không cộng hai người).
+    // Lấy số phiên lớn nhất của một diễn giả, không cộng hai người.
     [Fact]
     public void MultipleSpeakersUseBusiestSpeaker()
     {

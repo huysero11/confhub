@@ -9,7 +9,7 @@ public static class HungarianAlgorithm
     public const long Infeasible = 1_000_000_000L;
 
     // ---------- GIẢI BÀI TOÁN PHÂN CÔNG ----------
-    // Dùng ở: GroupRoomAssigner.TryAssign (tìm cách gán phòng có tổng chi phí nhỏ nhất).
+    // Tìm cách gán phòng có tổng chi phí nhỏ nhất.
     /*
         đang xét hàng i, ví dụ chọn cột j1 mà có thằng lấy rồi,
             thì coi như lấy j1 và sẽ chuyển cái thằng lấy j1 lúc trước sang cột j2,

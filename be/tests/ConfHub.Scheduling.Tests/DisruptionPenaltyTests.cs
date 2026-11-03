@@ -8,7 +8,7 @@ namespace ConfHub.Scheduling.Tests;
 public class DisruptionPenaltyTests
 {
     // ---------- ĐẾM VỊ TRÍ THAY ĐỔI ----------
-    // Dùng ở: dotnet test (đổi mốc, đổi phòng và mất phiên là ba xáo trộn riêng).
+    // Đổi mốc, đổi phòng và mất phiên là ba xáo trộn riêng.
     [Fact]
     public void IdenticalScheduleHasZeroDisruptionAndThreeChangesCountOnceEach()
     {
@@ -26,7 +26,7 @@ public class DisruptionPenaltyTests
         Assert.Equal([1, 2, 3], penalty.GetDisruptedSessionIds(changedSchedule));
     }
 
-    // Dùng ở: dotnet test (giao của bài toán mới và lịch gốc; danh sách theo thứ tự nhập mới).
+    // Giao của bài toán mới và lịch gốc; danh sách theo thứ tự nhập mới.
     [Fact]
     public void AddedAndDeletedSessionsAreExcludedAndBaseIsSnapshotted()
     {
@@ -46,7 +46,7 @@ public class DisruptionPenaltyTests
     }
 
     // ---------- BIÊN VÀ ĐẦU VÀO ----------
-    // Dùng ở: dotnet test (n = 0 không chia cho 0 và không có phạt).
+    // N = 0 không chia cho 0 và không có phạt.
     [Fact]
     public void EmptyIntersectionHasZeroPenalty()
     {
@@ -60,7 +60,7 @@ public class DisruptionPenaltyTests
         Assert.Equal(new ObjectiveCalculator(problem, ObjectiveWeights.Default).Evaluate(schedule).Value, objective.Value);
     }
 
-    // Dùng ở: dotnet test (không chấp nhận trọng số âm hoặc không hữu hạn).
+    // Không chấp nhận trọng số âm hoặc không hữu hạn.
     [Theory]
     [InlineData(-0.1)]
     [InlineData(double.NaN)]

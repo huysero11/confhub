@@ -1,6 +1,6 @@
 // themeTokens.ts — nơi DUY NHẤT khai màu, chữ, bo góc của ứng dụng (design token của antd).
 // Chứa: kiểu ThemeMode, token dùng chung, bảng màu cho từng nền (PROJECT.md mục 9).
-// Dùng ở: ThemeProvider. Component không gõ màu trực tiếp mà lấy qua theme.useToken().
+// Component không gõ màu trực tiếp mà lấy qua theme.useToken().
 import type { ThemeConfig } from "antd";
 
 export type ThemeMode = "light" | "dark";

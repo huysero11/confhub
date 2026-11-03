@@ -13,7 +13,7 @@ namespace ConfHub.Scheduling.Tests;
 public class ReschedulerTests
 {
     // ---------- VÍ DỤ TÍNH TAY ----------
-    // Dùng ở: dotnet test / Debug Test (B bị H5, C nhường chỗ; điểm cố định theo đặc tả).
+    // B bị H5, C nhường chỗ; điểm cố định theo đặc tả.
     [Fact]
     public void ExampleWithoutLocksDisplacesBAndMovesCToPlaceEverySession()
     {
@@ -33,7 +33,7 @@ public class ReschedulerTests
         LocalSearchTests.AssertSameSchedule(ExampleProblem.CreateSwappedSchedule(), baseSchedule);
     }
 
-    // Dùng ở: dotnet test / Debug Test (C ghim làm bước 3 không cứu được B; giữ lý do H2 của tham lam).
+    // C ghim làm bước 3 không cứu được B; giữ lý do H2 của tham lam.
     [Fact]
     public void ExampleWithCLockedLeavesBUnplacedWithH2()
     {
@@ -56,7 +56,7 @@ public class ReschedulerTests
     }
 
     // ---------- KHÔNG BIẾN ĐỘNG VÀ KIỂM ĐẦU VÀO ----------
-    // Dùng ở: dotnet test (lịch gốc M3 giữ y nguyên khi bài toán không thay đổi).
+    // Lịch gốc M3 giữ y nguyên khi bài toán không thay đổi.
     [Fact]
     public void UnchangedProblemKeepsOriginalM3Schedule()
     {
@@ -69,7 +69,7 @@ public class ReschedulerTests
         Assert.Equal(new ObjectiveCalculator(problem, ObjectiveWeights.Default).Evaluate(baseSchedule).Value, rescheduleResult.Value);
     }
 
-    // Dùng ở: dotnet test (lịch thiếu phòng hoặc tập ghim chứa phiên không có trong lịch gốc phải báo lỗi).
+    // Lịch thiếu phòng hoặc tập ghim chứa phiên không có trong lịch gốc phải báo lỗi.
     [Fact]
     public void MissingRoomAndUnknownLockAreRejected()
     {
@@ -83,7 +83,7 @@ public class ReschedulerTests
         Assert.Throws<ArgumentException>(() => scheduler.Run(deletedRoomlessSession));
     }
 
-    // Dùng ở: dotnet test (ghim hết hợp lệ mất ghim rồi được xếp lại; vẫn ghi rõ phiên bị gỡ).
+    // Ghim hết hợp lệ mất ghim rồi được xếp lại; vẫn ghi rõ phiên bị gỡ.
     [Fact]
     public void InvalidLockedSessionIsReleasedAndRescheduled()
     {
@@ -94,7 +94,7 @@ public class ReschedulerTests
         Assert.Equal([3, 4], rescheduleResult.ChangedSessionIds);
     }
 
-    // Dùng ở: dotnet test (ghim được giữ trước phiên không ghim dù đứng sau trong thứ tự nhập).
+    // Ghim được giữ trước phiên không ghim dù đứng sau trong thứ tự nhập.
     [Fact]
     public void LockedSessionHasPriorityWhenOldPlacementsConflict()
     {
@@ -115,7 +115,7 @@ public class ReschedulerTests
         Assert.Empty(new ConstraintChecker(problem).Validate(rescheduleResult.Schedule));
     }
 
-    // Dùng ở: dotnet test (phiên xóa không còn trong kết quả, phiên mới được xếp và không tính D).
+    // Phiên xóa không còn trong kết quả, phiên mới được xếp và không tính D.
     [Fact]
     public void AddedAndDeletedSessionsAreHandledWithoutCountingThemAsChanges()
     {
@@ -135,7 +135,7 @@ public class ReschedulerTests
         Assert.True(baseSchedule.IsPlaced(99));
     }
 
-    // Dùng ở: dotnet test (phòng cũ mất được báo H4; ghim mất phòng không ngăn xếp lại sang phòng khác).
+    // Phòng cũ mất được báo H4; ghim mất phòng không ngăn xếp lại sang phòng khác.
     [Fact]
     public void RemovedRoomDisplacesAndUnlocksItsSession()
     {
@@ -151,7 +151,7 @@ public class ReschedulerTests
     }
 
     // ---------- BA QUY MÔ VÀ HAI KỊCH BẢN ----------
-    // Dùng ở: dotnet test (18 biến động: hợp lệ, đủ trạng thái, tất định, ít xáo trộn hơn chạy lại M3).
+    // 18 biến động: hợp lệ, đủ trạng thái, tất định, ít xáo trộn hơn chạy lại M3.
     [Theory]
     [InlineData(30, 1)]
     [InlineData(30, 2)]

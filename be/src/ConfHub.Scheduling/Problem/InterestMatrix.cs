@@ -7,7 +7,6 @@ public sealed class InterestMatrix
     private readonly Dictionary<int, int> _indexBySessionId = [];
     private readonly int[][] _w;
 
-    // Dùng ở: constructor SchedulingProblem (dựng một lần, sau đó chỉ tra).
     public InterestMatrix(IReadOnlyList<SchedulingSession> sessions, IReadOnlyList<InterestEntry> interests)
     {
         /*
@@ -34,13 +33,9 @@ public sealed class InterestMatrix
     }
 
     // Tổng W[a][b] trên mọi cặp a < b: cận trên của số xung đột C, dùng để chuẩn hóa.
-    // Dùng ở: ObjectiveCalculator.Evaluate (mẫu số của Cn).
     public int TotalCoInterest { get; private set; }
 
     // Tra W[a][b] theo mã phiên; Get(a, a) = số người quan tâm phiên a.
-    // Dùng ở: SchedulingProblem.GetSessionSize (đường chéo), ObjectiveCalculator.CalculateConflictCount (C);
-    // T2.2 dùng khi chọn mốc ít xung đột.
-    // Dùng ở: ConflictContribution.Calculate (cộng W vào đóng góp của hai phiên chồng giờ).
     public int Get(int firstSessionId, int secondSessionId)
     {
         var firstIndex = GetIndex(firstSessionId);

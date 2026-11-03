@@ -1,6 +1,6 @@
 // useSessionBootstrap.ts — hook khôi phục phiên khi mở / tải lại ứng dụng (lớp hook).
 // Chứa: gọi refreshSession() một lần (trình duyệt tự gửi cookie refresh), trả isPending để chờ.
-// Dùng ở: SessionBootstrap. Cookie không có / hết hạn thì tiếp tục như khách, không báo lỗi.
+// Cookie không có / hết hạn thì tiếp tục như khách, không báo lỗi.
 import { useEffect, useState } from "react";
 import { refreshSession } from "@/lib/apiClient";
 

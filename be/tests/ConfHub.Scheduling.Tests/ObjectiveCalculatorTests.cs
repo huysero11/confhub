@@ -11,7 +11,7 @@ public class ObjectiveCalculatorTests
     private const int Precision = 6;
 
     // ---------- PHẠT XÁO TRỘN ----------
-    // Dùng ở: dotnet test (f' cộng đúng w4 * D / n; không truyền phạt thì các chỉ số mới bằng 0).
+    // F' cộng đúng w4 * D / n; không truyền phạt thì các chỉ số mới bằng 0.
     [Fact]
     public void DisruptionAddsNormalizedPenaltyToExistingObjective()
     {

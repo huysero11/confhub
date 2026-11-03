@@ -16,7 +16,6 @@ public sealed class RestartScheduler
     private readonly GreedyScheduler _greedyScheduler;
     private readonly LocalSearch _localSearch;
 
-    // Dùng ở: T2.4 và test (tạo phương pháp M3R với số lần thử và Seed cố định).
     public RestartScheduler(SchedulingProblem problem, ImprovementOptions? options = null, ObjectiveWeights? weights = null)
     {
         ArgumentNullException.ThrowIfNull(problem);
@@ -30,7 +29,7 @@ public sealed class RestartScheduler
     }
 
     // ---------- CHẠY VÀ GIỮ LẦN TỐT NHẤT ----------
-    // Dùng ở: T2.4 và test (chạy nhiều thứ tự, trả lịch và danh sách chưa xếp của cùng một lần thắng).
+    // Chạy nhiều thứ tự, trả lịch và danh sách chưa xếp của cùng một lần thắng.
     public SchedulingResult Run()
     {
         var initialOrder = ConstraintDegree.OrderSessions(_problem);

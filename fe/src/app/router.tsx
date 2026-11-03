@@ -1,6 +1,5 @@
 // router.tsx — khai báo các route của ứng dụng (react-router).
 // Chứa: appRoutes (danh sách route, test dùng lại) và router (bản dùng thật, theo địa chỉ trình duyệt).
-// Dùng ở: main.tsx truyền router vào RouterProvider; test/renderApp.tsx dùng appRoutes.
 import { createBrowserRouter, type RouteObject } from "react-router";
 import { ShellB } from "@/layouts/ShellB/ShellB";
 import { HomePage } from "@/pages/HomePage";

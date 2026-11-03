@@ -13,7 +13,6 @@ public sealed class LocalSearchScheduler
     private readonly GreedyScheduler _greedyScheduler;
     private readonly LocalSearch _localSearch;
 
-    // Dùng ở: T2.4 và test (tạo phương pháp M3, có thể thay trọng số khi phân tích độ nhạy).
     public LocalSearchScheduler(SchedulingProblem problem, ImprovementOptions? options = null, ObjectiveWeights? weights = null)
     {
         var selectedWeights = weights ?? ObjectiveWeights.Default;
@@ -21,7 +20,7 @@ public sealed class LocalSearchScheduler
         _localSearch = new LocalSearch(problem, selectedWeights, options ?? new ImprovementOptions());
     }
 
-    // Dùng ở: T2.4 và test (chạy trọn luồng tham lam → cục bộ).
+    // Chạy trọn luồng tham lam → cục bộ.
     public SchedulingResult Run()
     {
         var greedyResult = _greedyScheduler.Run();

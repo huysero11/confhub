@@ -7,7 +7,6 @@ public sealed class Timeline
     private readonly List<TimeSlot> _slots = [];
     private readonly int _slotMinutes;
 
-    // Dùng ở: constructor SchedulingProblem; ProblemGenerator.CheckLoad (đếm số phút dùng được).
     public Timeline(IReadOnlyList<SchedulingDay> days, int slotMinutes)
     {
         _slotMinutes = slotMinutes;
@@ -18,11 +17,10 @@ public sealed class Timeline
         }
     }
 
-    // Tập mốc T. Dùng ở: SchedulingProblem (GetSessionInterval, BuildValidStartSlots),
-    // ConstraintChecker (H2, kiểm mốc tồn tại), ObjectiveCalculator (B), ProblemGenerator.CheckLoad.
+    // Tập mốc T (Index liên tục qua các ngày, đã bỏ mốc chạm khung nghỉ).
     public IReadOnlyList<TimeSlot> Slots => _slots;
 
-    // Dùng ở: SchedulingProblem.BuildValidStartSlots (phần "trong cửa sổ ngày, không qua khung nghỉ" của H5).
+    // Phần "trong cửa sổ ngày, không qua khung nghỉ" của H5.
     /*
         Kiểm tra một session kéo dài durationMinutes có thể bắt đầu ở slotIndex hay không
         - Gọi endMinute là thời điểm kết thức phiên đang cần kiểm tra

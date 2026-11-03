@@ -11,7 +11,6 @@ public sealed class InterestBlindScheduler
 {
     private readonly SchedulingProblem _problem;
 
-    // Dùng ở: T2.4 và test (tạo phương pháp đối chứng M2).
     public InterestBlindScheduler(SchedulingProblem problem)
     {
         ArgumentNullException.ThrowIfNull(problem);
@@ -20,7 +19,7 @@ public sealed class InterestBlindScheduler
 
     public static ObjectiveWeights Weights { get; } = new(0, 2.0 / 3.0, 1.0 / 3.0);
 
-    // Dùng ở: T2.4 và test (chạy M2 qua cùng thuật toán tham lam với trọng số không có C).
+    // Chạy M2 qua cùng thuật toán tham lam với trọng số không có C.
     public SchedulingResult Run()
     {
         return new GreedyScheduler(_problem, Weights).Run();

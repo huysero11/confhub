@@ -12,8 +12,6 @@ public sealed class SchedulingProblem
     private readonly Dictionary<int, List<int>> _validStartSlotsBySession = [];
     private readonly Dictionary<int, HashSet<int>> _validStartSetsBySession = [];
 
-    // Dùng ở: tầng gọi thuật toán (T5.1 dựng từ dữ liệu CSDL), ProblemGenerator.BuildProblemWithPlaceableSessions, test.
-    // Dùng ở: ChangeScenario.RemoveRoom / MakeSpeakerUnavailable (dựng bài toán mới, giữ dữ liệu còn lại).
     public SchedulingProblem(
         IReadOnlyList<SchedulingSession> sessions,
         IReadOnlyList<SchedulingRoom> rooms,
@@ -83,9 +81,6 @@ public sealed class SchedulingProblem
 
     // ---------- TRA CỨU ----------
     // Tra phiên theo mã, mã lạ thì báo lỗi.
-    // Dùng ở: ConstraintChecker.AddSpeakerViolation (H1); trong lớp: GetSessionSize, GetSessionInterval.
-    // Dùng ở: ConstraintDegree.Calculate (lấy diễn giả để tính độ ràng buộc).
-    // Dùng ở: GreedyScheduler.ValidateCompletion (từ chối mã phiên không tồn tại).
     public SchedulingSession GetSession(int sessionId)
     {
         if (!_sessionsById.TryGetValue(sessionId, out var session))
@@ -97,9 +92,6 @@ public sealed class SchedulingProblem
     }
 
     // Tra phòng theo mã, mã lạ thì báo lỗi.
-    // Dùng ở: ConstraintChecker.AddCapacityViolation (H4), ObjectiveCalculator.CalculateWastedSeats (S).
-    // Dùng ở: GroupRoomAssigner.BuildCosts, FirstFitScheduler.TryPlaceSession (đọc sức chứa phòng).
-    // Dùng ở: ChangeScenario.RemoveRoom (từ chối mã phòng không tồn tại).
     public SchedulingRoom GetRoom(int roomId)
     {
         if (!_roomsById.TryGetValue(roomId, out var room))
@@ -111,7 +103,6 @@ public sealed class SchedulingProblem
     }
 
     // Quy mô phiên (dùng cho H4 và S): ExpectedSize nếu có, ngược lại là số người quan tâm.
-    // Dùng ở: ConstraintChecker.AddCapacityViolation (H4), ObjectiveCalculator (S và Smax), GroupRoomAssigner.BuildCosts, FirstFitScheduler.TryPlaceSession (quy mô khi gán phòng).
     public int GetSessionSize(int sessionId)
     {
         var session = GetSession(sessionId);
@@ -125,11 +116,6 @@ public sealed class SchedulingProblem
     }
 
     // Khoảng thời gian phiên chiếm khi bắt đầu ở mốc slotIndex (chưa xét phiên có đặt được ở đó không).
-    // Dùng ở: ConstraintChecker.BuildPlacedSession, ObjectiveCalculator.BuildPlacedSessions
-    // (đổi mốc bắt đầu thành khoảng thời gian để so chồng giờ).
-    // Dùng ở: GroupRoomAssigner.TryAssign / BuildGroupSessionIds, RoomFinder.FindFreeRoomIds, FirstFitScheduler.TryPlaceSession (xác định khoảng chiếm phòng).
-    // Dùng ở: ConflictContribution.Calculate, NeighborhoodMoves.TrySwap, SimulatedAnnealing.TryRandomSwap (so chồng giờ theo khoảng và ngày).
-    // Dùng ở: Rescheduler.TryDisplace (tìm phiên đang chồng giờ với phiên cần xếp).
     public (int DayIndex, TimeInterval Interval) GetSessionInterval(int sessionId, int slotIndex)
     {
         var session = GetSession(sessionId);
@@ -145,11 +131,6 @@ public sealed class SchedulingProblem
     }
 
     // Các mốc bắt đầu thỏa H5 (trong cửa sổ ngày, không qua khung nghỉ, mọi diễn giả đều rảnh).
-    // Dùng ở: ProblemGenerator.BuildProblemWithPlaceableSessions (phát hiện phiên hết chỗ đặt);
-    // T2.2 duyệt danh sách này để chọn mốc cho phiên.
-    // Dùng ở: ConstraintDegree.Calculate (đếm mốc), GreedyScheduler.TryPlaceSession, FirstFitScheduler.TryPlaceSession (duyệt mốc thỏa H5).
-    // Dùng ở: LocalSearch.Improve, SimulatedAnnealing.TryRandomMove (chọn mốc dời thỏa H5).
-    // Dùng ở: Rescheduler.TryDisplace (duyệt mốc hợp lệ theo thứ tự tăng dần).
     public IReadOnlyList<int> GetValidStartSlots(int sessionId)
     {
         if (!_validStartSlotsBySession.TryGetValue(sessionId, out var validSlots))
@@ -161,7 +142,6 @@ public sealed class SchedulingProblem
     }
 
     // Hỏi nhanh một mốc có thỏa H5 không (tra HashSet).
-    // Dùng ở: ConstraintChecker.CheckPlacement và Validate (kiểm H5).
     public bool IsValidStartSlot(int sessionId, int slotIndex)
     {
         if (!_validStartSetsBySession.TryGetValue(sessionId, out var validSet))

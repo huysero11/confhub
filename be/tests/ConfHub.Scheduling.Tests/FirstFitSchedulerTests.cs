@@ -12,7 +12,7 @@ namespace ConfHub.Scheduling.Tests;
 public class FirstFitSchedulerTests
 {
     // ---------- VÍ DỤ VÀ LÝ DO ----------
-    // Dùng ở: dotnet test / Debug Test (đối chiếu kết quả M1 Claude tính tay).
+    // Đối chiếu kết quả M1 Claude tính tay.
     [Fact]
     public void ExampleMatchesFirstFitPlacementsAndConflict5()
     {
@@ -30,7 +30,7 @@ public class FirstFitSchedulerTests
         Assert.Equal((0.7 * 5.0 / 40.0) + (0.1 * 164.0 / 284.0), objective.Value, 10);
     }
 
-    // Dùng ở: dotnet test (phòng đầu trong dữ liệu được chọn dù lãng phí hơn phòng sau).
+    // Phòng đầu trong dữ liệu được chọn dù lãng phí hơn phòng sau.
     [Fact]
     public void InputSessionAndRoomOrderArePreserved()
     {
@@ -45,7 +45,7 @@ public class FirstFitSchedulerTests
         AssertPlacement(schedulingResult.Schedule, 2, 0, 1);
     }
 
-    // Dùng ở: dotnet test (mỗi loại bế tắc có mã và số mốc đúng).
+    // Mỗi loại bế tắc có mã và số mốc đúng.
     [Fact]
     public void UnplacedSessionsReportH5H4AndH1()
     {
@@ -63,7 +63,7 @@ public class FirstFitSchedulerTests
         AssertCompleteAndValid(problem, schedulingResult);
     }
 
-    // Dùng ở: dotnet test (M1 không tự đổi phòng các phiên trước để cứu phiên sau).
+    // M1 không tự đổi phòng các phiên trước để cứu phiên sau.
     [Fact]
     public void FullRoomReportsH2WithoutMovingEarlierSessions()
     {
@@ -80,7 +80,7 @@ public class FirstFitSchedulerTests
     }
 
     // ---------- DỮ LIỆU SINH ----------
-    // Dùng ở: dotnet test (ba quy mô seed 1–5; không yêu cầu heuristic xếp được mọi phiên).
+    // Ba quy mô seed 1–5; không yêu cầu heuristic xếp được mọi phiên.
     [Theory]
     [InlineData(1)]
     [InlineData(2)]

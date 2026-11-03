@@ -11,7 +11,7 @@ namespace ConfHub.Scheduling.Tests;
 public class NeighborhoodMovesTests
 {
     // ---------- VÍ DỤ 6.5 ----------
-    // Dùng ở: dotnet test / Debug Test (chỉ C ↔ B hợp lệ trong các phép cải thiện của vòng đầu).
+    // Chỉ C ↔ B hợp lệ trong các phép cải thiện của vòng đầu.
     [Fact]
     public void ExampleMovesMatchManualConstraintsAndNeverMutateInput()
     {
@@ -40,7 +40,7 @@ public class NeighborhoodMovesTests
     }
 
     // ---------- DỜI VÀ GÁN PHÒNG ----------
-    // Dùng ở: dotnet test (Hungarian có thể đổi phòng phiên cũ trong nhóm đích để nhận phiên lớn).
+    // Hungarian có thể đổi phòng phiên cũ trong nhóm đích để nhận phiên lớn.
     [Fact]
     public void MoveReassignsTargetGroupAndLeavesSourceGroupAlone()
     {
@@ -66,7 +66,7 @@ public class NeighborhoodMovesTests
         LocalSearchTests.AssertSameSchedule(originalSchedule, schedule);
     }
 
-    // Dùng ở: dotnet test (H2 qua nhưng không còn phòng đủ sức chứa thì Hungarian từ chối).
+    // H2 qua nhưng không còn phòng đủ sức chứa thì Hungarian từ chối.
     [Fact]
     public void MoveRejectsCapacityFailureAfterConcurrencyPasses()
     {
@@ -84,7 +84,7 @@ public class NeighborhoodMovesTests
     }
 
     // ---------- RÀNG BUỘC THEO KHOẢNG ----------
-    // Dùng ở: dotnet test (đổi hai phiên dài khác nhau phải kiểm cả phần thời gian mới giao nhau).
+    // Đổi hai phiên dài khác nhau phải kiểm cả phần thời gian mới giao nhau.
     [Fact]
     public void SwapRejectsNewRoomOverlapFromDifferentDurations()
     {
@@ -103,7 +103,7 @@ public class NeighborhoodMovesTests
         LocalSearchTests.AssertSameSchedule(originalSchedule, schedule);
     }
 
-    // Dùng ở: dotnet test (mốc khác nhưng khoảng giao nhau vẫn bị Q3 loại).
+    // Mốc khác nhưng khoảng giao nhau vẫn bị Q3 loại.
     [Fact]
     public void SwapRejectsOverlappingIntervalsEvenAtDifferentStartSlots()
     {
@@ -118,7 +118,7 @@ public class NeighborhoodMovesTests
         Assert.Null(NeighborhoodMoves.TrySwap(problem, new ConstraintChecker(problem), schedule, 1, 2));
     }
 
-    // Dùng ở: dotnet test (cùng giờ ở hai ngày vẫn đổi được; giờ rảnh chỉ ngày cũ phải bị H5 loại).
+    // Cùng giờ ở hai ngày vẫn đổi được; giờ rảnh chỉ ngày cũ phải bị H5 loại.
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -154,7 +154,7 @@ public class NeighborhoodMovesTests
         LocalSearchTests.AssertSameSchedule(originalSchedule, schedule);
     }
 
-    // Dùng ở: dotnet test (mốc hiện tại, mốc ngoài lịch, phiên chưa đặt và tự đổi đều không sinh bước).
+    // Mốc hiện tại, mốc ngoài lịch, phiên chưa đặt và tự đổi đều không sinh bước.
     [Fact]
     public void MissingSessionsAndNoOpMovesReturnNull()
     {
@@ -170,7 +170,7 @@ public class NeighborhoodMovesTests
     }
 
     // ---------- BẢO VỆ PHIÊN GHIM ----------
-    // Dùng ở: dotnet test (không chọn phiên ghim ở cả hai phía hoán đổi, không dời mốc của phiên ghim).
+    // Không chọn phiên ghim ở cả hai phía hoán đổi, không dời mốc của phiên ghim.
     [Fact]
     public void LockedSessionsCannotMoveOrParticipateInEitherSwapPosition()
     {
@@ -188,7 +188,7 @@ public class NeighborhoodMovesTests
         Assert.Equal([ExampleProblem.SessionC], partialSchedule.PlacedSessionIds);
     }
 
-    // Dùng ở: dotnet test (phép dời không được dùng Hungarian để đẩy phiên ghim ra khỏi phòng cũ).
+    // Phép dời không được dùng Hungarian để đẩy phiên ghim ra khỏi phòng cũ.
     [Fact]
     public void MovePreservesLockedRoomAtDestination()
     {

@@ -10,7 +10,7 @@ namespace ConfHub.Scheduling.Tests;
 public class RestartSchedulerTests
 {
     // ---------- VÍ DỤ VÀ SỐ LẦN KHỞI ĐỘNG ----------
-    // Dùng ở: dotnet test (M3R trên ví dụ 6.5 vẫn đạt C = 5).
+    // M3R trên ví dụ 6.5 vẫn đạt C = 5.
     [Fact]
     public void ExampleReturnsConflictFive()
     {
@@ -21,7 +21,7 @@ public class RestartSchedulerTests
         Assert.Equal(5, new ObjectiveCalculator(problem, ObjectiveWeights.Default).Evaluate(schedulingResult.Schedule).ConflictCount);
     }
 
-    // Dùng ở: dotnet test (lần đầu dùng đúng thứ tự ràng buộc; RestartCount = 1 phải trùng M3).
+    // Lần đầu dùng đúng thứ tự ràng buộc; RestartCount = 1 phải trùng M3.
     [Fact]
     public void SingleRestartMatchesLocalSearchScheduler()
     {
@@ -32,7 +32,7 @@ public class RestartSchedulerTests
         LocalSearchTests.AssertSameSchedule(localResult.Schedule, restartResult.Schedule);
     }
 
-    // Dùng ở: dotnet test (danh sách chưa xếp phải thuộc đúng lần chạy thắng, kể cả khi không phiên nào đặt được).
+    // Danh sách chưa xếp phải thuộc đúng lần chạy thắng, kể cả khi không phiên nào đặt được.
     [Fact]
     public void CompletelyUnplaceableProblemPreservesAllReasons()
     {
@@ -48,7 +48,7 @@ public class RestartSchedulerTests
     }
 
     // ---------- DỮ LIỆU SINH ----------
-    // Dùng ở: dotnet test (M3R không mất phiên so với M3; cùng số phiên thì f không tệ hơn; cùng Seed tất định).
+    // M3R không mất phiên so với M3; cùng số phiên thì f không tệ hơn; cùng Seed tất định.
     [Theory]
     [InlineData(1)]
     [InlineData(2)]

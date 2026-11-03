@@ -10,7 +10,7 @@ namespace ConfHub.Scheduling.Improvement;
 public static class NeighborhoodMoves
 {
     // ---------- DỜI MỘT PHIÊN ----------
-    // Dùng ở: LocalSearch.Improve, SimulatedAnnealing.TryRandomMove (thử mốc khác và lọc H1–H5 trước khi chấm f).
+    // Thử mốc khác và lọc H1–H5 trước khi chấm f.
     public static Schedule? TryMove(SchedulingProblem problem, ConstraintChecker checker, Schedule schedule, int sessionId, int slotIndex, IReadOnlySet<int>? lockedSessionIds = null)
     {
         ArgumentNullException.ThrowIfNull(problem);
@@ -52,7 +52,7 @@ public static class NeighborhoodMoves
     }
 
     // ---------- HOÁN ĐỔI HAI PHIÊN ----------
-    // Dùng ở: LocalSearch.Improve, SimulatedAnnealing.TryRandomSwap (đổi cả mốc lẫn phòng của hai phiên không chồng giờ).
+    // Đổi cả mốc lẫn phòng của hai phiên không chồng giờ.
     public static Schedule? TrySwap(SchedulingProblem problem, ConstraintChecker checker, Schedule schedule, int firstSessionId, int secondSessionId, IReadOnlySet<int>? lockedSessionIds = null)
     {
         ArgumentNullException.ThrowIfNull(problem);

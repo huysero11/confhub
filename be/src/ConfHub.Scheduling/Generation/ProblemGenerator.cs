@@ -16,7 +16,6 @@ public static class ProblemGenerator
     private const double SpeakerPoolRatio = 0.7;
 
     // Sinh một bài toán mô phỏng theo tùy chọn.
-    // Dùng ở: T2.4 (chương trình thực nghiệm), test (dữ liệu Small / Medium / Large).
     public static GeneratedData Generate(GeneratorOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);

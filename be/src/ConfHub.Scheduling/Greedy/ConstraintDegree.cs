@@ -13,9 +13,7 @@ public static class ConstraintDegree
             vị trí ban đầu
     */
 
-    // Dùng ở: GreedyScheduler.Run (thứ tự mặc định khi không truyền sessionOrder).
-    // Dùng ở: RestartScheduler.Run (lấy thứ tự gốc trước khi xáo trộn các lần sau).
-    // Dùng ở: Rescheduler.Run (sắp các phiên còn thiếu trước khi xếp tiếp).
+    // Sắp phiên tăng dần theo độ ràng buộc; bằng nhau giữ thứ tự nhập.
     public static IReadOnlyList<int> OrderSessions(SchedulingProblem problem)
     {
         ArgumentNullException.ThrowIfNull(problem);
@@ -44,7 +42,6 @@ public static class ConstraintDegree
         return sessionIds;
     }
 
-    // Dùng ở: OrderSessions (cùng lớp); test kiểm công thức.
     // Độ ràng buộc = số mốc bắt đầu hợp lệ của phiên − số phiên của diễn giả bận nhất
     public static int CalculateDegree(SchedulingProblem problem, int sessionId)
     {

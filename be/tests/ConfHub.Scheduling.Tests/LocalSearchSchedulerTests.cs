@@ -14,7 +14,7 @@ namespace ConfHub.Scheduling.Tests;
 public class LocalSearchSchedulerTests
 {
     // ---------- VÍ DỤ VÀ PHIÊN CHƯA XẾP ----------
-    // Dùng ở: dotnet test / Debug Test (M3 đi đúng ví dụ 6.5).
+    // M3 đi đúng ví dụ 6.5.
     [Fact]
     public void ExampleReturnsConflictFive()
     {
@@ -26,7 +26,7 @@ public class LocalSearchSchedulerTests
         Assert.Equal(5, new ObjectiveCalculator(problem, ObjectiveWeights.Default).Evaluate(schedulingResult.Schedule).ConflictCount);
     }
 
-    // Dùng ở: dotnet test (không thêm phiên đang thiếu; giữ lý do H4 của tham lam).
+    // Không thêm phiên đang thiếu; giữ lý do H4 của tham lam.
     [Fact]
     public void UnplaceableSessionKeepsGreedyReason()
     {
@@ -44,7 +44,7 @@ public class LocalSearchSchedulerTests
     }
 
     // ---------- DỮ LIỆU SINH ----------
-    // Dùng ở: dotnet test (mỗi phiên đúng một trạng thái, cùng Seed tất định và f không tăng).
+    // Mỗi phiên đúng một trạng thái, cùng Seed tất định và f không tăng.
     [Theory]
     [InlineData(1)]
     [InlineData(2)]
@@ -76,7 +76,7 @@ public class LocalSearchSchedulerTests
         }
     }
 
-    // Dùng ở: dotnet test (tiêu chí tổng C của M3 trên Medium seed 1–5, không thay bằng so sánh f).
+    // Tiêu chí tổng C của M3 trên Medium seed 1–5, không thay bằng so sánh f.
     [Fact]
     public void MediumTotalConflictDoesNotExceedGreedy()
     {
@@ -94,7 +94,7 @@ public class LocalSearchSchedulerTests
     }
 
     // ---------- KIỂM KẾT QUẢ DÙNG CHUNG ----------
-    // Dùng ở: các test Methods (mỗi phiên có đúng một trạng thái và mọi phiên đã đặt có phòng hợp lệ).
+    // Mỗi phiên có đúng một trạng thái và mọi phiên đã đặt có phòng hợp lệ.
     internal static void AssertCompleteAndValid(SchedulingProblem problem, SchedulingResult schedulingResult)
     {
         Assert.Empty(new ConstraintChecker(problem).Validate(schedulingResult.Schedule));

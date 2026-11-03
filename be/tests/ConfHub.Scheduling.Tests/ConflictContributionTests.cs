@@ -9,7 +9,7 @@ namespace ConfHub.Scheduling.Tests;
 public class ConflictContributionTests
 {
     // ---------- VÍ DỤ 6.5 ----------
-    // Dùng ở: dotnet test (đối chiếu đóng góp trước và sau C ↔ B).
+    // Đối chiếu đóng góp trước và sau C ↔ B.
     [Fact]
     public void ExampleContributionsAndRankingMatchManualCalculation()
     {
@@ -31,7 +31,7 @@ public class ConflictContributionTests
     }
 
     // ---------- THỨ TỰ VÀ KHOẢNG THỜI GIAN ----------
-    // Dùng ở: dotnet test (thứ tự đặt trong lịch không được thay thứ tự nhập khi phá hòa).
+    // Thứ tự đặt trong lịch không được thay thứ tự nhập khi phá hòa.
     [Fact]
     public void TiesFollowInputOrderEvenWhenScheduleOrderChanges()
     {
@@ -42,7 +42,7 @@ public class ConflictContributionTests
         Assert.Equal(2, ConflictContribution.Calculate(ExampleProblem.Create(), schedule).Count);
     }
 
-    // Dùng ở: dotnet test (chồng khoảng dù khác mốc bắt đầu; chạm đầu mút và khác ngày không cộng W).
+    // Chồng khoảng dù khác mốc bắt đầu; chạm đầu mút và khác ngày không cộng W.
     [Fact]
     public void ContributionsUseIntervalsAndDaysInsteadOfStartSlots()
     {
@@ -64,7 +64,7 @@ public class ConflictContributionTests
         Assert.Equal(0, contributions[4]);
     }
 
-    // Dùng ở: dotnet test (lịch rỗng không có ứng viên; count sai phải bị từ chối).
+    // Lịch rỗng không có ứng viên; count sai phải bị từ chối.
     [Fact]
     public void EmptyScheduleAndInvalidCountAreHandled()
     {
@@ -76,7 +76,7 @@ public class ConflictContributionTests
     }
 
     // ---------- LOẠI PHIÊN GHIM ----------
-    // Dùng ở: dotnet test (loại trước khi lấy K; tập rỗng và null không đổi thứ tự cũ).
+    // Loại trước khi lấy K; tập rỗng và null không đổi thứ tự cũ.
     [Fact]
     public void ExclusionsApplyBeforeTakingCandidateCount()
     {

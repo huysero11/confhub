@@ -1,6 +1,6 @@
 // useAuthFormRules.ts — hook quy tắc nhập liệu dùng chung cho các form tài khoản (lớp hook).
 // Chứa: rule bắt buộc, email, mật khẩu, họ tên, đơn vị, nhập lại mật khẩu (trùng BR01–BR04 của backend).
-// Dùng ở: các form trong features/auth/components. Chữ lỗi theo ngôn ngữ hiện tại (qua t).
+// Chữ lỗi theo ngôn ngữ hiện tại (qua t).
 import type { FormInstance } from "antd";
 import type { Rule } from "antd/es/form";
 import { useTranslation } from "react-i18next";

@@ -10,7 +10,6 @@ public sealed class DisruptionPenalty
     private readonly Schedule _baseSchedule;
     private readonly List<int> _baseSessionIds = [];
 
-    // Dùng ở: Rescheduler.Run, test và chương trình đo (dựng mốc so sánh xáo trộn).
     public DisruptionPenalty(SchedulingProblem problem, Schedule baseSchedule, double weight)
     {
         ArgumentNullException.ThrowIfNull(problem);
@@ -36,7 +35,7 @@ public sealed class DisruptionPenalty
     public double Weight { get; }
 
     // ---------- ĐẾM VÀ LIỆT KÊ XÁO TRỘN ----------
-    // Dùng ở: ObjectiveCalculator.Evaluate, chương trình đo (đếm D, không tính phiên mới hoặc đã xóa).
+    // Đếm D, không tính phiên mới hoặc đã xóa.
     public int CountDisrupted(Schedule schedule)
     {
         ArgumentNullException.ThrowIfNull(schedule);
@@ -52,7 +51,7 @@ public sealed class DisruptionPenalty
         return disruptedCount;
     }
 
-    // Dùng ở: Rescheduler.Run (trả mã phiên bị xáo trộn theo thứ tự nhập của bài toán mới).
+    // Trả mã phiên bị xáo trộn theo thứ tự nhập của bài toán mới.
     public IReadOnlyList<int> GetDisruptedSessionIds(Schedule schedule)
     {
         ArgumentNullException.ThrowIfNull(schedule);

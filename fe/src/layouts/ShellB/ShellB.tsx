@@ -1,6 +1,5 @@
 // ShellB.tsx — khung Shell B: header + vùng nội dung, bọc mọi trang công khai / người tham dự.
 // Chứa: Layout của antd cao tối thiểu bằng màn hình; <Outlet/> là chỗ trang con hiện vào.
-// Dùng ở: app/router.tsx (route cha "/").
 import { Layout, theme } from "antd";
 import { Outlet } from "react-router";
 import { ShellBHeader } from "@/layouts/ShellB/ShellBHeader";
