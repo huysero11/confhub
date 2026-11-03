@@ -10,6 +10,28 @@ public class ObjectiveCalculatorTests
 {
     private const int Precision = 6;
 
+    // ---------- PHẠT XÁO TRỘN ----------
+    // Dùng ở: dotnet test (f' cộng đúng w4 * D / n; không truyền phạt thì các chỉ số mới bằng 0).
+    [Fact]
+    public void DisruptionAddsNormalizedPenaltyToExistingObjective()
+    {
+        var problem = ExampleProblem.Create();
+        var baseSchedule = ExampleProblem.CreateSwappedSchedule();
+        var schedule = ExampleProblem.CreateGreedySchedule();
+        var disruption = new DisruptionPenalty(problem, baseSchedule, 0.5);
+        var originalObjective = new ObjectiveCalculator(problem, ObjectiveWeights.Default).Evaluate(schedule);
+        var penalizedObjective = new ObjectiveCalculator(problem, ObjectiveWeights.Default, disruption).Evaluate(schedule);
+
+        Assert.Equal(0, originalObjective.DisruptedCount);
+        Assert.Equal(0, originalObjective.NormalizedDisruption);
+        Assert.Equal(2, penalizedObjective.DisruptedCount);
+        Assert.Equal(0.5, penalizedObjective.NormalizedDisruption);
+        Assert.Equal(originalObjective.Value + 0.25, penalizedObjective.Value, 12);
+        Assert.Equal(originalObjective.ConflictCount, penalizedObjective.ConflictCount);
+        Assert.Equal(originalObjective.LoadStdDev, penalizedObjective.LoadStdDev);
+        Assert.Equal(originalObjective.WastedSeats, penalizedObjective.WastedSeats);
+    }
+
     // ---------- VÍ DỤ CHẠY TAY (PROJECT.md 6.5) ----------
     [Fact]
     public void GreedyScheduleOfTheExampleHasConflict35()

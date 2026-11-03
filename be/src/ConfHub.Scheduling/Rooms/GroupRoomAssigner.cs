@@ -10,7 +10,8 @@ public static class GroupRoomAssigner
 {
     // Dùng ở: GreedyScheduler.TryPlaceSession (thử chia phòng trước khi chấm f); T2.3 sau khi dời / hoán đổi.
     // Dùng ở: NeighborhoodMoves.TryMove (gán phòng cho nhóm đích sau khi gỡ phiên khỏi vị trí cũ).
-    public static RoomAssignment TryAssign(SchedulingProblem problem, Schedule schedule, int sessionId, int slotIndex)
+    // Dùng ở: Rescheduler.TryPlaceDisplacedSession (đặt phiên đang chờ sau khi gỡ một phiên nhường chỗ).
+    public static RoomAssignment TryAssign(SchedulingProblem problem, Schedule schedule, int sessionId, int slotIndex, IReadOnlySet<int>? lockedSessionIds = null)
     {
         ArgumentNullException.ThrowIfNull(problem);
         ArgumentNullException.ThrowIfNull(schedule);
@@ -25,7 +26,7 @@ public static class GroupRoomAssigner
             return new RoomAssignment(false, ConstraintCode.H2, new Dictionary<int, int>());
         }
 
-        var costs = BuildCosts(problem, schedule, groupSessionIds, freeRoomIds);
+        var costs = BuildCosts(problem, schedule, groupSessionIds, freeRoomIds, lockedSessionIds);
         var assignedColumns = HungarianAlgorithm.Solve(costs); // assignedColumns[i] = j, thì j là index của freeRoomIds
 
         var roomBySession = new Dictionary<int, int>(); // {sessionId, roomId}
@@ -45,6 +46,7 @@ public static class GroupRoomAssigner
         return new RoomAssignment(true, null, roomBySession);
     }
 
+    // ---------- DỰNG NHÓM VÀ CHI PHÍ ----------
     // Helper của TryAssign (cùng lớp).
     // Lấy list các id của các phiên cùng ngày cùng giờ với sessionId
     private static List<int> BuildGroupSessionIds(SchedulingProblem problem, Schedule schedule, int sessionId, int dayIndex, TimeInterval interval)
@@ -70,7 +72,7 @@ public static class GroupRoomAssigner
     }
 
     // Helper của TryAssign (cùng lớp): hàng là phiên trong nhóm, cột là phòng ứng viên.
-    private static long[][] BuildCosts(SchedulingProblem problem, Schedule schedule, List<int> groupSessionIds, IReadOnlyList<int> freeRoomIds)
+    private static long[][] BuildCosts(SchedulingProblem problem, Schedule schedule, List<int> groupSessionIds, IReadOnlyList<int> freeRoomIds, IReadOnlySet<int>? lockedSessionIds)
     {
         var costs = new long[groupSessionIds.Count][];
         for (var row = 0; row < groupSessionIds.Count; row++)
@@ -85,8 +87,9 @@ public static class GroupRoomAssigner
                 var roomId = freeRoomIds[col];
                 var capacity = problem.GetRoom(roomId).Capacity;
 
-                // Phòng không đủ chỗ
-                if (capacity < sessionSize)
+                // Phòng không đủ chỗ hoặc khác phòng của phiên ghim
+                if (capacity < sessionSize
+                    || (lockedSessionIds?.Contains(sessionId) == true && placement.RoomId != roomId))
                 {
                     costs[row][col] = HungarianAlgorithm.Infeasible;
                     continue;

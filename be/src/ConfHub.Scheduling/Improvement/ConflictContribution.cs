@@ -9,7 +9,7 @@ public static class ConflictContribution
 {
     // ---------- CHỌN ỨNG VIÊN ----------
     // Dùng ở: LocalSearch.Improve (chỉ thử tối đa K phiên có đóng góp dương mỗi vòng).
-    public static IReadOnlyList<int> RankCandidates(SchedulingProblem problem, Schedule schedule, int candidateCount)
+    public static IReadOnlyList<int> RankCandidates(SchedulingProblem problem, Schedule schedule, int candidateCount, IReadOnlySet<int>? excludedSessionIds = null)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(candidateCount);
 
@@ -19,7 +19,8 @@ public static class ConflictContribution
         var initialPositions = new Dictionary<int, int>();
         foreach (var session in problem.Sessions)
         {
-            if (contributions.TryGetValue(session.Id, out var contribution) && contribution > 0)
+            if (excludedSessionIds?.Contains(session.Id) != true
+                && contributions.TryGetValue(session.Id, out var contribution) && contribution > 0)
             {
                 initialPositions[session.Id] = candidateIds.Count;
                 candidateIds.Add(session.Id);

@@ -168,4 +168,45 @@ public class NeighborhoodMovesTests
         Assert.Null(NeighborhoodMoves.TryMove(problem, checker, schedule, 4, 1));
         Assert.Null(NeighborhoodMoves.TrySwap(problem, checker, schedule, 4, 3));
     }
+
+    // ---------- BẢO VỆ PHIÊN GHIM ----------
+    // Dùng ở: dotnet test (không chọn phiên ghim ở cả hai phía hoán đổi, không dời mốc của phiên ghim).
+    [Fact]
+    public void LockedSessionsCannotMoveOrParticipateInEitherSwapPosition()
+    {
+        var problem = ExampleProblem.Create();
+        var checker = new ConstraintChecker(problem);
+        var schedule = ExampleProblem.CreateGreedySchedule();
+        var lockedIds = new HashSet<int> { ExampleProblem.SessionC };
+        Assert.Null(NeighborhoodMoves.TrySwap(problem, checker, schedule, ExampleProblem.SessionC, ExampleProblem.SessionB, lockedIds));
+        Assert.Null(NeighborhoodMoves.TrySwap(problem, checker, schedule, ExampleProblem.SessionB, ExampleProblem.SessionC, lockedIds));
+
+        var partialSchedule = new Schedule();
+        partialSchedule.Place(ExampleProblem.SessionC, 0, ExampleProblem.RoomP101);
+        Assert.NotNull(NeighborhoodMoves.TryMove(problem, checker, partialSchedule, ExampleProblem.SessionC, 1));
+        Assert.Null(NeighborhoodMoves.TryMove(problem, checker, partialSchedule, ExampleProblem.SessionC, 1, lockedIds));
+        Assert.Equal([ExampleProblem.SessionC], partialSchedule.PlacedSessionIds);
+    }
+
+    // Dùng ở: dotnet test (phép dời không được dùng Hungarian để đẩy phiên ghim ra khỏi phòng cũ).
+    [Fact]
+    public void MovePreservesLockedRoomAtDestination()
+    {
+        var problem = ExampleProblem.Create();
+        var checker = new ConstraintChecker(problem);
+        var schedule = new Schedule();
+        schedule.Place(ExampleProblem.SessionC, 0, ExampleProblem.RoomP101);
+        schedule.Place(ExampleProblem.SessionA, 1, ExampleProblem.RoomP101);
+        var unlockedMove = NeighborhoodMoves.TryMove(problem, checker, schedule, ExampleProblem.SessionA, 0);
+        Assert.NotNull(unlockedMove);
+        Assert.Null(NeighborhoodMoves.TryMove(problem, checker, schedule, ExampleProblem.SessionA, 0, new HashSet<int> { ExampleProblem.SessionC }));
+        var emptyLocksMove = NeighborhoodMoves.TryMove(problem, checker, schedule, ExampleProblem.SessionA, 0, new HashSet<int>());
+        Assert.NotNull(emptyLocksMove);
+        LocalSearchTests.AssertSameSchedule(unlockedMove, emptyLocksMove);
+
+        var greedySchedule = ExampleProblem.CreateGreedySchedule();
+        var emptyLocksSwap = NeighborhoodMoves.TrySwap(problem, checker, greedySchedule, ExampleProblem.SessionC, ExampleProblem.SessionB, new HashSet<int>());
+        Assert.NotNull(emptyLocksSwap);
+        LocalSearchTests.AssertSameSchedule(ExampleProblem.CreateSwappedSchedule(), emptyLocksSwap);
+    }
 }

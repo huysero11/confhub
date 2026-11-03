@@ -105,4 +105,36 @@ public class GroupRoomAssignerTests
         Assert.False(assignment.IsFeasible);
         Assert.Equal(ConstraintCode.H4, assignment.FailureCode);
     }
+
+    // ---------- GIỮ PHÒNG PHIÊN GHIM ----------
+    // Dùng ở: dotnet test (D ghim phòng lớn; B chỉ còn phòng nhỏ, kiểm cả vừa và không vừa).
+    [Theory]
+    [InlineData(39, true)]
+    [InlineData(41, false)]
+    public void LockedDInP101ForcesBIntoP102(int sessionBSize, bool isFeasible)
+    {
+        var problem = TestData.CreateProblem(
+            [TestData.SessionWithSize(2, 60, 14), TestData.SessionWithSize(3, 60, sessionBSize)],
+            [TestData.Room(1, 100), TestData.Room(2, 40)],
+            [TestData.Day(540, 660)],
+            slotMinutes: 60);
+        var schedule = new Schedule();
+        schedule.Place(2, 1, 1);
+        var assignment = GroupRoomAssigner.TryAssign(problem, schedule, 3, 1, new HashSet<int> { 2 });
+        Assert.Equal(isFeasible, assignment.IsFeasible);
+        if (isFeasible)
+        {
+            Assert.Equal(1, assignment.RoomBySession[2]);
+            Assert.Equal(2, assignment.RoomBySession[3]);
+        }
+        else
+        {
+            Assert.Equal(ConstraintCode.H4, assignment.FailureCode);
+            Assert.Empty(assignment.RoomBySession);
+        }
+
+        Assert.True(schedule.TryGetPlacement(2, out var placement));
+        Assert.Equal(new Placement(1, 1), placement);
+        Assert.True(GroupRoomAssigner.TryAssign(problem, schedule, 3, 1, new HashSet<int>()).IsFeasible);
+    }
 }

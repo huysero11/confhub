@@ -74,4 +74,17 @@ public class ConflictContributionTests
         Assert.Throws<ArgumentOutOfRangeException>(() => ConflictContribution.RankCandidates(problem, new Schedule(), 0));
         Assert.Throws<ArgumentOutOfRangeException>(() => ConflictContribution.RankCandidates(problem, new Schedule(), -1));
     }
+
+    // ---------- LOẠI PHIÊN GHIM ----------
+    // Dùng ở: dotnet test (loại trước khi lấy K; tập rỗng và null không đổi thứ tự cũ).
+    [Fact]
+    public void ExclusionsApplyBeforeTakingCandidateCount()
+    {
+        var problem = ExampleProblem.Create();
+        var schedule = ExampleProblem.CreateGreedySchedule();
+        Assert.Equal([ExampleProblem.SessionC], ConflictContribution.RankCandidates(problem, schedule, 1, new HashSet<int> { ExampleProblem.SessionA }));
+        Assert.Empty(ConflictContribution.RankCandidates(problem, schedule, 3, new HashSet<int> { ExampleProblem.SessionA, ExampleProblem.SessionC }));
+        Assert.Equal(ConflictContribution.RankCandidates(problem, schedule, 3), ConflictContribution.RankCandidates(problem, schedule, 3, new HashSet<int>()));
+        Assert.Equal(ConflictContribution.RankCandidates(problem, schedule, 3), ConflictContribution.RankCandidates(problem, schedule, 3, null));
+    }
 }

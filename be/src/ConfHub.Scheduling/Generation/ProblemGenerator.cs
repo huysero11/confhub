@@ -43,7 +43,7 @@ public static class ProblemGenerator
             clusterBySession[index + 1] = clusters[index];
         }
 
-        return new GeneratedData(problem, clusterBySession);
+        return new GeneratedData(problem, clusterBySession) { Interests = interests.AsReadOnly() };
     }
 
     // ---------- KIỂM TRA TÙY CHỌN ----------

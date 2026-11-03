@@ -10,7 +10,7 @@ public sealed record UnplacedSession(
     IReadOnlyDictionary<ConstraintCode, int> BlockedSlotCounts,
     string Reason)
 {
-    // Dùng ở: GreedyScheduler.Run, FirstFitScheduler.Run (tạo lý do tiếng Việt cho phiên bị bỏ lại).
+    // Dùng ở: GreedyScheduler.Complete, FirstFitScheduler.Run (tạo lý do tiếng Việt cho phiên bị bỏ lại).
     public static UnplacedSession Create(int sessionId, IReadOnlyDictionary<ConstraintCode, int> blockedSlotCounts)
     {
         ArgumentNullException.ThrowIfNull(blockedSlotCounts);

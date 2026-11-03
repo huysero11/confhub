@@ -7,7 +7,7 @@
 
 - **Vừa xong:** T2.2 (tham lam + Hungarian, M1, M2) — merge `8130a83`, 2026-10-27
 - **Đang làm:** —
-- **Tiếp theo:** Huy commit + merge T2.3; Claude viết đặc tả T2.5 (xếp lại hạn chế xáo trộn); Huy điền thông tin bìa trên Overleaf
+- **Tiếp theo:** Huy commit + merge T2.5; Claude viết đặc tả T2.4 (chương trình thực nghiệm); Huy điền thông tin bìa trên Overleaf
 - **Nhánh đang mở:** không (đang ở `main`)
 
 ## 1. Quy trình một task
@@ -158,7 +158,7 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 | T2.2 | Giai đoạn 1 tham lam + Hungarian    | T2.1      | done       |
 | T2.3 | Giai đoạn 2 cải thiện cục bộ        | T2.2      | done       |
 | T2.4 | Chương trình thực nghiệm            | T2.3, T2.5 | todo      |
-| T2.5 | Xếp lại hạn chế xáo trộn (thư viện) | T2.3      | todo       |
+| T2.5 | Xếp lại hạn chế xáo trộn (thư viện) | T2.3      | done       |
 
 **Chi tiết:**
 - **T2.1** — Đặc tả: `plan/tasks/T2.1.md`. Mô hình dữ liệu, tập mốc T (nhiều ngày + khung nghỉ), ma trận W,
@@ -392,3 +392,8 @@ Chỉ chia task khi P1–P4 xong.
 - 2026-10-27 T2.3: Codex viết đủ 9 file + 8 file test rồi lỗi (các lần giao sau đều `failed` ngay). Claude review code (khớp đặc tả; 9 file cũ chỉ thêm comment "Dùng ở:"), build + chạy đủ test bằng bản giả lập xUnit: pass hết (~220 trường hợp, ~1 phút). Ví dụ 6.5: leo đồi đúng 1 bước C ↔ B, C = 35 → 5. Đo Small / Medium / Large seed 1–3 (mục 6.1 đặc tả): M3 giảm C 20–32 % so với tham lam, M3R 33–43 %, M4 mặc định thường trùng M3 (dò tham số ở T2.4). Ghi PROJECT.md 6.8, viết mục 9. Chưa gắn `ref/T2.3`: cần build có StyleCop trên máy Huy. T2.3 → `retype`.
 - 2026-10-27 T2.3: Huy build trên máy báo SA1515 (`Schedule.cs`, comment "Dùng ở:" ngay sau khối `/* */`) → Claude chuyển dòng lên trên, bỏ 2 dòng "Dùng ở: T2.3" chung chung, đổi các file mới / dòng Codex chèn từ LF sang CRLF. Huy chạy lại: build 0 warning, test pass.
 - 2026-10-29 T2.3 → `done`: Huy gõ lại `ConflictContribution`, `NeighborhoodMoves`, `LocalSearch`, `SimulatedAnnealing`, `RestartScheduler` (các file khác giữ bản tham khảo; không gắn `ref/T2.3`, Claude so với bản đã review). Claude sửa 6 lỗi bản gõ lại: `Calculate` đổi thành private `CalculateContributions` (test và T2.4 gọi `Calculate` → lỗi biên dịch); `TryMove` thiếu chặn phiên chưa đặt / dời về mốc cũ (phiên chưa xếp bị thêm vào lịch); luyện kim chấm `currentSchedule` thay vì lịch lân cận và so Δ với f tốt nhất thay vì f hiện tại (M4 thành bước ngẫu nhiên không có tiêu chí Metropolis); `temperature >` thay `>=`; M3R chạy `RestartCount + 1` lần và không cập nhật `bestPlacedCount` khi gặp lần tốt hơn; bổ sung comment "Dùng ở / Helper của". Chạy lại: 220/220 pass (bản Huy trước khi sửa: 4 test fail).
+- 2026-10-29 Huy commit `7d1f8bc` + merge `--no-ff` vào `main` (`9fce756`), đã push.
+- 2026-10-29 T2.5 → `spec`: viết `plan/tasks/T2.5.md`. Claude chọn: D = số phiên (có ở cả lịch gốc và bài toán mới) chưa xếp / khác mốc / khác phòng, f' = f + w₄·D/n, w₄ = 0,5; 4 bước: giữ phiên còn hợp lệ (ghim trước, thứ tự nhập) → tham lam xếp tiếp trên lịch đang giữ (`GreedyScheduler.Complete`, chọn mốc theo f') → nhường chỗ một bậc (gỡ 1 phiên không ghim chồng giờ, chỉ nhận khi xếp được cả hai) → leo đồi với f'; phiên ghim không bị dời / đổi phòng; thêm `ChangeScenario` (mất phòng, diễn giả bận một ngày) cho test và T2.4. Ví dụ tính tay trên 6.5 (Hoa chỉ rảnh 10h): D = 2, f' = 0,9202465; ghim C → B chưa xếp, f' = 0,2823944. Chờ Huy duyệt.
+- 2026-10-29 Huy duyệt đặc tả T2.5 → `codex` (Codex chạy lại được).
+- 2026-10-29 T2.5: Codex viết 6 file mới + sửa 16 file cũ (7 file chỉ thêm comment "Dùng ở") + 4 file test mới, thêm test vào 7 file test cũ; build 0 warning, test 268/268 (Debug 3 phút 9 giây, Release 1 phút 7 giây). Ví dụ 3.6 khớp đúng số. Claude review code (khớp đặc tả) và sửa nhỏ: `ChangeScenario` từ chối dữ liệu không kèm nguyện vọng (trước đó im lặng dựng ma trận rỗng), gom dòng "Dùng ở" của `Schedule.TryGetPlacement` lên trên khối ví dụ, giảm `RestartSchedulerTests` dữ liệu sinh từ seed 1–5 xuống 1–3 (phần chậm nhất của bộ test). Chạy lại bằng xUnit giả lập: 266/266, ~40 giây Release. Đo (mục 6.1): mất phòng → xếp lại dời 12–19 phiên so với chạy lại M3 27–97. Ghi PROJECT.md 6.9, viết mục 9. Codex lỗi ở lần build kiểm cuối nên chưa gắn `ref/T2.5`. T2.5 → `retype`.
+- 2026-11-03 T2.5 → `done`: Huy gõ lại `Rescheduler` (các file khác giữ bản tham khảo; không gắn `ref/T2.5`, Claude so với bản đã review). Claude sửa 1 lỗi bản gõ lại: `KeepValidSessions` thiếu `continue` sau khi ghi phiên bị gỡ, nên phiên hết hợp lệ vẫn bị đặt vào lịch giữ lại (14/17 test `ReschedulerTests` fail: lịch đầu vi phạm, phòng không tồn tại); bổ sung comment "Dùng ở / Helper của" + tiêu đề phần, sửa comment nói `KeepValidSessions` phụ thuộc `ChangeScenario`. Chạy lại: 266/266 pass.

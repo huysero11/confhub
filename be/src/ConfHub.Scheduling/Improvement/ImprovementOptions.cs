@@ -24,6 +24,7 @@ public sealed record ImprovementOptions
 
     // ---------- KIỂM TRA ----------
     // Dùng ở: LocalSearch, SimulatedAnnealing, RestartScheduler (constructor loại tùy chọn sai trước khi chạy).
+    // Dùng ở: RescheduleOptions.Validate (kiểm tùy chọn leo đồi khi xếp lại).
     public void Validate()
     {
         if (CandidateCount <= 0 || MaxIterations <= 0 || RestartCount <= 0 || StepsPerTemperature <= 0)

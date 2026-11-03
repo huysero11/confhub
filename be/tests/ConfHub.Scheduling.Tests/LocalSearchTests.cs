@@ -11,6 +11,35 @@ namespace ConfHub.Scheduling.Tests;
 // Kiểm leo đồi theo từng vòng của ví dụ 6.5 và bất biến trên ba quy mô dữ liệu sinh.
 public class LocalSearchTests
 {
+    // ---------- GHIM VÀ PHẠT XÁO TRỘN ----------
+    // Dùng ở: dotnet test (ghim C chặn hoán đổi C ↔ B, cả mốc và phòng đều giữ nguyên).
+    [Fact]
+    public void LockedCKeepsExampleConflictAtThirtyFive()
+    {
+        var problem = ExampleProblem.Create();
+        var start = ExampleProblem.CreateGreedySchedule();
+        var search = new LocalSearch(problem, ObjectiveWeights.Default, new ImprovementOptions());
+        var lockedResult = search.Improve(start, new HashSet<int> { ExampleProblem.SessionC });
+        Assert.Equal(0, lockedResult.AcceptedMoves);
+        Assert.Equal(35, new ObjectiveCalculator(problem, ObjectiveWeights.Default).Evaluate(lockedResult.Schedule).ConflictCount);
+        AssertSameSchedule(start, lockedResult.Schedule);
+        AssertSameSchedule(search.Improve(start).Schedule, search.Improve(start, new HashSet<int>()).Schedule);
+        AssertSameSchedule(search.Improve(start).Schedule, search.Improve(start, null).Schedule);
+    }
+
+    // Dùng ở: dotnet test (leo đồi dùng f', có thể từ chối hoán đổi giảm f nhưng gây xáo trộn quá lớn).
+    [Fact]
+    public void DisruptionPenaltyCanRejectOtherwiseImprovingSwap()
+    {
+        var problem = ExampleProblem.Create();
+        var start = ExampleProblem.CreateGreedySchedule();
+        var disruption = new DisruptionPenalty(problem, start, 2);
+        var improvement = new LocalSearch(problem, ObjectiveWeights.Default, new ImprovementOptions(), disruption).Improve(start);
+        AssertSameSchedule(start, improvement.Schedule);
+        Assert.Equal(0, improvement.AcceptedMoves);
+        Assert.Equal(new ObjectiveCalculator(problem, ObjectiveWeights.Default, disruption).Evaluate(start).Value, improvement.Value);
+    }
+
     // ---------- VÍ DỤ VÀ ĐIỀU KIỆN DỪNG ----------
     // Dùng ở: dotnet test / Debug Test (vòng 1 chỉ nhận C ↔ B; vòng 2 dừng ở C = 5).
     [Fact]

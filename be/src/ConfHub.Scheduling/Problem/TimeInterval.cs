@@ -12,6 +12,7 @@ public readonly record struct TimeInterval(int StartMinute, int EndMinute)
     // ObjectiveCalculator.CalculateConflictCount (C).
     // Dùng ở: RoomFinder.FindFreeRoomIds (loại phòng bị chiếm trong bất kỳ phần nào của khoảng).
     // Dùng ở: ConflictContribution.Calculate, NeighborhoodMoves.TrySwap, SimulatedAnnealing.TryRandomSwap (xác định cặp chồng giờ).
+    // Dùng ở: Rescheduler.TryDisplace (chỉ thử gỡ phiên đang chồng giờ).
     public bool Overlaps(TimeInterval other)
     {
         return StartMinute < other.EndMinute && EndMinute > other.StartMinute;

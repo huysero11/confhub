@@ -12,6 +12,76 @@ namespace ConfHub.Scheduling.Tests;
 // Kiểm tham lam theo bảng 6.5, lý do thất bại và các bất biến trên dữ liệu sinh.
 public class GreedySchedulerTests
 {
+    // ---------- XẾP TIẾP TRÊN LỊCH CÓ SẴN ----------
+    // Dùng ở: dotnet test (chỉ xếp danh sách yêu cầu; Hungarian được đổi phòng phiên cũ không ghim).
+    [Fact]
+    public void CompletePlacesOnlyRequestedSessionsAndDoesNotMutateStart()
+    {
+        var start = new Schedule();
+        start.Place(ExampleProblem.SessionC, 0, ExampleProblem.RoomP101);
+        var originalSchedule = start.Clone();
+        var scheduler = new GreedyScheduler(ExampleProblem.Create(), new ObjectiveWeights(0, 0, 1));
+        var completion = scheduler.Complete(start, [ExampleProblem.SessionA]);
+        Assert.Equal(2, completion.Schedule.PlacedSessionIds.Count);
+        Assert.Empty(completion.UnplacedSessions);
+        Assert.False(completion.Schedule.IsPlaced(ExampleProblem.SessionB));
+        Assert.False(completion.Schedule.IsPlaced(ExampleProblem.SessionD));
+        Assert.True(completion.Schedule.TryGetPlacement(ExampleProblem.SessionC, out var placement));
+        Assert.Equal(new Placement(0, ExampleProblem.RoomP102), placement);
+        LocalSearchTests.AssertSameSchedule(originalSchedule, start);
+
+        var emptyCompletion = scheduler.Complete(start, []);
+        Assert.NotSame(start, emptyCompletion.Schedule);
+        LocalSearchTests.AssertSameSchedule(start, emptyCompletion.Schedule);
+    }
+
+    // Dùng ở: dotnet test (danh sách được xếp đúng thứ tự truyền vào, không sắp lại theo độ ràng buộc).
+    [Fact]
+    public void CompleteHonorsRequestedOrder()
+    {
+        var problem = TestData.CreateProblem(
+            [TestData.Session(1, 60), TestData.Session(2, 60)],
+            [TestData.Room(1, 100)],
+            [TestData.Day(540, 600)],
+            slotMinutes: 60);
+        var completion = new GreedyScheduler(problem, ObjectiveWeights.Default).Complete(new Schedule(), [2, 1]);
+        Assert.Equal([2], completion.Schedule.PlacedSessionIds);
+        Assert.Equal(1, Assert.Single(completion.UnplacedSessions).SessionId);
+    }
+
+    // Dùng ở: dotnet test (mã lạ, lặp hoặc đã xếp bị từ chối trước khi sửa bản sao).
+    [Fact]
+    public void CompleteRejectsInvalidSessionLists()
+    {
+        var scheduler = new GreedyScheduler(ExampleProblem.Create(), ObjectiveWeights.Default);
+        var start = new Schedule();
+        start.Place(1, 0, 1);
+        Assert.Throws<ArgumentException>(() => scheduler.Complete(start, [99]));
+        Assert.Throws<ArgumentException>(() => scheduler.Complete(start, [2, 2]));
+        Assert.Throws<ArgumentException>(() => scheduler.Complete(start, [1]));
+        Assert.Single(start.PlacedSessionIds);
+    }
+
+    // Dùng ở: dotnet test (phạt đổi phòng làm chọn mốc khác; ghim cũng bảo vệ phòng qua Hungarian).
+    [Fact]
+    public void CompleteUsesDisruptionAndKeepsLockedRooms()
+    {
+        var problem = ExampleProblem.Create();
+        var start = new Schedule();
+        start.Place(ExampleProblem.SessionC, 0, ExampleProblem.RoomP101);
+        var disruption = new DisruptionPenalty(problem, start, 1);
+        var scheduler = new GreedyScheduler(problem, new ObjectiveWeights(0, 0, 1), disruption);
+        var completion = scheduler.Complete(start, [ExampleProblem.SessionA]);
+        Assert.True(completion.Schedule.TryGetPlacement(ExampleProblem.SessionC, out var keptPlacement));
+        Assert.Equal(new Placement(0, ExampleProblem.RoomP101), keptPlacement);
+        Assert.True(completion.Schedule.TryGetPlacement(ExampleProblem.SessionA, out var addedPlacement));
+        Assert.Equal(1, addedPlacement.SlotIndex);
+
+        var lockedCompletion = new GreedyScheduler(problem, new ObjectiveWeights(0, 0, 1))
+            .Complete(start, [ExampleProblem.SessionA], new HashSet<int> { ExampleProblem.SessionC });
+        LocalSearchTests.AssertSameSchedule(completion.Schedule, lockedCompletion.Schedule);
+    }
+
     // ---------- VÍ DỤ VÀ THỨ TỰ ----------
     // Dùng ở: dotnet test / Debug Test (đi từng bước A, D, B, C của ví dụ 6.5).
     [Fact]
