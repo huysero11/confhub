@@ -1,11 +1,13 @@
 using ConfHub.Scheduling.Constraints;
 using ConfHub.Scheduling.Objective;
 using ConfHub.Scheduling.Problem;
+using ConfHub.Scheduling.Rooms;
 using ConfHub.Scheduling.Solution;
 
 namespace ConfHub.Scheduling.Improvement;
 
-// Leo đồi chọn bước tốt nhất: mỗi vòng duyệt hết lân cận Q1–Q3 rồi mới nhận một bước.
+// Leo đồi chọn bước tốt nhất: mỗi vòng duyệt hết lân cận Q1–Q3 rồi mới nhận một bước;
+// hết bước tốt hơn thì thử gán lại phòng toàn lịch (T2.6) trước khi dừng.
 // Chỉ cải thiện các phiên đã có trong lịch; không thử xếp thêm phiên còn thiếu.
 public sealed class LocalSearch
 {
@@ -68,9 +70,17 @@ public sealed class LocalSearch
                 }
             }
 
+            // Hết phép dời / hoán đổi tốt hơn thì thử gán lại phòng toàn lịch (giữ mốc, chỉ đổi phòng).
+            // Nhận được thì đi tiếp vòng sau vì phòng mới có thể mở ra phép hoán đổi mới; không thì dừng.
             if (bestSchedule is null)
             {
-                break;
+                bestSchedule = RoomReassigner.TryImprove(_problem, currentSchedule, _calculator, lockedSessionIds);
+                if (bestSchedule is null)
+                {
+                    break;
+                }
+
+                bestScore = _calculator.Evaluate(bestSchedule).Value;
             }
 
             currentSchedule = bestSchedule;

@@ -255,6 +255,7 @@ Seed 1–10 × Small / Medium / Large, bản Release, toàn bộ chạy 110 s; s
 5. **Xếp lại (chỉ số 8):** mất phòng nhỏ nhất → xếp lại dời 12 / 18 / 18 phiên so với chạy lại M3 từ đầu 28 / 55 / 89, **và xếp được nhiều phiên hơn** (Medium 54,4 so với 49,6). Diễn giả bận ngày 0 → 3–5 so với 20 / 38 / 69. w₄ từ 0,5 trở lên gần như không đổi kết quả; w₄ = 0,1 dời thêm ~1 phiên.
 6. **Gán phòng (chỉ số 10) — kết quả ngược kỳ vọng:** gán lại toàn lịch M3 bằng tham lam "phòng nhỏ nhất đủ chỗ theo giờ bắt đầu" cho **S nhỏ hơn** phòng của chính lịch M3 (Medium 738 so với 791, Large 1045 so với 1117), chỉ 0–0,2 phiên / seed gán thất bại (Small, Medium). Nguyên nhân: Hungarian chỉ tối ưu trong **nhóm cùng khoảng thời gian** lúc đặt phiên, còn phép hoán đổi Q3 đổi luôn phòng nên phiên nhỏ có thể giữ phòng lớn. *Huy chốt 2026-11-03: thêm bước gán lại phòng toàn lịch ở cuối leo đồi (làm ở T2.6).*
 7. Chỉ số 9 và 11 cần dữ liệu thật → T11.1.
+8. **Sau T2.6** (M4 100 bước + gán lại phòng toàn lịch trong leo đồi; số ở `docs/experiments/T2.6/`, 155 s): M3 C 160 / 210 / 494, S 395 / 737 / 1045 (trước 418 / 791 / 1117), f giảm 3–4 %; **M4 C 134 / 201 / 456** — ngang M3R (130 / 195 / 459) mà nhanh hơn ~3 lần (Large 0,7 s so với 2,2 s); phòng của lịch M3 giờ ngang gán tham lam (Large S 1045 so với 1046) mà không phiên nào thất bại. Xếp lại khi mất phòng dời 13 / 19 / 19 phiên (tăng ~1 do f' nhận vài lần đổi phòng có lợi), chạy lại M3 dời 27 / 51 / 85.
 
 ---
 

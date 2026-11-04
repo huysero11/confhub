@@ -18,7 +18,7 @@ public class ImprovementOptionsTests
         Assert.Equal(3, options.CandidateCount);
         Assert.Equal(200, options.MaxIterations);
         Assert.Equal(10, options.RestartCount);
-        Assert.Equal(20, options.StepsPerTemperature);
+        Assert.Equal(100, options.StepsPerTemperature);
         Assert.Equal(0.05, options.InitialTemperature);
         Assert.Equal(0.95, options.CoolingRate);
         Assert.Equal(1e-4, options.MinTemperature);

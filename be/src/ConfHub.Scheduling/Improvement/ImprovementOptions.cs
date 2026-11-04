@@ -18,7 +18,8 @@ public sealed record ImprovementOptions
 
     public double CoolingRate { get; init; } = 0.95;
 
-    public int StepsPerTemperature { get; init; } = 20;
+    // 100 bước mỗi mức nhiệt (T2.6): 20 bước thì luyện kim gần như không có tác dụng (T2.4).
+    public int StepsPerTemperature { get; init; } = 100;
 
     public double MinTemperature { get; init; } = 1e-4;
 
