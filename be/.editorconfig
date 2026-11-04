@@ -61,6 +61,9 @@ dotnet_diagnostic.SA1009.severity = none
 dotnet_diagnostic.SA1010.severity = none
 dotnet_diagnostic.SA1313.severity = none
 dotnet_diagnostic.SA1516.severity = none
+# SA1108: cho phép comment cùng dòng sau điều kiện (vd `if (...) // giải thích`) — Huy chốt 2026-11-04,
+# comment ngắn đặt ngay cạnh điều kiện dễ đọc hơn đẩy lên dòng trên.
+dotnet_diagnostic.SA1108.severity = none
 
 # RCS1194: không bắt đủ 3 constructor chuẩn cho exception — exception nghiệp vụ của repo
 # luôn cần tham số riêng (vd Code), constructor rỗng sẽ cho phép ném lỗi thiếu mã.

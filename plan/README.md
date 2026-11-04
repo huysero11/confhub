@@ -6,8 +6,8 @@
 ## 0. Đang ở đâu
 
 - **Vừa xong:** T2.2 (tham lam + Hungarian, M1, M2) — merge `8130a83`, 2026-10-27
-- **Đang làm:** T2.6 (M4 100 bước + gán lại phòng toàn lịch) — `codex`, nhánh `task/T2.6-room-reassign`
-- **Tiếp theo:** Claude review T2.6 → mục 9 (gồm cả file gõ lại của T2.4) → tag `ref/T2.6`; Huy điền thông tin bìa trên Overleaf
+- **Đang làm:** —
+- **Tiếp theo:** G2 xong phần thư viện → báo cáo tuần G-2 (T2.3, T2.4, T2.6) + viết phần báo cáo thuật toán trên Overleaf; rồi G3 (T3.1, cần D8); Huy điền thông tin bìa trên Overleaf
 - **Nhánh đang mở:** không (đang ở `main`)
 
 ## 1. Quy trình một task
@@ -159,7 +159,7 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 | T2.3 | Giai đoạn 2 cải thiện cục bộ        | T2.2      | done       |
 | T2.4 | Chương trình thực nghiệm            | T2.3, T2.5 | done      |
 | T2.5 | Xếp lại hạn chế xáo trộn (thư viện) | T2.3      | done       |
-| T2.6 | M4 100 bước + gán lại phòng         | T2.4      | codex      |
+| T2.6 | M4 100 bước + gán lại phòng         | T2.4      | done       |
 
 **Chi tiết:**
 - **T2.1** — Đặc tả: `plan/tasks/T2.1.md`. Mô hình dữ liệu, tập mốc T (nhiều ngày + khung nghỉ), ma trận W,
@@ -406,3 +406,7 @@ Chỉ chia task khi P1–P4 xong.
 - 2026-11-03 T2.4: Codex lượt 2 chọn diễn giả còn ngày rảnh khác; chạy đủ 5 thực nghiệm seed 1–10 (110 s, 0 ca `skipped`), build 0 warning, 283/283 test. Claude review code (`Evaluation/` khớp đặc tả; console chỉ điều phối), chạy lại 17 test mới bằng bản giả lập: pass. Kết luận ghi PROJECT.md 6.10: giả thuyết đạt (M3 giảm C 48–54 % so với M1, 0 vi phạm); M4 mặc định ≈ M3, 100 bước mỗi mức nhiệt tốt hơn rõ; xếp lại dời 12–18 phiên so với 28–89 khi chạy lại; **gán phòng tham lam toàn lịch cho S nhỏ hơn phòng của M3** (Hungarian chỉ tối ưu trong nhóm cùng khoảng + hoán đổi Q3 đổi luôn phòng). Hai đề xuất chờ Huy chốt. Viết mục 9. T2.4 → `retype`.
 - 2026-11-03 Huy chốt làm cả 2 đề xuất của T2.4 → task mới **T2.6** (phụ thuộc T2.4; T11.1 đổi phụ thuộc T2.4 → T2.6). T2.6 → `spec`: viết `plan/tasks/T2.6.md`. Claude chọn: gán lại phòng chạy một lần ở cuối `LocalSearch.Improve` (nên M3, M3R, M4, xếp lại đều có; tham lam đứng riêng không), 2 thứ tự (giờ bắt đầu; quy mô giảm dần) mỗi phiên lấy phòng nhỏ nhất đủ chỗ, phiên ghim giữ phòng, chấm bằng bộ chấm của leo đồi (f hoặc f'), chỉ nhận khi giảm; tách phần best-fit dùng chung với `GreedyRoomBaseline`. Chờ Huy duyệt.
 - 2026-11-03 T2.4 → `done` không gõ lại riêng (Huy): phần gõ của T2.4 (`Program`, `MethodExperiment`, `MetricsCalculator`, `GreedyRoomBaseline`) gộp vào mục 9 của T2.6, vì T2.6 sửa `GreedyRoomBaseline`; không gắn `ref/T2.4`. Huy duyệt T2.6 → `codex` sau khi T2.4 merge.
+- 2026-11-03 Huy commit + merge T2.4 (`c38db70`). T2.6: Codex hết lượt dùng → Huy để Claude tự viết. Sửa đặc tả 3.1 ý 2 khi code: gán lại phòng nằm **trong** vòng leo đồi (vòng nào hết phép dời / hoán đổi tốt hơn thì thử; nhận thì đi tiếp), để chạy từng vòng và chạy một lần cho cùng kết quả. Claude viết `Rooms/BestFitRoomAssigner`, `Rooms/RoomReassigner`, chuyển `RoomBaselineResult` sang `Rooms/`, sửa `LocalSearch`, `ImprovementOptions` (100 bước), `GreedyRoomBaseline`; 3 file test mới. Chạy bằng xUnit giả lập: 293/293 pass (283 test cũ pass nguyên, chỉ sửa test giá trị mặc định 20 → 100). Viết mục 9 (gồm phần gõ lại của T2.4). Chờ Huy build có StyleCop + chạy lại thực nghiệm.
+- 2026-11-03 Huy chạy lại thực nghiệm ra `docs/experiments/T2.6/` (155 s, mọi lịch 0 vi phạm). Claude ghi PROJECT.md 6.10 ý 8: M4 giờ ngang M3R mà nhanh ~3 lần; phòng của M3 ngang gán tham lam (Large S 1117 → 1045); xếp lại dời thêm ~1 phiên. T2.6 → `retype`.
+- 2026-11-04 Huy gõ lại `BestFitRoomAssigner`, `RoomReassigner` (chuyển `OrderByStart`, `OrderBySizeDescending` sang `RoomReassigner` — hợp lý hơn: chọn thứ tự là chiến lược của bên gán lại). Claude kiểm: logic đúng (phiên ghim duyệt thẳng `lockedSessionIds`, cùng kết quả); sửa chỗ gọi trong `GreedyRoomBaseline` và `BestFitRoomAssignerTests`, thêm comment nội dung cho 2 hàm public, viết hoa vài comment. Quy ước mới (Huy): cho phép comment cùng dòng sau điều kiện → tắt SA1108 trong `be/.editorconfig`, ghi CLAUDE.md. Chạy lại: 293/293 pass.
+- 2026-11-04 T2.6 → `done` (Huy): chưa gõ lại 3 file của T2.4 (`MetricsCalculator`, `Program`, `MethodExperiment`) — để sau, khi cần cho T11.1. Huy commit + merge.

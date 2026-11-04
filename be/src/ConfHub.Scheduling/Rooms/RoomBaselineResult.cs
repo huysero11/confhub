@@ -1,7 +1,7 @@
-// Kết quả gán phòng tham lam; lịch chỉ chứa các phiên gán được phòng.
+// Kết quả gán phòng theo một thứ tự: lịch chỉ chứa các phiên gán được phòng.
 using ConfHub.Scheduling.Solution;
 
-namespace ConfHub.Scheduling.Evaluation;
+namespace ConfHub.Scheduling.Rooms;
 
 public sealed record RoomBaselineResult(
     Schedule Schedule,

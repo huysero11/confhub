@@ -1,4 +1,4 @@
-// So phòng của lịch M3 (Hungarian theo nhóm) với gán tham lam trên đúng các mốc đó.
+// So phòng của lịch M3 (Hungarian theo nhóm + gán lại phòng toàn lịch từ T2.6) với gán tham lam trên đúng các mốc đó.
 using System.Diagnostics;
 using ConfHub.Scheduling.Evaluation;
 using ConfHub.Scheduling.Generation;
@@ -9,7 +9,7 @@ namespace ConfHub.Experiments;
 
 internal static class RoomExperiment
 {
-    // Hungarian là lịch tham chiếu đã có; chỉ đo thời gian lần gán lại tham lam độc lập.
+    // Phòng của lịch M3 là lịch tham chiếu đã có; chỉ đo thời gian lần gán lại tham lam độc lập.
     public static void Run(CsvTable table, string size, int seed, GeneratedData data, Schedule baseSchedule)
     {
         var calculator = new MetricsCalculator(data.Problem, data.Interests, ObjectiveWeights.Default);
