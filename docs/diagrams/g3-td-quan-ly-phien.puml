@@ -1,0 +1,48 @@
+@startuml g3-td-quan-ly-phien
+' Biểu đồ tuần tự UC08: thêm phiên, đọc danh sách phiên kèm cảnh báo
+' (UC04 Quản lý phòng đi cùng các bước, khác quyền Room.Manage)
+' Đặc tả: docs/specs/g3-conference.md mục 6, BR29, BR30
+!include _style.iuml
+autonumber
+
+actor "Ban tổ chức" as U
+participant "Giao diện\n(React)" as FE
+participant "API\n(Controller)" as API
+participant "Handler\n(MediatR)" as H
+database "SQL Server" as DB
+
+== Thêm phiên ==
+U -> FE : Nhập tiêu đề, track, thời lượng 90, quy mô 120
+FE -> API : POST /api/manage/conferences/{id}/sessions
+note right of API : [MustHavePermission(Session.Manage)]
+API -> H : CreateSessionCommand
+H -> H : Validator: BR17, BR18, BR29
+H -> DB : Hội nghị tồn tại, OwnerId = người gọi,\nchưa Finished?
+alt không
+  API --> FE : 404 NotFound / 422 ConferenceFinished
+else có
+  opt có chọn track
+    H -> DB : Track thuộc hội nghị này?
+    alt không
+      API --> FE : 400 Validation
+    end
+  end
+  H -> H : Session.Create(...)
+  H -> DB : Lưu Session
+  API --> FE : 201 Created {id}
+end
+
+== Danh sách phiên kèm cảnh báo ==
+FE -> API : GET /api/manage/conferences/{id}/sessions
+API -> H : GetSessionsQuery
+H -> DB : Đọc phiên + diễn giả (chỉ cột cần, Query.Select)
+H -> DB : Đọc phòng lớn nhất, các ngày và khung nghỉ
+loop mỗi phiên
+  H -> H : quy mô > phòng lớn nhất → NoRoomBigEnough
+  H -> H : không ngày nào có khoảng liền\n≥ thời lượng → NoSlotLongEnough
+  H -> H : không ai Accepted → NoAcceptedSpeaker
+end
+H --> API : danh sách + warnings
+API --> FE : 200
+FE --> U : Bảng phiên, biểu tượng cảnh báo
+@enduml

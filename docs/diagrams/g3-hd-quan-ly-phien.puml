@@ -1,0 +1,49 @@
+@startuml g3-hd-quan-ly-phien
+' Biểu đồ hoạt động UC08: track, thêm / sửa phiên, cảnh báo phiên khó xếp
+' Đặc tả: docs/specs/g3-conference.md mục 6
+!include _style.iuml
+
+|Ban tổ chức|
+start
+:Mở tab "Phiên" của hội nghị;
+|Hệ thống|
+:Hiện các track (chip màu)
+và danh sách phiên kèm cảnh báo (BR30);
+|Ban tổ chức|
+if (Cần thêm / sửa track?) then (có)
+  :Nhập tên track (vi, en);
+  |Hệ thống|
+  if (Tên chưa có và chưa đủ 5 track? (BR28)) then (có)
+    :Lưu track, gán màu theo thứ tự;
+  else (không)
+    :Báo lỗi: tên track đã có
+    hoặc đã đủ 5 track;
+  endif
+  |Ban tổ chức|
+endif
+:Bấm "Thêm phiên" (hoặc chọn phiên để sửa);
+repeat
+  |Ban tổ chức|
+  :Nhập tiêu đề, tóm tắt (vi, en),
+  chọn track, thời lượng, quy mô dự kiến;
+  :Bấm "Lưu";
+  |Hệ thống|
+  :Kiểm tra (BR17, BR18, BR29):
+  tiêu đề bắt buộc, thời lượng 15–240
+  và bội số 15, track thuộc hội nghị;
+  backward :Báo lỗi dưới từng ô;
+repeat while (Hợp lệ?) is (không) not (có)
+:Lưu phiên;
+:Tính cảnh báo (không chặn lưu):
+quy mô > phòng lớn nhất,
+không có khoảng liền đủ dài,
+chưa có diễn giả nhận lời;
+:Cập nhật danh sách phiên;
+|Ban tổ chức|
+if (Phiên mới?) then (có)
+  :Chuyển sang phần "Diễn giả"
+  để mời ngay (UC05);
+else (không)
+endif
+stop
+@enduml

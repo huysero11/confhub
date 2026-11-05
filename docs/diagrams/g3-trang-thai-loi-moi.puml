@@ -1,0 +1,28 @@
+@startuml g3-trang-thai-loi-moi
+' Vòng đời SessionSpeaker.InvitationStatus. Đặc tả: docs/specs/g3-conference.md mục 2, BR32–BR35
+!include _style.iuml
+hide empty description
+
+state "Lời mời trình bày một phiên" as Invitation {
+  state "Chờ phản hồi\n(Pending)" as Pending
+  state "Đã nhận lời\n(Accepted)" as Accepted
+  state "Đã từ chối\n(Declined)" as Declined
+
+  [*] --> Pending : BTC mời vào phiên (UC05)\n/ gửi email mời
+  Pending --> Accepted : Diễn giả nhận lời (UC06)
+  Pending --> Declined : Diễn giả từ chối (UC06)
+  Accepted --> Declined : Diễn giả rút lui (UC06)
+  Declined --> Pending : BTC mời lại (UC05)\n/ gửi lại email
+}
+[*] --> Invitation
+Invitation --> [*] : BTC gỡ khỏi phiên (UC05),\ntừ bất kỳ trạng thái nào
+
+note right of Accepted
+  Chỉ diễn giả Accepted được thuật toán
+  xét ở ràng buộc H1, H5
+end note
+note bottom of Declined
+  Diễn giả không tự nhận lại được,
+  phải chờ BTC mời lại
+end note
+@enduml

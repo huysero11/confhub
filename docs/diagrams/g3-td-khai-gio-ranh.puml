@@ -1,0 +1,38 @@
+@startuml g3-td-khai-gio-ranh
+' Biểu đồ tuần tự UC07: lưu cả bộ giờ rảnh (BTC sửa thay qua route /api/manage/... cùng handler)
+' Đặc tả: docs/specs/g3-conference.md mục 9, BR36–BR40
+!include _style.iuml
+autonumber
+
+actor "Diễn giả" as DG
+participant "Giao diện\n(React)" as FE
+participant "API\n(Controller)" as API
+participant "Handler\n(MediatR)" as H
+database "SQL Server" as DB
+
+DG -> FE : Mở trang khai giờ rảnh của hội nghị
+FE -> API : GET /api/me/speaking/conferences/{conferenceId}/availability
+API -> H : GetAvailabilityQuery (SpeakerId = người gọi)
+H -> DB : Có lời mời Pending / Accepted? Ngày, khung nghỉ, giờ rảnh
+H -> H : Suy ra chế độ từng ngày:\nkhông có dòng nào → mọi ngày AllDay (declared = false)\nngày không dòng → Unavailable\n1 dòng = giờ của ngày → AllDay, còn lại → Ranges
+API --> FE : 200 { declared, days[], warnings }
+
+DG -> FE : Ngày 1: Một số khung giờ 09:00–11:00\nNgày 2: Không tham gia
+FE -> API : PUT .../availability { days: [{dayId, mode, ranges}] }
+API -> H : SetAvailabilityCommand
+H -> H : Validator: mọi ngày có mặt, khoảng trong giờ ngày,\nbội số 15 phút, bắt đầu < kết thúc
+alt sai
+  API --> FE : 400 Validation
+else đúng định dạng
+  H -> H : Kiểm tra không chồng nhau,\nkhông phải mọi ngày Unavailable (BR38)
+  alt vi phạm
+    API --> FE : 422 AvailabilityOverlap / NoAvailability
+  else hợp lệ
+    H -> H : Đổi lựa chọn → các dòng\n(mọi ngày AllDay → không dòng nào)
+    H -> DB : Xóa giờ rảnh cũ + thêm dòng mới\n(một giao dịch, BR39)
+    H -> H : Tính cảnh báo NoRangeLongEnough (BR40)
+    API --> FE : 200 { declared, days[], warnings }
+    FE --> DG : "Đã lưu" (+ cảnh báo nếu có)
+  end
+end
+@enduml

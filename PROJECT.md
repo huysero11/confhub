@@ -66,9 +66,20 @@ Dùng kịch bản này làm chuẩn khi thiết kế màn hình và viết báo
 
 - 7 tác nhân: **Người dùng** (chung: đăng ký, đăng nhập, hồ sơ) và 6 tác nhân kế thừa — Người tham dự 12, Ban tổ chức 20, Diễn giả 8, Nhà cung cấp 4, Nhân viên vận hành 5, Quản trị viên 5.
 - Mức ưu tiên: **P1** lõi đến công bố lịch (UC01–19) · **P2** dịch vụ + vận hành (UC20–32) · **P3** hỏi đáp + AI (UC33–40) · **P4** hỗ trợ (UC41–47) · **P5** mở rộng, cắt đầu tiên (UC48–57).
-- CSDL: 19 bảng (P1) → 24 (P2) → 28 (P3) → 31 (P4) → 37 (P5). ERD nộp môn vẽ P1–P3 = 27 bảng nghiệp vụ (bỏ OutboxMessage kỹ thuật). Nguyên tắc: chỉ tách bảng khi có quan hệ 1–N/N–N thật hoặc vòng đời riêng. Chi tiết: `docs/design/erd.md`.
+- CSDL: 17 bảng (P1) → 24 (P2) → 28 (P3) → 31 (P4) → 37 (P5). ERD nộp môn vẽ P1–P3 = 27 bảng nghiệp vụ (bỏ OutboxMessage kỹ thuật). Nguyên tắc: chỉ tách bảng khi có quan hệ 1–N/N–N thật hoặc vòng đời riêng. Chi tiết: `docs/design/erd.md`.
 - Mỗi người dùng 1 vai trò; "Diễn giả" không phải vai trò mà là người được gán vào phiên (bảng SessionSpeaker; một phiên có thể nhiều diễn giả). Mỗi hội nghị 1 BTC (OwnerId). Các giới hạn chấp nhận: `erd.md` mục 10.
 - Tài liệu nộp môn Dự án công nghệ: vẽ đủ 57 UC trên biểu đồ tổng quát; đặc tả chi tiết + biểu đồ hoạt động/tuần tự cho P1–P3.
+
+**Quyết định nhóm G3 — hội nghị, phòng, phiên, diễn giả (D8, chốt 2026-11-05).** Đặc tả đủ: `docs/specs/g3-conference.md`.
+- **Song ngữ:** cột `_Vi` bắt buộc, `_En` tùy chọn; giao diện EN để trống thì hiện bản tiếng Việt.
+- **Track tùy chọn** (`Session.TrackId` null → màu xám); tối đa 5 track theo 5 màu track.
+- **Thiết bị sẵn có tại phòng + danh mục dịch vụ + suất trong khung nghỉ dời sang G6 (T6.2)** → P1 còn 17 bảng.
+- **BTC sửa được giờ rảnh thay diễn giả** (cần cho biến động trước hội nghị → UC19).
+- **Giờ:** ngày / khung nghỉ / giờ rảnh lưu giờ địa phương; `RegistrationCloseAt` lưu UTC; một múi giờ hệ thống `Asia/Ho_Chi_Minh` (giới hạn).
+- **Chủ sở hữu:** BTC chỉ thấy hội nghị của mình; của người khác trả 404 (không lộ tồn tại). Quyền: `Conference.Manage`, `Room.Manage`, `Session.Manage`, `Speaker.Manage` (seed cho `Organizer`).
+- **Lời mời:** diễn giả phải có tài khoản `Active`; mời / mời lại gửi email qua outbox (message chỉ mang Id); đã từ chối thì chỉ BTC mời lại được.
+- **Giờ rảnh khai theo ngày:** Cả ngày / Không tham gia / Một số khung giờ; mọi ngày "Cả ngày" → xóa hết dòng (= chưa khai = rảnh mọi lúc); cấm mọi ngày "Không tham gia".
+- Tạo hội nghị bằng **khoảng ngày + giờ mặc định** (sinh sẵn các ngày); hội nghị luôn có ≥ 1 ngày; chỉ `Draft` mới xóa được.
 
 ## 4. Phân hệ dịch vụ đi kèm
 

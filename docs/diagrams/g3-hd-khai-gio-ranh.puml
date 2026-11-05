@@ -1,0 +1,52 @@
+@startuml g3-hd-khai-gio-ranh
+' Biểu đồ hoạt động UC07: diễn giả khai thời gian có thể tham gia (BTC sửa thay dùng cùng luồng, UC05)
+' Đặc tả: docs/specs/g3-conference.md mục 9, BR36–BR40
+!include _style.iuml
+
+|Diễn giả|
+start
+:Mở "Khai giờ rảnh" của một hội nghị;
+|Hệ thống|
+if (Có lời mời Pending / Accepted
+trong hội nghị? (BR36)) then (có)
+else (không)
+  :Báo "Không tìm thấy";
+  stop
+endif
+if (Đã khai trước đó?) then (chưa)
+  :Báo "Chưa khai — coi là rảnh mọi lúc",
+  mọi ngày đặt *Cả ngày*;
+else (rồi)
+  :Hiện lựa chọn đã lưu của từng ngày;
+endif
+:Hiện từng ngày: giờ của ngày,
+các khung nghỉ để tham khảo;
+repeat
+  |Diễn giả|
+  repeat :Chọn một ngày;
+    switch (Lựa chọn)
+    case (Cả ngày)
+    case (Không tham gia)
+    case (Một số khung giờ)
+      :Thêm / sửa / xóa các khoảng
+      (bước 15 phút);
+    endswitch
+  repeat while (Còn ngày cần chỉnh?) is (có) not (không)
+  :Bấm "Lưu";
+  |Hệ thống|
+  :Kiểm tra (BR38): khoảng trong giờ ngày,
+  bội số 15 phút, không chồng nhau,
+  không phải mọi ngày "Không tham gia";
+  backward :Báo lỗi tại ngày sai;
+repeat while (Hợp lệ?) is (không) not (có)
+if (Mọi ngày "Cả ngày"?) then (có)
+  :Xóa hết giờ rảnh
+  (trở về "rảnh mọi lúc");
+else (không)
+  :Thay toàn bộ giờ rảnh bằng bộ mới
+  (một giao dịch, BR39);
+endif
+:Báo đã lưu, kèm cảnh báo nếu khoảng rảnh
+dài nhất ngắn hơn phiên đã nhận (BR40);
+stop
+@enduml

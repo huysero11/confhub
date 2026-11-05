@@ -1,0 +1,52 @@
+@startuml g3-td-tao-hoi-nghi
+' Biểu đồ tuần tự UC03: tạo hội nghị kèm các ngày tổ chức
+' Đặc tả: docs/specs/g3-conference.md mục 4, 10
+!include _style.iuml
+autonumber
+
+actor "Ban tổ chức" as U
+participant "Giao diện\n(React)" as FE
+participant "API\n(Controller)" as API
+participant "Phân quyền\n(Permission handler)" as AUTH
+participant "Handler\n(MediatR)" as H
+database "SQL Server" as DB
+
+U -> FE : Nhập thông tin, khoảng ngày,\ngiờ mặc định, hạn đăng ký
+FE -> API : POST /api/manage/conferences\n(Authorization: Bearer <access token>)
+API -> AUTH : Có quyền Conference.Manage?
+alt thiếu quyền
+  AUTH --> API : không
+  API --> FE : 403 Forbidden
+else có quyền
+  AUTH --> API : có
+  API -> H : CreateConferenceCommand\n(OwnerId = người gọi, lấy từ ICurrentUser)
+  H -> H : Validator kiểm tra BR17, BR18,\nBR20–BR22 (≤ 14 ngày, hạn đăng ký\ntrước giờ bắt đầu ngày đầu)
+  alt dữ liệu sai
+    H --> API : ValidationException
+    API --> FE : 400 Validation (lỗi từng ô)
+  else hợp lệ
+    H -> H : Conference.Create(...) → Draft\nAddDay(...) cho từng ngày trong khoảng
+    H -> DB : Lưu Conference + ConferenceDay (một giao dịch)
+    H --> API : id
+    API --> FE : 201 Created {id}
+    FE --> U : Mở tab "Ngày và khung nghỉ"
+  end
+end
+
+== Thêm khung nghỉ (tương tự cho sửa ngày) ==
+U -> FE : Nhập "Nghỉ trưa" 11:30–13:00
+FE -> API : POST /api/manage/conferences/{id}/days/{dayId}/breaks
+API -> H : AddBreakSlotCommand
+H -> DB : Đọc Conference kèm ngày, khung nghỉ
+alt không tồn tại / OwnerId khác người gọi
+  API --> FE : 404 NotFound (BR16)
+else là chủ hội nghị
+  H -> H : conference.AddBreak(dayId, ...)\nkiểm tra trong giờ ngày, không chồng (BR23)
+  alt vi phạm
+    API --> FE : 422 BreakOutsideDay / BreakOverlap
+  else hợp lệ
+    H -> DB : Lưu
+    API --> FE : 201 Created
+  end
+end
+@enduml

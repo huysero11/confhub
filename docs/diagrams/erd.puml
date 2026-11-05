@@ -54,7 +54,8 @@ package "Hội nghị, phòng, dịch vụ" {
   entity Conference {
     * Id : uniqueidentifier <<PK>>
     --
-    * Name_Vi, Name_En : nvarchar
+    * Name_Vi : nvarchar
+    Name_En : nvarchar
     Description_Vi, Description_En : nvarchar
     * Venue : nvarchar
     * RegistrationCloseAt : datetime2
@@ -109,14 +110,16 @@ package "Phiên, diễn giả" {
     * Id : uniqueidentifier <<PK>>
     --
     * ConferenceId : uniqueidentifier <<FK>>
-    * Name_Vi, Name_En : nvarchar
+    * Name_Vi : nvarchar
+    Name_En : nvarchar
   }
   entity Session {
     * Id : uniqueidentifier <<PK>>
     --
     * ConferenceId : uniqueidentifier <<FK>>
-    * TrackId : uniqueidentifier <<FK>>
-    * Title_Vi, Title_En : nvarchar
+    TrackId : uniqueidentifier <<FK>>
+    * Title_Vi : nvarchar
+    Title_En : nvarchar
     Abstract_Vi, Abstract_En : nvarchar
     * DurationMinutes : int
     ExpectedSize : int
@@ -287,7 +290,7 @@ User ||--o{ ServiceItem : SupplierId
 
 Conference ||--o{ Track
 Conference ||--o{ Session
-Track ||--o{ Session
+Track |o--o{ Session
 Session ||--o{ SessionSpeaker
 User ||--o{ SessionSpeaker : SpeakerId
 ConferenceDay ||--o{ SpeakerAvailability

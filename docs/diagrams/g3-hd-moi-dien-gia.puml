@@ -1,0 +1,58 @@
+@startuml g3-hd-moi-dien-gia
+' Biểu đồ hoạt động UC05 + UC06: mời diễn giả, gửi email, phản hồi lời mời
+' Đặc tả: docs/specs/g3-conference.md mục 7, 8
+!include _style.iuml
+
+|Ban tổ chức|
+start
+:Mở phần "Diễn giả" của phiên;
+repeat
+  |Ban tổ chức|
+  :Nhập email diễn giả, bấm "Mời";
+  |Hệ thống|
+  :Tìm tài khoản Active theo email,
+  kiểm tra chưa có trong phiên,
+  phiên chưa đủ 5 diễn giả (BR32);
+  backward :Báo lỗi: chưa có tài khoản,
+  đã có trong phiên, hoặc đủ 5 diễn giả;
+repeat while (Hợp lệ?) is (không) not (có)
+:Tạo lời mời **Pending**;
+:Ghi sự kiện gửi email mời
+vào outbox (cùng giao dịch);
+:Gửi email mời (chạy nền,
+chỉ khi lời mời còn Pending);
+|Diễn giả|
+:Mở email, bấm "Xem lời mời";
+:Đăng nhập (nếu chưa),
+mở trang "Lời mời trình bày";
+if (Nhận lời?) then (có)
+  |Hệ thống|
+  :Chuyển **Accepted**;
+  :Nhắc khai thời gian có thể tham gia (UC07);
+  |Diễn giả|
+  if (Sau đó bận, muốn rút lui?) then (có)
+    :Bấm "Rút lui", xác nhận;
+    |Hệ thống|
+    :Chuyển **Declined**;
+  else (không)
+  endif
+else (từ chối)
+  |Hệ thống|
+  :Chuyển **Declined**;
+endif
+|Ban tổ chức|
+:Xem trạng thái lời mời
+ở tab Phiên / Diễn giả;
+if (Có người từ chối?) then (có)
+  if (Mời lại người đó?) then (có)
+    :Bấm "Mời lại";
+    |Hệ thống|
+    :Chuyển **Pending**, gửi lại email;
+  else (mời người khác / gỡ)
+    |Ban tổ chức|
+    :Gỡ khỏi phiên hoặc mời người khác;
+  endif
+else (không)
+endif
+stop
+@enduml

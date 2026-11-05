@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>G3 Hội nghị, phòng, phiên, diễn giả — mockup giao diện</title>
+<!--
+  D8 — Mockup giao diện nhóm G3 (UC03–UC08). Đặc tả: docs/specs/g3-conference.md
+  Token màu/chữ giống PROJECT.md mục 9, docs/ui-prototype.html, docs/ui/g1-account.html.
+  Màn BTC thuộc Shell A (sidebar), màn diễn giả thuộc Shell B (header ngang).
+  Thanh công cụ trên cùng và các nút "Trạng thái" chỉ để xem mockup, không có trong sản phẩm.
+  Chữ tiếng Việt viết thẳng trong HTML; bản tiếng Anh nằm trong bảng EN ở cuối file (khóa data-t).
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F7F8F7; --surface:#FFFFFF; --surface-2:#EEF1F1; --ink:#17232B; --muted:#5E6E75;
+  --line:#D8DEDF; --primary:#0E5A62; --primary-ink:#FFFFFF; --primary-soft:#E3F0F1;
+  --warn:#B26B00; --warn-soft:#FDF2DF; --danger:#B3261E; --danger-soft:#FCE9E7;
+  --ok:#2E6B45; --ok-soft:#E4F1E9;
+  --t1:#1F6F8B; --t1s:#E2EEF3; --t2:#7A4E9E; --t2s:#EFE7F6; --t3:#A25A2A; --t3s:#F7EAE0;
+  --t4:#2F7050; --t4s:#E4F0EA; --t5:#8C3B54; --t5s:#F6E6EB; --t0:#7D8B91; --t0s:#EEF1F1;
+  --shadow:0 1px 2px rgba(20,35,43,.07), 0 4px 14px rgba(20,35,43,.05);
+  /* Bo góc 3 mức (theo token antd): nhỏ = tag, chip, mục segmented; vừa = nút, ô nhập; lớn = card, modal */
+  --r-sm:4px; --r:8px; --r-lg:12px;
+}
+:root[data-theme="dark"]{
+  --bg:#14181A; --surface:#1D2326; --surface-2:#252C30; --ink:#E6EAEB; --muted:#9AA8AD;
+  --line:#333C40; --primary:#4FB3BF; --primary-ink:#06262A; --primary-soft:#1B3A3E;
+  --warn:#E0A33D; --warn-soft:#3A2E18; --danger:#F2887F; --danger-soft:#3D2220;
+  --ok:#68B98A; --ok-soft:#1D3527;
+  --t1:#6FB6D0; --t1s:#1E323B; --t2:#B492D8; --t2s:#2C2338; --t3:#D69A6B; --t3s:#382A20;
+  --t4:#6FB894; --t4s:#1C3329; --t5:#D08AA0; --t5s:#38222A; --t0:#9AA8AD; --t0s:#252C30;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 4px 14px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg); color:var(--ink); font-family:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:15px; line-height:1.55; font-variant-numeric:tabular-nums}
+button,input,select,textarea{font:inherit; color:inherit}
+.hidden{display:none !important}
+
+/* ---- thanh công cụ của mockup ---- */
+.tool{position:sticky; top:0; z-index:30; display:flex; flex-wrap:wrap; gap:8px 12px; align-items:center;
+  padding:10px 16px; background:var(--surface-2); border-bottom:1px solid var(--line); font-size:13.5px}
+.tool b{margin-right:auto}
+.seg{display:inline-flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; background:var(--surface)}
+.seg button{border:0; background:transparent; color:var(--muted); padding:5px 11px; cursor:pointer; font-size:13px; font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--primary); color:var(--primary-ink)}
+.tabs{display:flex; gap:6px; flex-wrap:wrap; padding:10px 16px; border-bottom:1px solid var(--line); background:var(--surface)}
+.tabs button{border:1px solid var(--line); background:var(--surface); color:var(--muted); border-radius:20px; padding:4px 12px; font-size:13px; cursor:pointer}
+.tabs button[aria-pressed="true"]{border-color:var(--primary); color:var(--primary); background:var(--primary-soft); font-weight:600}
+.tabs .sep{width:1px; background:var(--line); margin:0 4px}
+.states{display:flex; gap:6px; flex-wrap:wrap; align-items:center; font-size:12.5px; color:var(--muted); margin:0 0 14px}
+.states button{border:1px dashed var(--line); background:transparent; color:var(--muted); border-radius:6px; padding:2px 9px; cursor:pointer; font-size:12.5px}
+.states button[aria-pressed="true"]{border-style:solid; border-color:var(--primary); color:var(--primary)}
+
+/* ---- thành phần kiểu antd ---- */
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:6px; height:36px; padding:0 15px; border-radius:var(--r);
+  border:1px solid transparent; background:var(--primary); color:var(--primary-ink); font-weight:600; cursor:pointer; font-size:14px; white-space:nowrap}
+.btn.default{background:var(--surface); color:var(--ink); border-color:var(--line)}
+.btn.danger{background:var(--surface); color:var(--danger); border-color:var(--danger)}
+.btn.link{background:transparent; color:var(--primary); padding:0 4px; height:auto; font-weight:500; border:0}
+.btn.link.danger{color:var(--danger); border:0}
+.btn.sm{height:28px; padding:0 10px; font-size:13px}
+.btn.block{width:100%}
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg); box-shadow:var(--shadow)}
+.card .hd{display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:12px 16px; border-bottom:1px solid var(--line)}
+.card .hd h3{margin:0; font-size:15.5px}
+.card .bd{padding:16px}
+.spacer{margin-left:auto}
+.field{margin-bottom:14px}
+.field label{display:block; font-size:14px; font-weight:500; margin-bottom:5px}
+.req{color:var(--danger); margin-right:3px}
+.input{width:100%; min-height:36px; border:1px solid var(--line); border-radius:var(--r); padding:6px 11px; background:var(--surface); display:flex; align-items:center; gap:8px; font-size:14px}
+.input.ta{min-height:72px; align-items:flex-start; color:var(--muted)}
+.input.err{border-color:var(--danger)}
+.input .ph{color:var(--muted)}
+.input .suf{margin-left:auto; color:var(--muted); font-size:13px}
+.help{font-size:12.5px; color:var(--muted); margin-top:4px}
+.help.err{color:var(--danger)}
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:0 16px}
+.grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:0 16px}
+@media(max-width:720px){ .grid2,.grid3{grid-template-columns:1fr} }
+.switch{display:inline-flex; align-items:center; gap:8px; font-size:14px}
+.switch i{width:36px; height:20px; border-radius:10px; background:var(--primary); position:relative; display:inline-block}
+.switch i::after{content:""; position:absolute; right:2px; top:2px; width:16px; height:16px; border-radius:50%; background:#fff}
+.tag{display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:600; padding:1px 8px; border-radius:var(--r-sm); white-space:nowrap}
+.tag.draft{background:var(--surface-2); color:var(--muted); border:1px solid var(--line)}
+.tag.open{background:var(--primary-soft); color:var(--primary)}
+.tag.ok{background:var(--ok-soft); color:var(--ok)}
+.tag.warn{background:var(--warn-soft); color:var(--warn)}
+.tag.bad{background:var(--danger-soft); color:var(--danger)}
+.alert{border-radius:var(--r); padding:9px 12px; font-size:14px; margin-bottom:14px; display:flex; gap:10px; align-items:flex-start; border:1px solid}
+.alert .ic{font-weight:700; width:16px; flex:none; text-align:center}
+.alert.info{background:var(--primary-soft); border-color:var(--primary)} .alert.info .ic{color:var(--primary)}
+.alert.warn{background:var(--warn-soft); border-color:var(--warn)} .alert.warn .ic{color:var(--warn)}
+.alert.error{background:var(--danger-soft); border-color:var(--danger)} .alert.error .ic{color:var(--danger)}
+table.list{border-collapse:collapse; width:100%; font-size:14px}
+table.list th{text-align:left; font-size:12.5px; color:var(--muted); font-weight:600; padding:9px 12px; border-bottom:1px solid var(--line); background:var(--surface-2); white-space:nowrap}
+table.list td{padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top}
+table.list tr:last-child td{border-bottom:0}
+table.list .num{text-align:right}
+table.list .nowrap{white-space:nowrap}
+.avl{font-size:13.5px; margin-top:3px}
+.tagcol{display:flex; flex-direction:column; align-items:flex-start; gap:4px}
+.tw{overflow-x:auto}
+.muted{color:var(--muted)} .small{font-size:12.5px}
+.warnline{color:var(--warn); font-size:12.5px; display:flex; gap:5px; align-items:flex-start; margin-top:3px}
+.trk{width:4px; border-radius:2px; align-self:stretch; flex:none}
+.chip{display:inline-flex; align-items:center; gap:6px; border:1px solid var(--line); border-radius:var(--r-sm); padding:3px 6px 3px 10px; font-size:13px; background:var(--surface)}
+.chip .sw{width:10px; height:10px; border-radius:2px}
+.chip .x{color:var(--muted); cursor:pointer; padding:0 4px}
+.k1{--k:var(--t1); --ks:var(--t1s)} .k2{--k:var(--t2); --ks:var(--t2s)} .k3{--k:var(--t3); --ks:var(--t3s)}
+.k4{--k:var(--t4); --ks:var(--t4s)} .k5{--k:var(--t5); --ks:var(--t5s)} .k0{--k:var(--t0); --ks:var(--t0s)}
+.sw.kc,.trk.kc{background:var(--k)}
+.stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:16px}
+.stat{background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg); padding:12px 14px}
+.stat .n{font-size:1.4rem; font-weight:700; display:block; line-height:1.2}
+.stat .l{font-size:12.5px; color:var(--muted)}
+.pagehd{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:16px}
+.pagehd h1{font-size:21px; margin:0; letter-spacing:-.01em}
+.crumb{font-size:13px; color:var(--muted); margin-bottom:4px}
+.crumb a{color:var(--primary); text-decoration:none; cursor:pointer}
+
+/* ---- Shell A ---- */
+.shellA{display:flex; min-height:calc(100vh - 100px)}
+.side{width:236px; flex:none; background:var(--surface); border-right:1px solid var(--line); padding:14px 10px; display:flex; flex-direction:column; gap:2px}
+.side .logo{display:flex; align-items:center; gap:9px; font-weight:700; padding:4px 10px 14px}
+.side .logo i{width:12px; height:12px; border-radius:3px; background:var(--primary); display:block}
+.side .conf{margin:2px 4px 10px; padding:10px; border-radius:var(--r); background:var(--surface-2); font-size:13px}
+.side .conf b{display:block; font-size:14px; line-height:1.35; margin:3px 0 6px}
+.side .back{font-size:12.5px; color:var(--primary); cursor:pointer}
+.side .it{display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:var(--r); cursor:pointer; color:var(--ink); font-size:14px}
+.side .it:hover{background:var(--surface-2)}
+.side .it.on{background:var(--primary-soft); color:var(--primary); font-weight:600}
+.side .it .ico{width:18px; text-align:center; color:var(--muted)}
+.side .it.on .ico{color:var(--primary)}
+.side .gl{font-size:11.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); padding:10px 10px 4px}
+.mainA{flex:1; min-width:0; display:flex; flex-direction:column}
+.hdrA{height:56px; display:flex; align-items:center; gap:12px; padding:0 20px; background:var(--surface); border-bottom:1px solid var(--line)}
+.hdrA .burger{display:none; border:1px solid var(--line); background:var(--surface); border-radius:var(--r); width:34px; height:32px; cursor:pointer}
+.avatar{width:30px; height:30px; border-radius:50%; background:var(--primary); color:var(--primary-ink); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12.5px}
+.user{display:flex; align-items:center; gap:8px; margin-left:auto; font-size:14px}
+.contentA{padding:22px 24px 48px; max-width:1180px; width:100%}
+@media(max-width:860px){
+  .side{position:fixed; left:0; top:0; bottom:0; z-index:40; box-shadow:var(--shadow); transform:translateX(-100%); transition:transform .2s}
+  .side.open{transform:none}
+  .hdrA .burger{display:inline-block}
+  .contentA{padding:16px 12px 40px}
+}
+
+/* ---- Shell B ---- */
+.hdrB{display:flex; align-items:center; gap:14px; height:60px; padding:0 20px; background:var(--surface); border-bottom:1px solid var(--line)}
+.hdrB .logo{display:flex; align-items:center; gap:9px; font-weight:700}
+.hdrB .logo i{width:12px; height:12px; border-radius:3px; background:var(--primary); display:block}
+.hdrB .search{flex:1; max-width:340px; margin-left:12px; height:36px; border:1px solid var(--line); border-radius:var(--r); padding:0 12px; background:var(--bg); color:var(--muted); display:flex; align-items:center; font-size:14px}
+.contentB{max-width:860px; margin:0 auto; padding:26px 16px 56px}
+@media(max-width:640px){ .hdrB .search{display:none} .contentB{padding:16px 12px 40px} }
+
+/* ---- màn riêng ---- */
+.daycard{margin-bottom:14px}
+.daycard .hd .dt{font-weight:600}
+.brk{display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px dashed var(--line); font-size:14px}
+.brk:last-child{border-bottom:0}
+.brk .tm{width:110px; color:var(--muted); font-weight:500}
+.timeline{position:relative; height:24px; border-radius:var(--r-sm); background:var(--primary-soft); margin:4px 0 12px; overflow:hidden}
+.timeline span{position:absolute; top:0; bottom:0; background:repeating-linear-gradient(45deg,var(--warn-soft),var(--warn-soft) 5px,var(--surface-2) 5px,var(--surface-2) 10px); border-left:1px solid var(--warn); border-right:1px solid var(--warn)}
+.timeline span.av{background:var(--ok); opacity:.55; border:0}
+.tlabels{display:flex; justify-content:space-between; font-size:11.5px; color:var(--muted); margin-top:-8px; margin-bottom:10px}
+.overlay{position:relative; margin-top:18px}
+.modal{max-width:520px; margin:0 auto; background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg); box-shadow:0 10px 40px rgba(0,0,0,.18)}
+.modal .hd{padding:14px 18px; border-bottom:1px solid var(--line); font-weight:600; display:flex}
+.modal .bd{padding:16px 18px}
+.modal .ft{padding:10px 18px; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:8px}
+.dimmed{position:relative}
+.dimmed::before{content:""; position:absolute; inset:-12px; background:rgba(20,35,43,.35); border-radius:12px; z-index:1}
+.dimmed > *{position:relative; z-index:2}
+.split{display:grid; grid-template-columns:minmax(0,1fr) 420px; gap:16px; align-items:start}
+@media(max-width:1100px){ .split{grid-template-columns:1fr} }
+.drawer{border-left:3px solid var(--primary)}
+.spk{display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); font-size:14px}
+.spk:last-child{border-bottom:0}
+.spk .nm{flex:1; min-width:0}
+.spk .nm small{display:block; color:var(--muted); font-size:12.5px}
+.av2{width:28px; height:28px; border-radius:50%; background:var(--surface-2); color:var(--muted); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex:none}
+.segm{display:inline-flex; background:var(--surface-2); border-radius:var(--r); padding:3px; gap:2px; flex-wrap:wrap}
+.segm span{padding:4px 11px; border-radius:var(--r-sm); font-size:13px; cursor:pointer; color:var(--muted)}
+.segm span.on{background:var(--surface); color:var(--ink); font-weight:600; box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.range{display:flex; align-items:center; gap:8px; margin:8px 0}
+.range .input{width:auto; min-width:180px}
+.inv{margin-bottom:16px}
+.inv .ses{display:flex; gap:12px; padding:12px 16px; border-top:1px solid var(--line)}
+.inv .ses .body{flex:1; min-width:0}
+.inv .ses .t{font-weight:600}
+.inv .ses .acts{display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end}
+@media(max-width:640px){ .inv .ses{flex-direction:column} .inv .ses .acts{justify-content:flex-start} }
+.cf{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:14px}
+.cfc .bd b{display:block; font-size:15.5px; margin-bottom:2px}
+.cfc .meta{display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-top:12px; text-align:center}
+.cfc .meta div{background:var(--surface-2); border-radius:var(--r-sm); padding:6px 4px; font-size:12px; color:var(--muted)}
+.cfc .meta b{font-size:15px; color:var(--ink); margin:0}
+.note{font-size:12.5px; color:var(--muted); margin-top:10px}
+</style>
+</head>
+<body>
+
+<div class="tool">
+  <b data-t="mock.title">G3 Hội nghị, phòng, phiên, diễn giả — mockup</b>
+  <span data-t="mock.theme">Giao diện</span>
+  <div class="seg" id="themeSeg"><button data-v="light" aria-pressed="true" data-t="mock.light">Sáng</button><button data-v="dark" aria-pressed="false" data-t="mock.dark">Tối</button></div>
+  <div class="seg" id="langSeg"><button data-v="vi" aria-pressed="true">VI</button><button data-v="en" aria-pressed="false">EN</button></div>
+</div>
+<div class="tabs" id="tabs">
+  <button data-go="list" aria-pressed="true" data-t="tab.list">Hội nghị của tôi</button>
+  <button data-go="create" data-t="tab.create">Tạo hội nghị</button>
+  <button data-go="overview" data-t="tab.overview">Tổng quan</button>
+  <button data-go="days" data-t="tab.days">Ngày và khung nghỉ</button>
+  <button data-go="rooms" data-t="tab.rooms">Phòng</button>
+  <button data-go="sessions" data-t="tab.sessions">Phiên</button>
+  <button data-go="speakers" data-t="tab.speakers">Diễn giả</button>
+  <span class="sep"></span>
+  <button data-go="invites" data-t="tab.invites">DG: Lời mời trình bày</button>
+  <button data-go="avail" data-t="tab.avail">DG: Khai giờ rảnh</button>
+</div>
+
+<!-- =================== SHELL A (Ban tổ chức) =================== -->
+<div class="shellA" id="shellA">
+  <aside class="side" id="side">
+    <div class="logo"><i></i>ConfHub</div>
+
+    <!-- Sidebar ở trang danh sách -->
+    <div id="sideList">
+      <div class="it on"><span class="ico">▦</span><span data-t="nav.conferences">Hội nghị</span></div>
+    </div>
+
+    <!-- Sidebar khi đang ở trong một hội nghị -->
+    <div id="sideConf" class="hidden">
+      <div class="conf">
+        <span class="back" data-go="list" data-t="nav.back">← Tất cả hội nghị</span>
+        <b data-t="demo.conf">Công nghệ Xanh 2026</b>
+        <span class="tag draft" data-t="st.Draft">Nháp</span>
+      </div>
+      <div class="it" data-go="overview" data-nav="overview"><span class="ico">ⓘ</span><span data-t="tab.overview">Tổng quan</span></div>
+      <div class="it" data-go="days" data-nav="days"><span class="ico">▤</span><span data-t="tab.days">Ngày và khung nghỉ</span></div>
+      <div class="it" data-go="rooms" data-nav="rooms"><span class="ico">⌂</span><span data-t="tab.rooms">Phòng</span></div>
+      <div class="it" data-go="sessions" data-nav="sessions"><span class="ico">≡</span><span data-t="tab.sessions">Phiên</span></div>
+      <div class="it" data-go="speakers" data-nav="speakers"><span class="ico">☺</span><span data-t="tab.speakers">Diễn giả</span></div>
+      <div class="note" style="padding:6px 10px" data-t="nav.later">Nhóm sau thêm: Vé, Đăng ký, Xếp lịch…</div>
+    </div>
+  </aside>
+
+  <div class="mainA">
+    <header class="hdrA">
+      <button class="burger" id="burger" aria-label="menu">☰</button>
+      <div class="user"><span class="avatar">ML</span><span data-t="demo.btc">Mai Lan</span></div>
+    </header>
+    <div class="contentA">
+
+      <!-- ===== /manage/conferences ===== -->
+      <section data-screen="list">
+        <div class="states"><span data-t="mock.state">Trạng thái:</span>
+          <button data-state="has" aria-pressed="true" data-t="st.hasData">Có dữ liệu</button>
+          <button data-state="empty" aria-pressed="false" data-t="st.empty">Chưa có hội nghị</button>
+        </div>
+        <div class="pagehd">
+          <h1 data-t="list.title">Hội nghị của tôi</h1>
+          <button class="btn spacer" data-go="create" data-t="list.new">+ Tạo hội nghị</button>
+        </div>
+        <div class="cf st-has">
+          <div class="card cfc"><div class="bd">
+            <span class="tag draft" data-t="st.Draft">Nháp</span>
+            <b data-t="demo.conf">Công nghệ Xanh 2026</b>
+            <div class="small muted" data-t="list.c1meta">03–04/12/2026 · Hội trường A, ĐH Bách khoa</div>
+            <div class="meta">
+              <div><b>3</b><span data-t="list.rooms">phòng</span></div>
+              <div><b>6</b><span data-t="list.sessions">phiên</span></div>
+              <div><b>4/5</b><span data-t="list.speakers">DG nhận lời</span></div>
+            </div>
+            <div style="margin-top:12px; display:flex; gap:8px"><button class="btn sm" data-go="overview" data-t="list.open">Mở</button></div>
+          </div></div>
+          <div class="card cfc"><div class="bd">
+            <span class="tag open" data-t="st.RegistrationOpen">Đang mở đăng ký</span>
+            <b data-t="demo.conf2">Hội thảo Dữ liệu mở 2026</b>
+            <div class="small muted" data-t="list.c2meta">15/01/2027 · Trung tâm Hội nghị Quốc gia</div>
+            <div class="meta">
+              <div><b>2</b><span data-t="list.rooms">phòng</span></div>
+              <div><b>8</b><span data-t="list.sessions">phiên</span></div>
+              <div><b>8/8</b><span data-t="list.speakers">DG nhận lời</span></div>
+            </div>
+            <div style="margin-top:12px"><button class="btn sm" data-t="list.open">Mở</button></div>
+          </div></div>
+        </div>
+        <div class="card st-empty hidden"><div class="bd" style="text-align:center; padding:48px 16px">
+          <div style="font-size:34px">▦</div>
+          <h3 style="margin:6px 0" data-t="list.emptyT">Bạn chưa có hội nghị nào</h3>
+          <p class="muted" style="margin:0 0 16px" data-t="list.emptyS">Tạo hội nghị đầu tiên, khai ngày tổ chức, phòng và phiên trình bày.</p>
+          <button class="btn" data-go="create" data-t="list.new">+ Tạo hội nghị</button>
+        </div></div>
+      </section>
+
+      <!-- ===== /manage/conferences/new ===== -->
+      <section data-screen="create" class="hidden">
+        <div class="states"><span data-t="mock.state">Trạng thái:</span>
+          <button data-state="ok" aria-pressed="true" data-t="st.normal">Bình thường</button>
+          <button data-state="err" aria-pressed="false" data-t="st.errors">Lỗi nhập liệu</button>
+        </div>
+        <div class="crumb"><a data-go="list" data-t="tab.list">Hội nghị của tôi</a> / <span data-t="tab.create">Tạo hội nghị</span></div>
+        <div class="pagehd"><h1 data-t="cr.title">Tạo hội nghị</h1></div>
+        <div class="card" style="max-width:820px"><div class="bd">
+          <h3 style="margin:0 0 12px; font-size:15px" data-t="cr.info">Thông tin chung</h3>
+          <div class="grid2">
+            <div class="field"><label><span class="req">*</span><span data-t="f.nameVi">Tên (tiếng Việt)</span></label>
+              <div class="input">Công nghệ Xanh 2026</div></div>
+            <div class="field"><label data-t="f.nameEn">Tên (tiếng Anh, tùy chọn)</label>
+              <div class="input">Green Tech 2026</div></div>
+          </div>
+          <div class="grid2">
+            <div class="field"><label data-t="f.descVi">Mô tả (tiếng Việt)</label>
+              <div class="input ta" data-t="cr.descPh">Hội nghị về công nghệ cho phát triển bền vững…</div></div>
+            <div class="field"><label data-t="f.descEn">Mô tả (tiếng Anh)</label>
+              <div class="input ta"><span class="ph" data-t="cr.descEnPh">Để trống thì giao diện EN hiện bản tiếng Việt</span></div></div>
+          </div>
+          <div class="field"><label><span class="req">*</span><span data-t="f.venue">Địa điểm</span></label>
+            <div class="input">Hội trường A, ĐH Bách khoa Hà Nội</div></div>
+
+          <h3 style="margin:8px 0 12px; font-size:15px" data-t="cr.time">Thời gian</h3>
+          <div class="grid3">
+            <div class="field"><label><span class="req">*</span><span data-t="f.dates">Ngày tổ chức (từ – đến)</span></label>
+              <div class="input">03/12/2026 → 04/12/2026<span class="suf">▦</span></div>
+              <div class="help st-ok" data-t="cr.datesHelp">Tối đa 14 ngày. Sửa giờ từng ngày sau khi tạo.</div>
+              <div class="help err st-err hidden" data-t="v.dates">Ngày tổ chức không được ở quá khứ</div></div>
+            <div class="field"><label><span class="req">*</span><span data-t="f.hours">Giờ mặc định mỗi ngày</span></label>
+              <div class="input" id="crHours">08:00 → 17:00<span class="suf">◷</span></div>
+              <div class="help err st-err hidden" data-t="v.step">Giờ phải là bội số của 15 phút</div></div>
+            <div class="field"><label><span class="req">*</span><span data-t="f.close">Hạn đăng ký</span></label>
+              <div class="input" id="crClose">01/12/2026 23:59<span class="suf">▦</span></div>
+              <div class="help err st-err hidden" data-t="v.close">Hạn đăng ký phải trước giờ bắt đầu ngày đầu tiên</div></div>
+          </div>
+          <div class="field"><span class="switch"><i></i><span data-t="f.approval">Cần ban tổ chức duyệt đăng ký tham dự</span></span>
+            <div class="help" data-t="cr.approvalHelp">Tắt thì đăng ký được duyệt tự động (cấu hình ở nhóm Đăng ký).</div></div>
+          <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:8px">
+            <button class="btn default" data-go="list" data-t="c.cancel">Hủy</button>
+            <button class="btn" data-go="days" data-t="cr.submit">Tạo hội nghị</button>
+          </div>
+        </div></div>
+      </section>
+
+      <!-- ===== /manage/conferences/:id ===== -->
+      <section data-screen="overview" class="hidden">
+        <div class="pagehd"><div><div class="crumb"><a data-go="list" data-t="tab.list">Hội nghị của tôi</a></div>
+          <h1 data-t="demo.conf">Công nghệ Xanh 2026</h1></div>
+          <span class="tag draft" data-t="st.Draft">Nháp</span>
+          <button class="btn danger spacer" data-t="ov.delete">Xóa hội nghị</button>
+        </div>
+        <div class="stats">
+          <div class="stat"><span class="n">2</span><span class="l" data-t="ov.days">ngày tổ chức</span></div>
+          <div class="stat"><span class="n">3</span><span class="l" data-t="ov.rooms">phòng · 200 chỗ</span></div>
+          <div class="stat"><span class="n">6</span><span class="l" data-t="ov.sessions">phiên · 2 cần xem</span></div>
+          <div class="stat"><span class="n">4/5</span><span class="l" data-t="ov.speakers">diễn giả đã nhận lời</span></div>
+        </div>
+        <div class="card" style="max-width:820px"><div class="hd"><h3 data-t="ov.info">Thông tin hội nghị</h3></div><div class="bd">
+          <div class="grid2">
+            <div class="field"><label><span class="req">*</span><span data-t="f.nameVi">Tên (tiếng Việt)</span></label><div class="input">Công nghệ Xanh 2026</div></div>
+            <div class="field"><label data-t="f.nameEn">Tên (tiếng Anh, tùy chọn)</label><div class="input">Green Tech 2026</div></div>
+          </div>
+          <div class="field"><label><span class="req">*</span><span data-t="f.venue">Địa điểm</span></label><div class="input">Hội trường A, ĐH Bách khoa Hà Nội</div></div>
+          <div class="grid2">
+            <div class="field"><label><span class="req">*</span><span data-t="f.close">Hạn đăng ký</span></label><div class="input">01/12/2026 23:59<span class="suf">▦</span></div></div>
+            <div class="field"><label>&nbsp;</label><span class="switch"><i></i><span data-t="f.approval">Cần ban tổ chức duyệt đăng ký tham dự</span></span></div>
+          </div>
+          <div class="help" style="margin:-4px 0 14px" data-t="ov.daysHint">Ngày tổ chức sửa ở mục "Ngày và khung nghỉ".</div>
+          <div style="display:flex; justify-content:flex-end"><button class="btn" data-t="c.save">Lưu thay đổi</button></div>
+        </div></div>
+
+        <!-- Hộp xác nhận xóa -->
+        <div class="overlay dimmed" style="max-width:820px; margin-top:28px">
+          <div class="modal">
+            <div class="hd" data-t="ov.delT">Xóa hội nghị "Công nghệ Xanh 2026"?</div>
+            <div class="bd">
+              <div class="alert error"><span class="ic">!</span><span data-t="ov.delWarn">Xóa vĩnh viễn 2 ngày, 3 khung nghỉ, 3 phòng, 3 track, 6 phiên, 7 lời mời và giờ rảnh đã khai. Chỉ hội nghị ở trạng thái Nháp mới xóa được.</span></div>
+              <div class="field"><label data-t="ov.delType">Gõ lại tên hội nghị để xác nhận</label><div class="input"><span class="ph">Công nghệ Xanh 2026</span></div></div>
+            </div>
+            <div class="ft"><button class="btn default" data-t="c.cancel">Hủy</button><button class="btn danger" disabled style="opacity:.5" data-t="c.delete">Xóa</button></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== /manage/conferences/:id/days ===== -->
+      <section data-screen="days" class="hidden">
+        <div class="states"><span data-t="mock.state">Trạng thái:</span>
+          <button data-state="ok" aria-pressed="true" data-t="st.normal">Bình thường</button>
+          <button data-state="modal" aria-pressed="false" data-t="st.breakModal">Thêm khung nghỉ (lỗi chồng)</button>
+          <button data-state="del" aria-pressed="false" data-t="st.delDay">Xóa ngày</button>
+        </div>
+        <div class="pagehd"><h1 data-t="tab.days">Ngày và khung nghỉ</h1><button class="btn spacer" data-t="dy.add">+ Thêm ngày</button></div>
+        <div class="alert info"><span class="ic">i</span><span data-t="dy.hint">Thuật toán chỉ xếp phiên trong giờ của ngày và không xếp vắt qua khung nghỉ. Mọi giờ là bội số của 15 phút.</span></div>
+
+        <div class="card daycard"><div class="hd">
+          <span class="dt" data-t="dy.d1">Ngày 1 · Thứ Năm 03/12/2026</span><span class="muted">08:00 – 17:00</span>
+          <span class="spacer"></span><button class="btn link" data-t="c.edit">Sửa</button><button class="btn link danger" data-t="c.delete">Xóa</button>
+        </div><div class="bd">
+          <div class="timeline"><span style="left:38.9%; width:16.7%"></span><span style="left:77.8%; width:2.8%"></span></div>
+          <div class="tlabels"><span>08:00</span><span>10:00</span><span>12:00</span><span>14:00</span><span>17:00</span></div>
+          <div class="brk"><span class="tm">11:30 – 13:00</span><span data-t="dy.lunch">Nghỉ trưa</span><span class="spacer"></span><button class="btn link" data-t="c.edit">Sửa</button><button class="btn link danger" data-t="c.delete">Xóa</button></div>
+          <div class="brk"><span class="tm">15:00 – 15:15</span><span data-t="dy.tea">Tea break chiều</span><span class="spacer"></span><button class="btn link" data-t="c.edit">Sửa</button><button class="btn link danger" data-t="c.delete">Xóa</button></div>
+          <button class="btn sm default" style="margin-top:10px" data-t="dy.addBreak">+ Khung nghỉ</button>
+        </div></div>
+
+        <div class="card daycard"><div class="hd">
+          <span class="dt" data-t="dy.d2">Ngày 2 · Thứ Sáu 04/12/2026</span><span class="muted">08:00 – 12:00</span>
+          <span class="spacer"></span><button class="btn link" data-t="c.edit">Sửa</button><button class="btn link danger" data-t="c.delete">Xóa</button>
+        </div><div class="bd">
+          <div class="timeline"><span style="left:50%; width:6.25%"></span></div>
+          <div class="tlabels"><span>08:00</span><span>10:00</span><span>12:00</span></div>
+          <div class="brk"><span class="tm">10:00 – 10:15</span><span data-t="dy.teaAm">Tea break sáng</span><span class="spacer"></span><button class="btn link" data-t="c.edit">Sửa</button><button class="btn link danger" data-t="c.delete">Xóa</button></div>
+          <button class="btn sm default" style="margin-top:10px" data-t="dy.addBreak">+ Khung nghỉ</button>
+        </div></div>
+
+        <!-- Modal thêm khung nghỉ -->
+        <div class="overlay dimmed st-modal hidden">
+          <div class="modal">
+            <div class="hd" data-t="dy.brkT">Thêm khung nghỉ · Ngày 1</div>
+            <div class="bd">
+              <div class="field"><label><span class="req">*</span><span data-t="f.brkName">Tên khung nghỉ</span></label><div class="input" data-t="dy.brkVal">Nghỉ giữa giờ</div></div>
+              <div class="field"><label><span class="req">*</span><span data-t="f.time">Giờ</span></label><div class="input err">11:00 → 11:45<span class="suf">◷</span></div>
+                <div class="help err" data-t="err.BreakOverlap">Khung nghỉ chồng với "Nghỉ trưa" (11:30 – 13:00)</div></div>
+            </div>
+            <div class="ft"><button class="btn default" data-t="c.cancel">Hủy</button><button class="btn" data-t="c.save">Lưu</button></div>
+          </div>
+        </div>
+
+        <!-- Xác nhận xóa ngày -->
+        <div class="overlay dimmed st-del hidden">
+          <div class="modal">
+            <div class="hd" data-t="dy.delT">Xóa Ngày 2 (04/12/2026)?</div>
+            <div class="bd"><div class="alert warn" style="margin:0"><span class="ic">!</span><span data-t="dy.delWarn">Xóa kèm 1 khung nghỉ và 2 khoảng giờ rảnh diễn giả đã khai cho ngày này.</span></div></div>
+            <div class="ft"><button class="btn default" data-t="c.cancel">Hủy</button><button class="btn danger" data-t="c.delete">Xóa</button></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== /manage/conferences/:id/rooms ===== -->
+      <section data-screen="rooms" class="hidden">
+        <div class="states"><span data-t="mock.state">Trạng thái:</span>
+          <button data-state="ok" aria-pressed="true" data-t="st.normal">Bình thường</button>
+          <button data-state="modal" aria-pressed="false" data-t="st.roomModal">Thêm phòng (trùng tên)</button>
+        </div>
+        <div class="pagehd"><h1 data-t="tab.rooms">Phòng</h1><button class="btn spacer" data-t="rm.add">+ Thêm phòng</button></div>
+        <div class="stats">
+          <div class="stat"><span class="n">3</span><span class="l" data-t="rm.count">phòng</span></div>
+          <div class="stat"><span class="n">200</span><span class="l" data-t="rm.total">tổng số chỗ</span></div>
+          <div class="stat"><span class="n">100</span><span class="l" data-t="rm.max">phòng lớn nhất (P101)</span></div>
+        </div>
+        <div class="card"><div class="tw"><table class="list">
+          <thead><tr><th data-t="rm.name">Tên phòng</th><th class="num" data-t="rm.cap">Sức chứa</th><th></th></tr></thead>
+          <tbody>
+            <tr><td>P101</td><td class="num">100</td><td class="num"><button class="btn link" data-t="c.edit">Sửa</button><button class="btn link danger" data-t="c.delete">Xóa</button></td></tr>
+            <tr><td>P102</td><td class="num">60</td><td class="num"><button class="btn link" data-t="c.edit">Sửa</button><button class="btn link danger" data-t="c.delete">Xóa</button></td></tr>
+            <tr><td>P103</td><td class="num">40</td><td class="num"><button class="btn link" data-t="c.edit">Sửa</button><button class="btn link danger" data-t="c.delete">Xóa</button></td></tr>
+          </tbody>
+        </table></div></div>
+        <div class="note" data-t="rm.later">Thiết bị sẵn có tại phòng (máy chiếu, micro…) khai ở nhóm Dịch vụ (G6).</div>
+
+        <div class="overlay dimmed st-modal hidden">
+          <div class="modal">
+            <div class="hd" data-t="rm.addT">Thêm phòng</div>
+            <div class="bd">
+              <div class="field"><label><span class="req">*</span><span data-t="rm.name">Tên phòng</span></label><div class="input err">p102</div>
+                <div class="help err" data-t="err.RoomNameTaken">Hội nghị đã có phòng tên này</div></div>
+              <div class="field"><label><span class="req">*</span><span data-t="rm.cap">Sức chứa</span></label><div class="input">80<span class="suf" data-t="rm.seats">chỗ</span></div>
+                <div class="help">1 – 10 000</div></div>
+            </div>
+            <div class="ft"><button class="btn default" data-t="c.cancel">Hủy</button><button class="btn" data-t="c.save">Lưu</button></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== /manage/conferences/:id/sessions ===== -->
+      <section data-screen="sessions" class="hidden">
+        <div class="states"><span data-t="mock.state">Trạng thái:</span>
+          <button data-state="drawer" aria-pressed="true" data-t="st.drawer">Đang sửa phiên A</button>
+          <button data-state="list" aria-pressed="false" data-t="st.listOnly">Chỉ danh sách</button>
+          <button data-state="inviteErr" aria-pressed="false" data-t="st.inviteErr">Mời lỗi</button>
+        </div>
+        <div class="pagehd"><h1 data-t="tab.sessions">Phiên</h1><button class="btn spacer" data-t="ss.add">+ Thêm phiên</button></div>
+
+        <!-- Track -->
+        <div class="card" style="margin-bottom:16px"><div class="bd" style="display:flex; gap:8px; flex-wrap:wrap; align-items:center">
+          <b style="font-size:14px; margin-right:4px" data-t="ss.tracks">Track (3/5):</b>
+          <span class="chip k1"><span class="sw kc"></span><span data-t="trk.1">Công nghệ</span><span class="x">✎</span></span>
+          <span class="chip k2"><span class="sw kc"></span><span data-t="trk.2">Kinh tế</span><span class="x">✎</span></span>
+          <span class="chip k3"><span class="sw kc"></span><span data-t="trk.3">Khởi nghiệp</span><span class="x">✎</span></span>
+          <button class="btn sm default" data-t="ss.addTrack">+ Track</button>
+          <span class="small muted spacer" data-t="ss.trackHint">Không chọn track thì phiên hiện màu xám.</span>
+        </div></div>
+
+        <div class="split" id="sesSplit">
+          <!-- Danh sách phiên -->
+          <div class="card">
+            <div class="hd">
+              <div class="input" style="max-width:240px"><span class="ph" data-t="ss.search">Tìm theo tiêu đề…</span></div>
+              <div class="segm"><span class="on" data-t="ss.all">Tất cả</span><span data-t="trk.1">Công nghệ</span><span data-t="trk.2">Kinh tế</span><span data-t="trk.3">Khởi nghiệp</span></div>
+            </div>
+            <div class="tw"><table class="list">
+              <thead><tr><th></th><th data-t="ss.title">Phiên</th><th class="num" data-t="ss.dur">Thời lượng</th><th class="num" data-t="ss.size">Quy mô</th><th data-t="ss.spk">Diễn giả</th></tr></thead>
+              <tbody>
+                <tr style="background:var(--primary-soft)"><td class="k1" style="padding-right:0"><div class="trk kc" style="height:38px"></div></td>
+                  <td><b data-t="ses.A">AI trong nông nghiệp</b></td><td class="num">60′</td><td class="num muted small nowrap" data-t="ss.auto">tự ước lượng</td>
+                  <td><div class="tagcol"><span class="tag ok">Long ✓</span><span class="tag warn">Hoa …</span></div></td></tr>
+                <tr><td class="k1" style="padding-right:0"><div class="trk kc" style="height:38px"></div></td>
+                  <td><b data-t="ses.D">Blockchain cho tín chỉ carbon</b></td><td class="num">60′</td><td class="num">45</td>
+                  <td><div class="tagcol"><span class="tag ok">Long ✓</span></div></td></tr>
+                <tr><td class="k2" style="padding-right:0"><div class="trk kc" style="height:38px"></div></td>
+                  <td><b data-t="ses.B">Tài chính xanh cho doanh nghiệp nhỏ</b></td><td class="num">60′</td><td class="num">39</td>
+                  <td><div class="tagcol"><span class="tag ok">Hoa ✓</span></div></td></tr>
+                <tr><td class="k1" style="padding-right:0"><div class="trk kc" style="height:38px"></div></td>
+                  <td><b data-t="ses.C">Điện mặt trời áp mái</b></td><td class="num">90′</td><td class="num">21</td>
+                  <td><div class="tagcol"><span class="tag ok">Tùng ✓</span></div></td></tr>
+                <tr><td class="k2" style="padding-right:0"><div class="trk kc" style="height:38px"></div></td>
+                  <td><b data-t="ses.E">Keynote: Kinh tế tuần hoàn</b>
+                    <div class="warnline">⚠ <span data-t="w.NoRoomBigEnough">Quy mô 150 lớn hơn phòng lớn nhất (100 chỗ)</span></div></td>
+                  <td class="num">90′</td><td class="num">150</td><td><div class="tagcol"><span class="tag bad">Bình ✗</span><span class="tag ok">An ✓</span></div></td></tr>
+                <tr><td class="k0" style="padding-right:0"><div class="trk kc" style="height:38px"></div></td>
+                  <td><b data-t="ses.F">Gọi vốn cho startup xanh</b>
+                    <div class="warnline">⚠ <span data-t="w.NoAcceptedSpeaker">Chưa có diễn giả nhận lời</span></div>
+                    <div class="warnline">⚠ <span data-t="w.NoSlotLongEnough">Không ngày nào có khoảng liền đủ 240 phút</span></div></td>
+                  <td class="num">240′</td><td class="num muted small nowrap" data-t="ss.auto">tự ước lượng</td><td><span class="muted small">—</span></td></tr>
+              </tbody>
+            </table></div>
+            <div class="note" style="padding:0 16px 12px" data-t="ss.legend">✓ đã nhận lời · … chờ phản hồi · ✗ đã từ chối. Cảnh báo không chặn lưu.</div>
+          </div>
+
+          <!-- Drawer sửa phiên -->
+          <div class="card drawer" id="sesDrawer">
+            <div class="hd"><h3 data-t="dr.title">Sửa phiên</h3><span class="spacer"></span><span class="muted" style="cursor:pointer">✕</span></div>
+            <div class="bd">
+              <div class="field"><label><span class="req">*</span><span data-t="f.titleVi">Tiêu đề (tiếng Việt)</span></label><div class="input" data-t="ses.A">AI trong nông nghiệp</div></div>
+              <div class="field"><label data-t="f.titleEn">Tiêu đề (tiếng Anh)</label><div class="input">AI in agriculture</div></div>
+              <div class="field"><label data-t="f.absVi">Tóm tắt (tiếng Việt)</label><div class="input ta" data-t="dr.absVal">Ứng dụng thị giác máy tính để phát hiện sâu bệnh…</div></div>
+              <div class="grid2">
+                <div class="field"><label data-t="f.track">Track</label><div class="input k1"><span class="sw kc" style="width:10px;height:10px;border-radius:3px;display:inline-block"></span><span data-t="trk.1">Công nghệ</span><span class="suf">▾</span></div></div>
+                <div class="field"><label><span class="req">*</span><span data-t="f.dur">Thời lượng</span></label><div class="input">60<span class="suf" data-t="c.min">phút</span></div>
+                  <div class="help" data-t="dr.durHelp">30 · 45 · 60 · 90 · 120 hoặc bội số 15</div></div>
+              </div>
+              <div class="field"><label data-t="f.size">Quy mô dự kiến</label><div class="input"><span class="ph" data-t="dr.sizePh">Để trống: ước lượng từ số người quan tâm</span></div></div>
+              <div style="display:flex; justify-content:flex-end; gap:8px; margin-bottom:18px">
+                <button class="btn link danger" data-t="dr.delete">Xóa phiên</button><span class="spacer"></span>
+                <button class="btn" data-t="c.save">Lưu</button></div>
+
+              <h3 style="margin:0 0 8px; font-size:15px; border-top:1px solid var(--line); padding-top:14px" data-t="dr.speakers">Diễn giả (2/5)</h3>
+              <div class="spk"><span class="av2">LH</span><span class="nm">Trần Long<small>long@vidu.com</small><small>ĐH Nông nghiệp</small></span>
+                <span class="tag ok" data-t="inv.Accepted">Đã nhận lời</span><button class="btn link danger" data-t="dr.remove">Gỡ</button></div>
+              <div class="spk"><span class="av2">HN</span><span class="nm">Nguyễn Hoa<small>hoa@vidu.com</small><small>Viện KH Nông nghiệp</small></span>
+                <span class="tag warn" data-t="inv.Pending">Chờ phản hồi</span><button class="btn link danger" data-t="dr.remove">Gỡ</button></div>
+              <div style="display:flex; gap:8px; margin-top:12px">
+                <div class="input" id="inviteInput"><span class="ph">email@diengia.com</span></div>
+                <button class="btn" data-t="dr.invite">Mời</button>
+              </div>
+              <div class="help err st-inviteErr hidden" data-t="err.SpeakerAccountNotFound">Không có tài khoản đang hoạt động với email này. Diễn giả cần đăng ký ConfHub trước.</div>
+              <div class="help st-drawer st-list" data-t="dr.inviteHelp">Diễn giả nhận email mời và phản hồi trên trang "Lời mời trình bày".</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== /manage/conferences/:id/speakers ===== -->
+      <section data-screen="speakers" class="hidden">
+        <div class="states"><span data-t="mock.state">Trạng thái:</span>
+          <button data-state="ok" aria-pressed="true" data-t="st.normal">Bình thường</button>
+          <button data-state="modal" aria-pressed="false" data-t="st.availModal">Sửa giờ rảnh thay</button>
+        </div>
+        <div class="pagehd"><h1 data-t="tab.speakers">Diễn giả</h1></div>
+        <div class="alert info"><span class="ic">i</span><span data-t="sp.hint">Mời diễn giả trong từng phiên (mục Phiên). Diễn giả chưa khai giờ rảnh được coi là rảnh mọi lúc.</span></div>
+        <div class="card"><div class="tw"><table class="list">
+          <thead><tr><th data-t="sp.name">Diễn giả</th><th data-t="sp.sessions">Phiên</th><th data-t="sp.status">Lời mời</th><th data-t="sp.avail">Giờ rảnh</th><th></th></tr></thead>
+          <tbody>
+            <!-- Mỗi dòng là một cặp (diễn giả, phiên); ô Diễn giả, Giờ rảnh, nút gộp dọc (rowSpan) qua các phiên của cùng người -->
+            <tr><td rowspan="2"><b>Trần Long</b><div class="small muted">long@vidu.com</div><div class="small muted">ĐH Nông nghiệp</div></td>
+              <td data-t="ses.A">AI trong nông nghiệp</td>
+              <td class="nowrap"><span class="tag ok" data-t="inv.Accepted">Đã nhận lời</span></td>
+              <td rowspan="2"><div class="small"><span class="tag ok" data-t="sp.isDeclared">Đã khai</span></div>
+                <div class="avl"><span data-t="sp.d1">N1</span> 09:00–11:00</div><div class="avl"><span data-t="sp.d2">N2</span> <span class="muted" data-t="av.off">Không tham gia</span></div></td>
+              <td rowspan="2" class="num"><button class="btn sm default" data-t="sp.edit">Giờ rảnh</button></td></tr>
+            <tr><td data-t="ses.D">Blockchain cho tín chỉ carbon</td>
+              <td class="nowrap"><span class="tag ok" data-t="inv.Accepted">Đã nhận lời</span></td></tr>
+
+            <tr><td rowspan="2"><b>Nguyễn Hoa</b><div class="small muted">hoa@vidu.com</div><div class="small muted">Viện KH Nông nghiệp</div></td>
+              <td data-t="ses.A">AI trong nông nghiệp</td>
+              <td class="nowrap"><span class="tag warn" data-t="inv.Pending">Chờ phản hồi</span></td>
+              <td rowspan="2"><div class="small"><span class="tag ok" data-t="sp.isDeclared">Đã khai</span></div>
+                <div class="avl"><span data-t="sp.d1">N1</span> <span data-t="av.allDay">Cả ngày</span></div><div class="avl"><span data-t="sp.d2">N2</span> 08:00–10:00</div></td>
+              <td rowspan="2" class="num"><button class="btn sm default" data-t="sp.edit">Giờ rảnh</button></td></tr>
+            <tr><td data-t="ses.B">Tài chính xanh cho doanh nghiệp nhỏ</td>
+              <td class="nowrap"><span class="tag ok" data-t="inv.Accepted">Đã nhận lời</span></td></tr>
+
+            <tr><td><b>Lê Tùng</b><div class="small muted">tung@vidu.com</div></td>
+              <td data-t="ses.C">Điện mặt trời áp mái</td>
+              <td class="nowrap"><span class="tag ok" data-t="inv.Accepted">Đã nhận lời</span></td>
+              <td><div class="small"><span class="tag ok" data-t="sp.isDeclared">Đã khai</span></div>
+                <div class="avl"><span data-t="sp.d1">N1</span> 13:00–14:00</div><div class="avl"><span data-t="sp.d2">N2</span> <span class="muted" data-t="av.off">Không tham gia</span></div>
+                <div class="warnline">⚠ <span data-t="w.NoRangeLongEnough">Khoảng rảnh dài nhất 60′ ngắn hơn phiên 90′</span></div></td>
+              <td class="num"><button class="btn sm default" data-t="sp.edit">Giờ rảnh</button></td></tr>
+
+            <tr><td><b>Phạm Bình</b><div class="small muted">binh@vidu.com</div><div class="small muted">Bộ KH&amp;ĐT</div></td>
+              <td data-t="ses.E">Keynote: Kinh tế tuần hoàn</td>
+              <td class="nowrap"><span class="tag bad" data-t="inv.Declined">Đã từ chối</span><div style="margin-top:6px"><button class="btn sm default" data-t="sp.reinvite">Mời lại</button></div></td>
+              <td><span class="tag draft" data-t="sp.notDeclaredTag">Chưa khai</span><div class="small muted" data-t="sp.alwaysFree">Coi là rảnh mọi lúc</div></td>
+              <td class="num"><button class="btn sm default" data-t="sp.edit">Giờ rảnh</button></td></tr>
+
+            <tr><td><b>Đỗ An</b><div class="small muted">an@vidu.com</div></td>
+              <td data-t="ses.E">Keynote: Kinh tế tuần hoàn</td>
+              <td class="nowrap"><span class="tag ok" data-t="inv.Accepted">Đã nhận lời</span></td>
+              <td><span class="tag draft" data-t="sp.notDeclaredTag">Chưa khai</span><div class="small muted" data-t="sp.alwaysFree">Coi là rảnh mọi lúc</div></td>
+              <td class="num"><button class="btn sm default" data-t="sp.edit">Giờ rảnh</button></td></tr>
+          </tbody>
+        </table></div></div>
+
+        <div class="overlay dimmed st-modal hidden">
+          <div class="modal" style="max-width:640px">
+            <div class="hd" data-t="sp.modalT">Giờ rảnh của Trần Long · Công nghệ Xanh 2026</div>
+            <div class="bd">
+              <div class="alert warn"><span class="ic">!</span><span data-t="sp.modalWarn">Bạn đang sửa thay diễn giả. Nếu lịch đã công bố, cần chạy xếp lại sau khi lưu.</span></div>
+              <div class="avail-slot"></div>
+            </div>
+            <div class="ft"><button class="btn default" data-t="c.cancel">Hủy</button><button class="btn" data-t="c.save">Lưu</button></div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- =================== SHELL B (Diễn giả) =================== -->
+<div id="shellB" class="hidden">
+  <header class="hdrB">
+    <div class="logo"><i></i>ConfHub</div>
+    <div class="search" data-t="shell.search">Tìm hội nghị…</div>
+    <div class="user"><span class="avatar">TL</span><span>Trần Long</span></div>
+  </header>
+  <main class="contentB">
+
+    <!-- ===== /me/speaking ===== -->
+    <section data-screen="invites" class="hidden">
+      <div class="states"><span data-t="mock.state">Trạng thái:</span>
+        <button data-state="ok" aria-pressed="true" data-t="st.normal">Bình thường</button>
+        <button data-state="accepted" aria-pressed="false" data-t="st.justAccepted">Vừa nhận lời</button>
+        <button data-state="empty" aria-pressed="false" data-t="st.noInvites">Không có lời mời</button>
+      </div>
+      <div class="pagehd"><h1 data-t="iv.title">Lời mời trình bày</h1></div>
+
+      <div class="alert info st-accepted hidden"><span class="ic">✓</span><div><span data-t="iv.acceptedMsg">Đã nhận lời trình bày "AI trong nông nghiệp". Hãy khai thời gian bạn có thể tham gia để ban tổ chức xếp lịch.</span>
+        <div style="margin-top:4px"><a class="btn link" data-go="avail" data-t="iv.toAvail">Khai giờ rảnh →</a></div></div></div>
+
+      <div class="card inv st-ok st-accepted">
+        <div class="hd"><div><b data-t="demo.conf">Công nghệ Xanh 2026</b><div class="small muted" data-t="list.c1meta">03–04/12/2026 · Hội trường A, ĐH Bách khoa</div></div>
+          <span class="spacer"></span><button class="btn sm default" data-go="avail" data-t="iv.avail">Khai giờ rảnh</button></div>
+        <div class="ses">
+          <div class="trk k1 kc"></div>
+          <div class="body"><div class="t" data-t="ses.A">AI trong nông nghiệp</div>
+            <div class="small muted" data-t="iv.metaA">60 phút · Công nghệ · Ban tổ chức: Mai Lan</div>
+            <div class="small" style="margin-top:4px"><span data-t="iv.with">Cùng trình bày:</span> Nguyễn Hoa <span class="tag warn" data-t="inv.Pending">Chờ phản hồi</span></div></div>
+          <div class="acts">
+            <span class="st-ok"><button class="btn sm default" data-t="iv.decline">Từ chối</button> <button class="btn sm" data-t="iv.accept">Nhận lời</button></span>
+            <span class="st-accepted hidden"><span class="tag ok" data-t="inv.Accepted">Đã nhận lời</span> <button class="btn sm danger" data-t="iv.withdraw">Rút lui</button></span>
+          </div>
+        </div>
+        <div class="ses">
+          <div class="trk k1 kc"></div>
+          <div class="body"><div class="t" data-t="ses.D">Blockchain cho tín chỉ carbon</div>
+            <div class="small muted" data-t="iv.metaD">60 phút · Công nghệ · Ban tổ chức: Mai Lan</div></div>
+          <div class="acts"><span class="tag ok" data-t="inv.Accepted">Đã nhận lời</span> <button class="btn sm danger" data-t="iv.withdraw">Rút lui</button></div>
+        </div>
+      </div>
+
+      <div class="card inv st-ok st-accepted">
+        <div class="hd"><div><b data-t="demo.conf2">Hội thảo Dữ liệu mở 2026</b><div class="small muted" data-t="list.c2meta">15/01/2027 · Trung tâm Hội nghị Quốc gia</div></div></div>
+        <div class="ses">
+          <div class="trk k0 kc"></div>
+          <div class="body"><div class="t" data-t="ses.G">Dữ liệu mở cho nông nghiệp</div>
+            <div class="small muted" data-t="iv.metaG">45 phút · Ban tổ chức: Hà Phương</div></div>
+          <div class="acts"><span class="tag bad" data-t="inv.Declined">Đã từ chối</span>
+            <div class="small muted" style="width:100%; text-align:right" data-t="iv.declinedHint">Muốn trình bày lại, liên hệ ban tổ chức để được mời lại.</div></div>
+        </div>
+      </div>
+
+      <div class="card st-empty hidden"><div class="bd" style="text-align:center; padding:44px 16px">
+        <div style="font-size:32px">✉</div>
+        <h3 style="margin:6px 0" data-t="iv.emptyT">Chưa có lời mời nào</h3>
+        <p class="muted" style="margin:0" data-t="iv.emptyS">Khi ban tổ chức mời bạn trình bày, lời mời sẽ hiện ở đây và được gửi qua email.</p>
+      </div></div>
+    </section>
+
+    <!-- ===== /me/speaking/:conferenceId/availability ===== -->
+    <section data-screen="avail" class="hidden">
+      <div class="states"><span data-t="mock.state">Trạng thái:</span>
+        <button data-state="declared" aria-pressed="true" data-t="st.declared">Đã khai</button>
+        <button data-state="none" aria-pressed="false" data-t="st.notDeclared">Chưa khai</button>
+        <button data-state="err" aria-pressed="false" data-t="st.errors">Lỗi</button>
+      </div>
+      <div class="crumb"><a data-go="invites" data-t="iv.title">Lời mời trình bày</a> / <span data-t="demo.conf">Công nghệ Xanh 2026</span></div>
+      <div class="pagehd"><h1 data-t="av.title">Thời gian có thể tham gia</h1></div>
+      <div id="availHome">
+        <div id="availBlock">
+          <div class="alert info av-none hidden"><span class="ic">i</span><span data-t="av.none">Bạn chưa khai — hệ thống coi là bạn rảnh mọi lúc trong hội nghị. Chọn "Không tham gia" hoặc "Một số khung giờ" cho ngày bạn bận.</span></div>
+          <div class="alert warn av-declared"><span class="ic">!</span><span data-t="av.rule">Ngày chọn "Không tham gia" sẽ không được xếp phiên của bạn. Phiên bạn đã nhận dài nhất: 60 phút.</span></div>
+          <div class="alert error av-err hidden"><span class="ic">!</span><span data-t="err.AvailabilityOverlap">Ngày 1: khoảng 10:30–12:00 chồng với khoảng 09:00–11:00.</span></div>
+
+          <div class="card daycard"><div class="hd"><span class="dt" data-t="dy.d1">Ngày 1 · Thứ Năm 03/12/2026</span><span class="muted">08:00 – 17:00</span></div><div class="bd">
+            <div class="segm" style="margin-bottom:10px"><span class="av-none-on" data-t="av.allDay">Cả ngày</span><span data-t="av.off">Không tham gia</span><span class="on av-declared-on" data-t="av.ranges">Một số khung giờ</span></div>
+            <div class="av-declared">
+              <div class="timeline"><span class="av" style="left:11.1%; width:22.2%"></span><span style="left:38.9%; width:16.7%"></span><span style="left:77.8%; width:2.8%"></span></div>
+              <div class="range"><div class="input">09:00 → 11:00<span class="suf">◷</span></div><span class="x muted" style="cursor:pointer">✕</span></div>
+              <div class="range av-err hidden"><div class="input err">10:30 → 12:00<span class="suf">◷</span></div><span class="x muted">✕</span></div>
+              <button class="btn sm default" data-t="av.addRange">+ Thêm khoảng</button>
+              <div class="help" data-t="av.breaks">Khung nghỉ để tham khảo: 11:30–13:00 Nghỉ trưa · 15:00–15:15 Tea break chiều</div>
+            </div>
+          </div></div>
+
+          <div class="card daycard"><div class="hd"><span class="dt" data-t="dy.d2">Ngày 2 · Thứ Sáu 04/12/2026</span><span class="muted">08:00 – 12:00</span></div><div class="bd">
+            <div class="segm"><span class="av-none-on" data-t="av.allDay">Cả ngày</span><span class="on av-declared-on" data-t="av.off">Không tham gia</span><span data-t="av.ranges">Một số khung giờ</span></div>
+          </div></div>
+
+          <div class="av-own" style="display:flex; gap:8px; justify-content:flex-end">
+            <button class="btn default" data-t="c.cancel">Hủy</button><button class="btn" data-t="c.save">Lưu</button>
+          </div>
+          <div class="note" data-t="av.note">Mỗi lần lưu thay toàn bộ giờ rảnh của bạn trong hội nghị này. Giờ theo bước 15 phút.</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+// Bản tiếng Anh theo khóa data-t; bản tiếng Việt lấy từ chính HTML lúc tải trang.
+const EN = {
+ "mock.title":"G3 Conferences, rooms, sessions, speakers — mockup","mock.theme":"Theme","mock.light":"Light","mock.dark":"Dark","mock.state":"State:",
+ "tab.list":"My conferences","tab.create":"New conference","tab.overview":"Overview","tab.days":"Days and breaks","tab.rooms":"Rooms","tab.sessions":"Sessions","tab.speakers":"Speakers",
+ "tab.invites":"SPK: Speaking invitations","tab.avail":"SPK: Availability",
+ "nav.conferences":"Conferences","nav.back":"← All conferences","nav.later":"Later groups add: Tickets, Registrations, Scheduling…",
+ "demo.conf":"Green Tech 2026","demo.conf2":"Open Data Workshop 2026","demo.btc":"Mai Lan",
+ "st.Draft":"Draft","st.RegistrationOpen":"Registration open","st.hasData":"With data","st.empty":"No conferences","st.normal":"Normal","st.errors":"Input errors",
+ "st.breakModal":"Add break (overlap error)","st.delDay":"Delete day","st.roomModal":"Add room (name taken)","st.drawer":"Editing session A","st.listOnly":"List only",
+ "st.inviteErr":"Invite error","st.availModal":"Edit availability on behalf","st.justAccepted":"Just accepted","st.noInvites":"No invitations","st.declared":"Declared","st.notDeclared":"Not declared",
+ "list.title":"My conferences","list.new":"+ New conference","list.c1meta":"Dec 3–4, 2026 · Hall A, Hanoi Univ. of Science and Technology","list.c2meta":"Jan 15, 2027 · National Convention Center",
+ "list.rooms":"rooms","list.sessions":"sessions","list.speakers":"speakers accepted","list.open":"Open","list.emptyT":"You have no conferences yet","list.emptyS":"Create your first conference, then add days, rooms and sessions.",
+ "cr.title":"New conference","cr.info":"General information","f.nameVi":"Name (Vietnamese)","f.nameEn":"Name (English, optional)","f.descVi":"Description (Vietnamese)","f.descEn":"Description (English)",
+ "cr.descPh":"Hội nghị về công nghệ cho phát triển bền vững…","cr.descEnPh":"Leave empty to show the Vietnamese text in English UI","f.venue":"Venue","cr.time":"Time",
+ "f.dates":"Conference dates (from – to)","cr.datesHelp":"Up to 14 days. Edit each day's hours after creating.","v.dates":"Dates cannot be in the past","f.hours":"Default hours per day","v.step":"Times must be multiples of 15 minutes",
+ "f.close":"Registration deadline","v.close":"Deadline must be before the first day starts","f.approval":"Organizer must approve registrations","cr.approvalHelp":"Off means registrations are approved automatically (configured in the Registration group).",
+ "c.cancel":"Cancel","cr.submit":"Create conference","c.save":"Save","c.edit":"Edit","c.delete":"Delete","c.min":"min",
+ "ov.delete":"Delete conference","ov.days":"conference days","ov.rooms":"rooms · 200 seats","ov.sessions":"sessions · 2 need attention","ov.speakers":"speakers accepted","ov.info":"Conference information",
+ "ov.daysHint":"Edit conference days under \"Days and breaks\".","ov.delT":"Delete \"Green Tech 2026\"?","ov.delWarn":"Permanently deletes 2 days, 3 breaks, 3 rooms, 3 tracks, 6 sessions, 7 invitations and declared availability. Only Draft conferences can be deleted.","ov.delType":"Type the conference name to confirm",
+ "dy.add":"+ Add day","dy.hint":"Sessions are only scheduled within each day's hours and never across a break. All times are multiples of 15 minutes.",
+ "dy.d1":"Day 1 · Thursday, Dec 3, 2026","dy.d2":"Day 2 · Friday, Dec 4, 2026","dy.lunch":"Lunch break","dy.tea":"Afternoon tea break","dy.teaAm":"Morning tea break","dy.addBreak":"+ Break",
+ "dy.brkT":"Add break · Day 1","f.brkName":"Break name","dy.brkVal":"Short break","f.time":"Time","err.BreakOverlap":"Overlaps \"Lunch break\" (11:30 – 13:00)",
+ "dy.delT":"Delete Day 2 (Dec 4, 2026)?","dy.delWarn":"Also deletes 1 break and 2 availability ranges declared by speakers for this day.",
+ "rm.add":"+ Add room","rm.count":"rooms","rm.total":"total seats","rm.max":"largest room (P101)","rm.name":"Room name","rm.cap":"Capacity","rm.later":"Equipment available in rooms (projectors, mics…) is declared in the Services group (G6).",
+ "rm.addT":"Add room","err.RoomNameTaken":"This conference already has a room with this name","rm.seats":"seats",
+ "ss.add":"+ Add session","ss.tracks":"Tracks (3/5):","trk.1":"Technology","trk.2":"Economy","trk.3":"Start-ups","ss.addTrack":"+ Track","ss.trackHint":"Sessions without a track are shown in grey.",
+ "ss.search":"Search by title…","ss.all":"All","ss.title":"Session","ss.dur":"Duration","ss.size":"Size","ss.spk":"Speakers","ss.auto":"estimated",
+ "ses.A":"AI in agriculture","ses.B":"Green finance for small businesses","ses.C":"Rooftop solar power","ses.D":"Blockchain for carbon credits","ses.E":"Keynote: Circular economy","ses.F":"Fundraising for green start-ups","ses.G":"Open data for agriculture",
+ "w.NoRoomBigEnough":"Size 150 exceeds the largest room (100 seats)","w.NoAcceptedSpeaker":"No speaker has accepted yet","w.NoSlotLongEnough":"No day has a continuous 240-minute block","w.NoRangeLongEnough":"Longest available range (60′) is shorter than the 90′ session",
+ "ss.legend":"✓ accepted · … pending · ✗ declined. Warnings do not block saving.",
+ "dr.title":"Edit session","f.titleVi":"Title (Vietnamese)","f.titleEn":"Title (English)","f.absVi":"Abstract (Vietnamese)","dr.absVal":"Using computer vision to detect crop pests…","f.track":"Track","f.dur":"Duration",
+ "dr.durHelp":"30 · 45 · 60 · 90 · 120 or a multiple of 15","f.size":"Expected size","dr.sizePh":"Leave empty: estimated from interested attendees","dr.delete":"Delete session",
+ "dr.speakers":"Speakers (2/5)","inv.Accepted":"Accepted","inv.Pending":"Pending","inv.Declined":"Declined","dr.remove":"Remove","dr.invite":"Invite",
+ "err.SpeakerAccountNotFound":"No active account uses this email. The speaker must sign up for ConfHub first.","dr.inviteHelp":"The speaker gets an invitation email and responds on the \"Speaking invitations\" page.",
+ "sp.hint":"Invite speakers from each session (Sessions). Speakers who haven't declared availability are treated as always available.","sp.name":"Speaker","sp.sessions":"Sessions","sp.avail":"Availability",
+ "sp.declared1":"Declared: D1 09:00–11:00 · D2 not attending","sp.declared2":"Declared: D1 all day · D2 08:00–10:00","sp.declared3":"Declared: D1 13:00–14:00","sp.notDeclared":"Not declared — always available",
+ "sp.edit":"Availability","sp.status":"Invitation","sp.isDeclared":"Declared","sp.notDeclaredTag":"Not declared","sp.alwaysFree":"Treated as always available","sp.d1":"D1","sp.d2":"D2","sp.reinvite":"Re-invite","sp.modalT":"Availability of Trần Long · Green Tech 2026","sp.modalWarn":"You are editing on behalf of the speaker. If the schedule is published, run rescheduling after saving.",
+ "shell.search":"Search conferences…","iv.title":"Speaking invitations","iv.acceptedMsg":"You accepted \"AI in agriculture\". Please declare when you can attend so the organizer can schedule it.","iv.toAvail":"Declare availability →",
+ "iv.avail":"Declare availability","iv.metaA":"60 min · Technology · Organizer: Mai Lan","iv.metaD":"60 min · Technology · Organizer: Mai Lan","iv.metaG":"45 min · Organizer: Hà Phương","iv.with":"Co-speakers:",
+ "iv.decline":"Decline","iv.accept":"Accept","iv.withdraw":"Withdraw","iv.declinedHint":"To present again, ask the organizer to re-invite you.","iv.emptyT":"No invitations yet","iv.emptyS":"When an organizer invites you to speak, the invitation appears here and is sent by email.",
+ "av.title":"When can you attend?","av.none":"You haven't declared yet — you are treated as available at any time. Choose \"Not attending\" or \"Some time ranges\" for days you are busy.",
+ "av.rule":"Days marked \"Not attending\" won't host your sessions. Your longest accepted session: 60 minutes.","err.AvailabilityOverlap":"Day 1: range 10:30–12:00 overlaps 09:00–11:00.",
+ "av.allDay":"All day","av.off":"Not attending","av.ranges":"Some time ranges","av.addRange":"+ Add range","av.breaks":"Breaks for reference: 11:30–13:00 Lunch · 15:00–15:15 Tea break",
+ "av.note":"Each save replaces all your availability for this conference. Times use 15-minute steps."
+};
+
+// ---------- NGÔN NGỮ, GIAO DIỆN ----------
+const VI = {};
+document.querySelectorAll('[data-t]').forEach(el => { if (!(el.dataset.t in VI)) VI[el.dataset.t] = el.innerHTML; });
+function setLang(lang){
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-t]').forEach(el => {
+    const key = el.dataset.t;
+    el.innerHTML = lang === 'en' && EN[key] ? EN[key] : VI[key];
+  });
+}
+function pressOne(group, value){
+  group.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === value)));
+}
+document.getElementById('themeSeg').addEventListener('click', e => {
+  const v = e.target.dataset.v; if (!v) return;
+  document.documentElement.dataset.theme = v; pressOne(e.currentTarget, v);
+});
+document.getElementById('langSeg').addEventListener('click', e => {
+  const v = e.target.dataset.v; if (!v) return;
+  setLang(v); pressOne(e.currentTarget, v);
+});
+
+// ---------- CHUYỂN MÀN HÌNH ----------
+const shellBScreens = ['invites', 'avail'];
+function go(screen){
+  const isB = shellBScreens.includes(screen);
+  document.getElementById('shellA').classList.toggle('hidden', isB);
+  document.getElementById('shellB').classList.toggle('hidden', !isB);
+  document.querySelectorAll('[data-screen]').forEach(s => s.classList.toggle('hidden', s.dataset.screen !== screen));
+  document.querySelectorAll('#tabs button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.go === screen)));
+  const inConf = !['list', 'create'].includes(screen);
+  document.getElementById('sideList').classList.toggle('hidden', inConf);
+  document.getElementById('sideConf').classList.toggle('hidden', !inConf);
+  document.querySelectorAll('[data-nav]').forEach(i => i.classList.toggle('on', i.dataset.nav === screen));
+  document.getElementById('side').classList.remove('open');
+  if (screen === 'avail') moveAvail(false);
+  window.scrollTo(0, 0);
+}
+document.addEventListener('click', e => {
+  const target = e.target.closest('[data-go]');
+  if (target) go(target.dataset.go);
+});
+document.getElementById('burger').addEventListener('click', () => document.getElementById('side').classList.toggle('open'));
+
+// ---------- TRẠNG THÁI MẪU CỦA TỪNG MÀN ----------
+// Mỗi nút trạng thái hiện các phần tử .st-<tên> trong cùng section và ẩn các .st-<tên khác>.
+document.querySelectorAll('.states').forEach(box => {
+  const section = box.closest('[data-screen]');
+  const names = [...box.querySelectorAll('button')].map(b => b.dataset.state);
+  function apply(state){
+    box.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === state)));
+    names.forEach(n => section.querySelectorAll('.st-' + n).forEach(el => el.classList.add('hidden')));
+    section.querySelectorAll('.st-' + state).forEach(el => el.classList.remove('hidden'));
+    if (section.dataset.screen === 'sessions') {
+      document.getElementById('sesDrawer').classList.toggle('hidden', state === 'list');
+      document.getElementById('sesSplit').style.gridTemplateColumns = state === 'list' ? '1fr' : '';
+      document.getElementById('inviteInput').classList.toggle('err', state === 'inviteErr');
+    }
+    if (section.dataset.screen === 'avail') applyAvail(state);
+    if (section.dataset.screen === 'create') {
+      ['crHours', 'crClose'].forEach(id => document.getElementById(id).classList.toggle('err', state === 'err'));
+    }
+    if (section.dataset.screen === 'speakers') moveAvail(state === 'modal');
+  }
+  box.addEventListener('click', e => { if (e.target.dataset.state) apply(e.target.dataset.state); });
+  apply(box.querySelector('[aria-pressed="true"]').dataset.state);
+});
+
+// Màn khai giờ rảnh: 3 trạng thái mẫu
+function applyAvail(state){
+  const block = document.getElementById('availBlock');
+  block.querySelectorAll('.av-none').forEach(el => el.classList.toggle('hidden', state !== 'none'));
+  block.querySelectorAll('.av-declared').forEach(el => el.classList.toggle('hidden', state === 'none'));
+  block.querySelectorAll('.av-err').forEach(el => el.classList.toggle('hidden', state !== 'err'));
+  block.querySelectorAll('.segm').forEach(seg => {
+    seg.querySelectorAll('span').forEach(s => s.classList.remove('on'));
+    const pick = seg.querySelector(state === 'none' ? '.av-none-on' : '.av-declared-on');
+    if (pick) pick.classList.add('on');
+  });
+}
+// BTC sửa thay dùng chung khối khai giờ rảnh của diễn giả (cùng component), hiện trong modal
+function moveAvail(intoModal){
+  const block = document.getElementById('availBlock');
+  const target = intoModal ? document.querySelector('[data-screen="speakers"] .avail-slot') : document.getElementById('availHome');
+  if (block.parentElement !== target) target.appendChild(block);
+  block.querySelector('.av-own').classList.toggle('hidden', intoModal);
+  applyAvail('declared');
+}
+</script>
+</body>
+</html>

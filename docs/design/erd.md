@@ -9,7 +9,7 @@
 | Quy ước | Nội dung |
 |---|---|
 | Cột mặc định | Mọi bảng có `Id` (Guid) và `CreatedAt` — không liệt kê lại. Bảng nối N–N dùng khóa ghép, không có `Id` |
-| Song ngữ | Chỉ nội dung công khai do BTC nhập: tên/mô tả hội nghị, tên track, tiêu đề/tóm tắt phiên có cặp `_Vi` / `_En` |
+| Song ngữ | Chỉ nội dung công khai do BTC nhập: tên/mô tả hội nghị, tên track, tiêu đề/tóm tắt phiên có cặp `_Vi` / `_En`. **`_Vi` bắt buộc, `_En` cho phép null** (D8, 2026-11-05): để trống thì giao diện EN hiện bản tiếng Việt |
 | Enum | Lưu dạng chuỗi |
 | Mã QR | Chuỗi ngẫu nhiên khó đoán, không dùng Id → chống làm giả |
 | Bí mật | Mật khẩu, token chỉ lưu bản băm |
@@ -58,7 +58,9 @@ Kiểu dữ liệu: **Guid** (khóa), **chuỗi**, **số nguyên**, **số th�
 
 ---
 
-## 2. Hội nghị, phòng, dịch vụ (P1 — 6 bảng)
+## 2. Hội nghị, phòng, dịch vụ (P1 — 4 bảng · P2 — 2 bảng)
+
+> D8 (2026-11-05): RoomEquipment, ServiceItem và 2 cột dịch vụ của BreakSlot (`ServiceItemId`, `IsOptional`) dời sang **G6 (T6.2)** — G3–G5 chỉ cần tên phòng + sức chứa. Chi tiết G3: `docs/specs/g3-conference.md`.
 
 **Conference**
 | Cột | Kiểu | Mô tả |
@@ -83,8 +85,8 @@ Kiểu dữ liệu: **Guid** (khóa), **chuỗi**, **số nguyên**, **số th�
 | ConferenceDayId | FK | |
 | Name | chuỗi | vd "Nghỉ trưa", "Tea break chiều" |
 | StartTime, EndTime | giờ | Không xếp phiên vào khoảng này |
-| ServiceItemId | FK, null | Suất phục vụ trong khung; null = nghỉ không kèm dịch vụ |
-| IsOptional | logic | `false`: suất gồm trong vé, tự tạo voucher. `true`: người tham dự tự chọn (UC22) |
+| ServiceItemId | FK, null | (G6) Suất phục vụ trong khung; null = nghỉ không kèm dịch vụ |
+| IsOptional | logic | (G6) `false`: suất gồm trong vé, tự tạo voucher. `true`: người tham dự tự chọn (UC22) |
 
 **Room**
 | Cột | Kiểu | Mô tả |
@@ -93,13 +95,13 @@ Kiểu dữ liệu: **Guid** (khóa), **chuỗi**, **số nguyên**, **số th�
 | Name | chuỗi | vd "P101" |
 | Capacity | số nguyên | Số chỗ → ràng buộc **H4**, chi phí Hungarian |
 
-**RoomEquipment** — thiết bị có sẵn tại phòng
+**RoomEquipment** — thiết bị có sẵn tại phòng (P2, G6)
 | Cột | Kiểu | Mô tả |
 |---|---|---|
 | RoomId, ServiceItemId | FK, khóa ghép | |
 | Quantity | số nguyên | Số lượng sẵn có → trừ đi khi tính số cần thuê |
 
-**ServiceItem** — danh mục dịch vụ của hội nghị
+**ServiceItem** — danh mục dịch vụ của hội nghị (P2, G6)
 | Cột | Kiểu | Mô tả |
 |---|---|---|
 | ConferenceId | FK | |
@@ -122,7 +124,8 @@ Kiểu dữ liệu: **Guid** (khóa), **chuỗi**, **số nguyên**, **số th�
 **Session** — phiên: một khối thời gian liền trong một phòng (60–90 phút), gồm một hoặc nhiều diễn giả trình bày cùng chủ đề
 | Cột | Kiểu | Mô tả |
 |---|---|---|
-| ConferenceId, TrackId | FK | |
+| ConferenceId | FK | |
+| TrackId | FK, null | Track tùy chọn (D8); null = "Chưa phân track", màu xám trên lưới lịch |
 | Title_Vi/En, Abstract_Vi/En | chuỗi | Tiêu đề, tóm tắt công khai |
 | DurationMinutes | số nguyên | Thời lượng (60, 90…) |
 | ExpectedSize | số nguyên, null | Quy mô BTC nhập tay. Null → thuật toán tự ước lượng từ số người quan tâm (**H4**) |
@@ -301,7 +304,7 @@ Các UC P5 khác cần thêm cột khi làm tới: UC51 thêm `ActualQuantity` v
 
 | Mức | Bảng cộng dồn |
 |---|---|
-| P1 | 19 |
+| P1 | 17 |
 | P1–P2 | 24 |
 | P1–P3 | 28 (**27 bảng nghiệp vụ** vẽ ERD nộp môn, bỏ OutboxMessage) |
 | P1–P4 | 31 |

@@ -1,0 +1,61 @@
+@startuml g3-hd-tao-hoi-nghi
+' Biểu đồ hoạt động UC03: tạo hội nghị, chỉnh ngày, khung nghỉ
+' Đặc tả: docs/specs/g3-conference.md mục 4
+!include _style.iuml
+
+|Ban tổ chức|
+start
+:Mở "Tạo hội nghị";
+repeat
+  |Ban tổ chức|
+  :Nhập tên, mô tả (vi, en), địa điểm;
+  :Chọn khoảng ngày, giờ mặc định mỗi ngày,
+  hạn đăng ký, "Cần duyệt đăng ký";
+  :Bấm "Tạo";
+  |Hệ thống|
+  :Kiểm tra dữ liệu (BR17, BR18, BR20–BR22);
+  backward :Báo lỗi dưới từng ô;
+repeat while (Hợp lệ?) is (không) not (có)
+:Tạo hội nghị **Draft**, chủ sở hữu = BTC;
+:Tạo một ngày tổ chức cho mỗi ngày
+trong khoảng, với giờ mặc định;
+:Mở tab "Ngày và khung nghỉ";
+|Ban tổ chức|
+while (Cần chỉnh thêm?) is (có)
+  switch (Thao tác)
+  case (Sửa / thêm ngày)
+    :Nhập ngày, giờ bắt đầu, giờ kết thúc;
+    |Hệ thống|
+    if (Hợp lệ? (BR21–BR23)) then (có)
+      :Lưu ngày; khoảng rảnh "cả ngày"
+      đổi theo giờ mới (BR26);
+    else (không)
+      :Báo lỗi: trùng ngày / hạn đăng ký
+      sau ngày đầu / khung nghỉ lọt ra ngoài;
+    endif
+  case (Xóa ngày)
+    |Ban tổ chức|
+    :Xác nhận (thấy số khung nghỉ,
+    số khoảng giờ rảnh bị xóa);
+    |Hệ thống|
+    if (Còn ngày khác?) then (có)
+      :Xóa ngày kèm khung nghỉ, giờ rảnh;
+    else (không)
+      :Báo "Hội nghị cần ít nhất một ngày";
+    endif
+  case (Khung nghỉ)
+    |Ban tổ chức|
+    :Thêm / sửa / xóa khung nghỉ
+    (tên, giờ bắt đầu, giờ kết thúc);
+    |Hệ thống|
+    if (Trong giờ của ngày và
+    không chồng khung khác? (BR23)) then (có)
+      :Lưu khung nghỉ;
+    else (không)
+      :Báo lỗi;
+    endif
+  endswitch
+  |Ban tổ chức|
+endwhile (không)
+stop
+@enduml

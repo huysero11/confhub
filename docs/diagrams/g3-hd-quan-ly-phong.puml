@@ -1,0 +1,34 @@
+@startuml g3-hd-quan-ly-phong
+' Biểu đồ hoạt động UC04: thêm / sửa / xóa phòng
+' Đặc tả: docs/specs/g3-conference.md mục 5
+!include _style.iuml
+
+|Ban tổ chức|
+start
+:Mở tab "Phòng" của hội nghị;
+|Hệ thống|
+:Kiểm tra quyền Room.Manage
+và BTC là chủ hội nghị (BR16);
+:Hiện bảng phòng (sức chứa giảm dần),
+tổng sức chứa, phòng lớn nhất;
+|Ban tổ chức|
+switch (Thao tác)
+case (Thêm / sửa)
+  repeat
+    |Ban tổ chức|
+    :Nhập tên phòng, sức chứa;
+    |Hệ thống|
+    :Kiểm tra (BR27):
+    tên ≤ 50 ký tự, sức chứa 1–10 000,
+    tên chưa có trong hội nghị;
+    backward :Báo lỗi / "Tên phòng đã có";
+  repeat while (Hợp lệ?) is (không) not (có)
+  :Lưu phòng, cập nhật bảng;
+case (Xóa)
+  |Ban tổ chức|
+  :Bấm "Xóa", xác nhận;
+  |Hệ thống|
+  :Xóa phòng, cập nhật bảng;
+endswitch
+stop
+@enduml

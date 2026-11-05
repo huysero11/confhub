@@ -1,0 +1,117 @@
+@startuml g3-erd-hoi-nghi
+' ERD nhóm Hội nghị, phòng, phiên, diễn giả (8 bảng + User). Nguồn: docs/design/erd.md mục 2–3
+' Đặc tả: docs/specs/g3-conference.md mục 2. RoomEquipment, ServiceItem dời sang G6.
+
+skinparam defaultFontName "Times New Roman"
+skinparam nodesep 40
+skinparam ranksep 60
+skinparam shadowing false
+skinparam class {
+  BackgroundColor White
+  BorderColor #0E5A62
+  ArrowColor #5E6E75
+  HeaderBackgroundColor #E3EFF0
+}
+hide circle
+hide methods
+hide stereotypes
+skinparam linetype polyline
+
+entity User {
+  * Id : uniqueidentifier <<PK>>
+  --
+  * Email : nvarchar <<UQ>>
+  * FullName : nvarchar
+  Organization : nvarchar
+  ...
+}
+
+package "Hội nghị, phòng" {
+  entity Conference {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * Name_Vi : nvarchar
+    Name_En : nvarchar
+    Description_Vi : nvarchar
+    Description_En : nvarchar
+    * Venue : nvarchar
+    * RegistrationCloseAt : datetime2 (UTC)
+    * RequireApproval : bit
+    * Status : nvarchar
+    * OwnerId : uniqueidentifier <<FK>>
+  }
+  entity ConferenceDay {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * ConferenceId : uniqueidentifier <<FK>>
+    * Date : date
+    * StartTime : time
+    * EndTime : time
+    UQ (ConferenceId, Date)
+  }
+  entity BreakSlot {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * ConferenceDayId : uniqueidentifier <<FK>>
+    * Name : nvarchar
+    * StartTime : time
+    * EndTime : time
+  }
+  entity Room {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * ConferenceId : uniqueidentifier <<FK>>
+    * Name : nvarchar
+    * Capacity : int
+    UQ (ConferenceId, Name)
+  }
+}
+
+package "Phiên, diễn giả" {
+  entity Track {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * ConferenceId : uniqueidentifier <<FK>>
+    * Name_Vi : nvarchar
+    Name_En : nvarchar
+  }
+  entity Session {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * ConferenceId : uniqueidentifier <<FK>>
+    TrackId : uniqueidentifier <<FK>>
+    * Title_Vi : nvarchar
+    Title_En : nvarchar
+    Abstract_Vi : nvarchar
+    Abstract_En : nvarchar
+    * DurationMinutes : int
+    ExpectedSize : int
+  }
+  entity SessionSpeaker {
+    * SessionId : uniqueidentifier <<PK, FK>>
+    * SpeakerId : uniqueidentifier <<PK, FK>>
+    --
+    * InvitationStatus : nvarchar
+  }
+  entity SpeakerAvailability {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * ConferenceDayId : uniqueidentifier <<FK>>
+    * SpeakerId : uniqueidentifier <<FK>>
+    * StartTime : time
+    * EndTime : time
+  }
+}
+
+User ||--o{ Conference : "làm BTC"
+Conference ||--|{ ConferenceDay
+ConferenceDay ||--o{ BreakSlot
+Conference ||--o{ Room
+Conference ||--o{ Track
+Conference ||--o{ Session
+Track |o--o{ Session
+Session ||--o{ SessionSpeaker
+User ||--o{ SessionSpeaker : "được mời"
+ConferenceDay ||--o{ SpeakerAvailability
+User ||--o{ SpeakerAvailability
+@enduml

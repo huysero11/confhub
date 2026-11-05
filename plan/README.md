@@ -5,10 +5,10 @@
 
 ## 0. Đang ở đâu
 
-- **Vừa xong:** T2.2 (tham lam + Hungarian, M1, M2) — merge `8130a83`, 2026-10-27
-- **Đang làm:** —
-- **Tiếp theo:** Huy đọc lại chương 2 (mục 2.4) và chương 5 trên Overleaf; rồi G3 (T3.1, cần D8); Huy điền thông tin bìa trên Overleaf
-- **Nhánh đang mở:** không (đang ở `main`)
+- **Vừa xong:** G2 (T2.1–T2.6, báo cáo tuần G-2, Overleaf chương 2 mục 2.4 + chương 5)
+- **Đang làm:** T3.1 (BE hội nghị, ngày, khung nghỉ, phòng, track) — `spec`, chờ Huy duyệt `plan/tasks/T3.1.md`
+- **Tiếp theo:** Huy commit D8 lên `main` → duyệt T3.1 → giao Codex; Huy điền thông tin bìa trên Overleaf
+- **Nhánh đang mở:** không (đang ở `main`; file D8 + T3.1.md chưa commit)
 
 ## 1. Quy trình một task
 
@@ -98,7 +98,7 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 | D5  | Kiến trúc hệ thống                     | D1         | todo       |
 | D6  | Slide trình bày                        | D1, D2, D5 | todo       |
 | D7  | Thiết kế G1 Tài khoản                  | D1, D2     | done       |
-| D8  | Thiết kế G3 Hội nghị, phiên            | D7         | todo       |
+| D8  | Thiết kế G3 Hội nghị, phiên            | D7         | done       |
 | D9  | Thiết kế G4 Đăng ký                    | D8         | todo       |
 | D10 | Thiết kế G5 Xếp lịch                   | D9         | todo       |
 | D11 | Thiết kế G6 Dịch vụ                    | D10        | todo       |
@@ -174,14 +174,14 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 
 | ID   | Việc                             | Phụ thuộc  | Trạng thái |
 |------|----------------------------------|------------|------------|
-| T3.1 | BE: hội nghị, ngày, phòng, track | D8, T1.4   | todo       |
+| T3.1 | BE: hội nghị, ngày, phòng, track | D8, T1.4   | spec       |
 | T3.2 | BE: phiên, diễn giả, giờ rảnh    | T3.1       | todo       |
 | T3.3 | FE Shell A (BTC)                 | T3.2, T1.2 | todo       |
 | T3.4 | FE diễn giả                      | T3.2, T1.2 | todo       |
 
 **Chi tiết:**
-- **T3.1** — Conference, ConferenceDay, BreakSlot, Room, RoomEquipment, ServiceItem (cơ bản), Track.
-- **T3.2** — Session, SessionSpeaker (mời nhiều diễn giả / phản hồi), SpeakerAvailability.
+- **T3.1** — Conference, ConferenceDay, BreakSlot (chưa có cột dịch vụ), Room, Track; 4 quyền G3 seed cho `Organizer`; route `/api/manage/conferences`. RoomEquipment, ServiceItem dời sang T6.2 (D8). Đặc tả nhóm: `docs/specs/g3-conference.md`.
+- **T3.2** — Session (cảnh báo BR30), SessionSpeaker (mời / mời lại / gỡ, phản hồi, email mời qua outbox), SpeakerAvailability (khai theo ngày, BTC sửa thay); route `/api/me/speaking`.
 - **T3.3** — Hội nghị, ngày, khung nghỉ, phòng, phiên, mời diễn giả. **Kèm (dời từ T1.2):** chặn route cần đăng nhập (`/login?returnUrl=`) và cần quyền (`[MustHavePermission]` phía FE đọc `permissions` của người dùng), trang 403 (`docs/ui/g1-account.html` màn "Không đủ quyền"), mục "Trang quản lý" trong menu tài khoản, sửa `roleLandingPaths` cho BTC.
 - **T3.4** — Lời mời, khai giờ rảnh.
 
@@ -226,7 +226,7 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 
 **Chi tiết:**
 - **T6.1** — Duyệt BTC/NCC, khóa/mở.
-- **T6.2** — Danh mục dịch vụ, khung nghỉ có suất, chọn suất → Voucher, yêu cầu thiết bị + duyệt.
+- **T6.2** — Danh mục dịch vụ (ServiceItem), thiết bị sẵn có tại phòng (RoomEquipment, nhận từ T3.1 theo D8), khung nghỉ có suất (`BreakSlot.ServiceItemId`, `IsOptional`), chọn suất → Voucher, yêu cầu thiết bị + duyệt.
 - **T6.3** — Cộng (tiêu hao) / đỉnh đồng thời − sẵn có (cho thuê); tạo và gửi đơn theo NCC.
 - **T6.4** — NCC cập nhật giao hàng; tính lại khi ScheduleChanged → PreviousQuantity, NeedsReview.
 
@@ -413,3 +413,7 @@ Chỉ chia task khi P1–P4 xong.
 - 2026-11-04 Huy commit `439e15d` + merge `--no-ff` vào `main` (`3f6d8ae`), đã push (lần đầu GitHub lỗi 500, push lại được). Build 0 warning, test 293/293 (Debug 3 phút 36 giây — vượt ngưỡng 3 phút, giảm seed test M4 khi cần). **G2 xong phần thư viện thuật toán** (T2.1–T2.6); còn báo cáo tuần G-2 cho T2.3, T2.4, T2.6 và phần báo cáo thuật toán trên Overleaf.
 - 2026-11-04 Overleaf: Huy đăng nhập lại MCP. Claude viết chương 5 `chapters/05-xep-lich-thuc-nghiem.tex` (mô hình + H1–H5 + f chuẩn hóa; tham lam + Hungarian; leo đồi Q1–Q3 + gán lại phòng; M3R, M4; ví dụ 6.5; xếp lại; thực nghiệm 8 bảng số từ `docs/experiments/T2.6/`, đã đối chiếu `summary.md`). Biên dịch Overleaf thành công, không lỗi. Viết báo cáo tuần G-2 phần 5 (T2.4), phần 6 (T2.6). Mục "Bài toán xếp lịch hội nghị" ở chương 2 còn `\chuaviet`.
 - 2026-11-05 Viết báo cáo tuần G-2 phần 3 (T2.3) → G-2 đủ 6 phần. Overleaf: viết chương 2 mục "Bài toán xếp lịch hội nghị" (phát biểu, NP-khó, bảng 5 công trình quy hoạch nguyên, lý do chọn heuristic, tô màu đồ thị và khoảng thời gian, Hungarian, leo đồi / khởi động lại / luyện kim, xáo trộn tối thiểu) + 12 tài liệu tham khảo (đã kiểm tra thông tin xuất bản qua tìm kiếm). Biên dịch thành công. Các mục kiến trúc / công nghệ của chương 2 viết khi xong nhóm tương ứng.
+- 2026-11-05 Bắt đầu G3. Kiểm tra Codex: chạy được (`main` sạch, dotnet 10.0.401, node 22.21.1). D8 → `spec`. Huy chốt 4 điểm: thiết bị sẵn có tại phòng + ServiceItem + cột dịch vụ của BreakSlot **dời sang G6 (T6.2)** (P1 còn 17 bảng); **BTC sửa được giờ rảnh thay diễn giả**; **`_En` tùy chọn**; **track tùy chọn** (`Session.TrackId` null). Ghi PROJECT.md mục 3, sửa `erd.md`, `erd.puml`, `use-cases.md`.
+- 2026-11-05 D8 → `review`: `docs/specs/g3-conference.md` (BR16–BR40, đặc tả UC03–UC08, 2 bảng trạng thái, 34 endpoint dưới `/api/manage/conferences` + `/api/me/speaking`, 18 mã lỗi, 4 quyền, email mời qua outbox) + 12 biểu đồ `g3-*.puml` (ERD, 2 trạng thái, 5 hoạt động, 4 tuần tự; render thử PlantUML 1.2025.4 không lỗi) + mockup `docs/ui/g3-conference.html` (7 màn Shell A + 2 màn Shell B, sáng / tối, vi / en, điện thoại; chạy thử Chromium không lỗi console). Claude chọn: tạo hội nghị bằng khoảng ngày + giờ mặc định; ≥ 1 ngày, ≤ 14 ngày; mọi giờ bội số 15 phút; tối đa 5 track, 5 diễn giả / phiên; BTC khác → 404; đã từ chối thì chỉ BTC mời lại; mọi ngày "Cả ngày" → xóa hết giờ rảnh, cấm mọi ngày "Không tham gia"; cảnh báo phiên khó xếp do BE tính; một múi giờ `Asia/Ho_Chi_Minh`. Chờ Huy duyệt.
+- 2026-11-05 D8 sửa theo Huy: trang Diễn giả mỗi dòng một cặp (diễn giả, phiên), thêm cột Lời mời, gộp ô bằng `rowSpan`; giờ rảnh mỗi ngày một dòng; "Mời lại", "Rút lui", "Nhận lời / Từ chối" là nút nhỏ (thao tác gắn trạng thái), Sửa / Xóa / Gỡ giữ dạng link; tag và chip dùng chung bo góc nhỏ, bo góc 3 mức theo token. Đặc tả mục 13 ghi 2 quy tắc này. Mã lỗi: `DayDateTaken` đổi 409 → 422 (bất biến trong aggregate), thêm `TooManyDays`, `DayInPast`, `RegistrationCloseInPast`; BR19 / kiểm `ConferenceNotDraft` để task tạo chuyển trạng thái (G4, G5) làm.
+- 2026-11-05 D8 → `done` (Huy duyệt, chuyển sang T3.1). T3.1 → `spec`: viết `plan/tasks/T3.1.md` (nhánh `task/T3.1-conferences`). Claude chọn: `Conference` là aggregate chứa ngày + khung nghỉ (sửa qua aggregate), `Room`, `Track` là aggregate riêng; value object `TimeRange` map bằng complex property EF (2 cột `StartTime`, `EndTime`); `VenueClock` (múi giờ `Venue:TimeZoneId`) đưa `today` / `nowUtc` vào aggregate nên validator không dùng đồng hồ; hội nghị người khác → 404 qua `ConferenceAccess.EnsureOwned`; route `/api/manage/conferences/...` với 4 controller; request record riêng cho body có id trong route; JSON giờ `"HH:mm"`; seed 3 quyền cho `Organizer` trong migration `T3_1_Conferences` (`Speaker.Manage` để T3.2). Chờ Huy duyệt.

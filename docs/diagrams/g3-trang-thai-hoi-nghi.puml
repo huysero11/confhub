@@ -1,0 +1,27 @@
+@startuml g3-trang-thai-hoi-nghi
+' Vòng đời Conference.Status. Đặc tả: docs/specs/g3-conference.md mục 2
+' G3 chỉ tạo Draft và xóa; các chuyển tiếp còn lại thiết kế chi tiết ở D9 (G4), D10 (G5).
+!include _style.iuml
+hide empty description
+
+state "Nháp\n(Draft)" as Draft
+state "Mở đăng ký\n(RegistrationOpen)" as Open
+state "Đóng đăng ký\n(RegistrationClosed)" as Closed
+state "Đã công bố lịch\n(Scheduled)" as Scheduled
+state "Đã kết thúc\n(Finished)" as Finished
+
+[*] --> Draft : Tạo hội nghị (UC03)
+Draft --> [*] : Xóa (UC03)
+Draft --> Open : Mở đăng ký\n[có ≥ 1 loại vé] (G4)
+Open --> Closed : Tới hạn đăng ký /\nBTC đóng sớm (G4)
+Closed --> Scheduled : Công bố chương trình\n(UC17, G5)
+Scheduled --> Finished : Qua ngày cuối\ncủa hội nghị (G5)
+
+note right of Draft
+  Chỉ hội nghị Nháp mới xóa được (BR24)
+end note
+note right of Finished
+  Chỉ còn xem, mọi thao tác sửa
+  bị từ chối (BR19)
+end note
+@enduml

@@ -1,0 +1,63 @@
+@startuml g3-td-moi-dien-gia
+' Biểu đồ tuần tự UC05 + UC06: mời diễn giả, gửi email qua outbox, diễn giả nhận lời
+' Đặc tả: docs/specs/g3-conference.md mục 7, 8, 11
+!include _style.iuml
+autonumber
+
+actor "Ban tổ chức" as BTC
+actor "Diễn giả" as DG
+participant "Giao diện\n(React)" as FE
+participant "API\n(Controller)" as API
+participant "Handler\n(MediatR)" as H
+database "SQL Server" as DB
+queue "RabbitMQ" as MQ
+participant "Consumer\ngửi email" as C
+participant "Máy chủ mail\n(smtp4dev)" as SMTP
+
+== Mời (UC05) ==
+BTC -> FE : Nhập email long@vidu.com, bấm "Mời"
+FE -> API : POST .../conferences/{id}/sessions/{sessionId}/speakers
+note right of API : [MustHavePermission(Speaker.Manage)]
+API -> H : InviteSpeakerCommand
+H -> DB : Phiên + lời mời hiện có,\nhội nghị của người gọi?
+H -> DB : Tài khoản Active theo email?
+alt không có tài khoản
+  API --> FE : 422 SpeakerAccountNotFound
+else đã có trong phiên / đủ 5 người
+  API --> FE : 409 SpeakerAlreadyInvited / 422 TooManySpeakers
+else hợp lệ
+  H -> H : session.InviteSpeaker(userId)\n→ Pending, sự kiện SpeakerInvited
+  H -> DB : Lưu SessionSpeaker + SendSpeakerInvitationEmailMessage\nvào bảng outbox (một giao dịch)
+  API --> FE : 201 Created
+  FE --> BTC : Dòng mới "Chờ phản hồi"
+end
+
+== Gửi email (chạy nền) ==
+DB -> MQ : Outbox chuyển message lên hàng đợi
+MQ -> C : SendSpeakerInvitationEmailMessage (SessionId, SpeakerId)
+C -> DB : Đọc lời mời, phiên, hội nghị, BTC
+alt lời mời không còn Pending (đã gỡ / đã phản hồi)
+  C -> C : Bỏ qua, không gửi
+else còn Pending
+  C -> SMTP : Gửi email mời (vi + en),\nlink /me/speaking
+end
+
+== Phản hồi (UC06) ==
+DG -> FE : Mở /me/speaking (đăng nhập nếu chưa)
+FE -> API : GET /api/me/speaking
+API --> FE : Lời mời gom theo hội nghị
+DG -> FE : Bấm "Nhận lời"
+FE -> API : PUT /api/me/speaking/sessions/{sessionId}\n{ response: "Accepted" }
+API -> H : RespondInvitationCommand (SpeakerId = người gọi)
+H -> DB : Đọc lời mời (SessionId, SpeakerId = người gọi)
+alt không có
+  API --> FE : 404 NotFound
+else chuyển không hợp lệ (vd đã Declined)
+  API --> FE : 422 InvalidInvitationStatus
+else hợp lệ
+  H -> H : session.RespondInvitation(...) → Accepted
+  H -> DB : Lưu
+  API --> FE : 200
+  FE --> DG : "Đã nhận lời" + nhắc khai giờ rảnh
+end
+@enduml
