@@ -7,7 +7,7 @@
 
 - **Vừa xong:** T2.2 (tham lam + Hungarian, M1, M2) — merge `8130a83`, 2026-10-27
 - **Đang làm:** —
-- **Tiếp theo:** G2 xong phần thư viện → báo cáo tuần G-2 (T2.3, T2.4, T2.6) + viết phần báo cáo thuật toán trên Overleaf; rồi G3 (T3.1, cần D8); Huy điền thông tin bìa trên Overleaf
+- **Tiếp theo:** Huy đọc lại chương 2 (mục 2.4) và chương 5 trên Overleaf; rồi G3 (T3.1, cần D8); Huy điền thông tin bìa trên Overleaf
 - **Nhánh đang mở:** không (đang ở `main`)
 
 ## 1. Quy trình một task
@@ -410,3 +410,6 @@ Chỉ chia task khi P1–P4 xong.
 - 2026-11-03 Huy chạy lại thực nghiệm ra `docs/experiments/T2.6/` (155 s, mọi lịch 0 vi phạm). Claude ghi PROJECT.md 6.10 ý 8: M4 giờ ngang M3R mà nhanh ~3 lần; phòng của M3 ngang gán tham lam (Large S 1117 → 1045); xếp lại dời thêm ~1 phiên. T2.6 → `retype`.
 - 2026-11-04 Huy gõ lại `BestFitRoomAssigner`, `RoomReassigner` (chuyển `OrderByStart`, `OrderBySizeDescending` sang `RoomReassigner` — hợp lý hơn: chọn thứ tự là chiến lược của bên gán lại). Claude kiểm: logic đúng (phiên ghim duyệt thẳng `lockedSessionIds`, cùng kết quả); sửa chỗ gọi trong `GreedyRoomBaseline` và `BestFitRoomAssignerTests`, thêm comment nội dung cho 2 hàm public, viết hoa vài comment. Quy ước mới (Huy): cho phép comment cùng dòng sau điều kiện → tắt SA1108 trong `be/.editorconfig`, ghi CLAUDE.md. Chạy lại: 293/293 pass.
 - 2026-11-04 T2.6 → `done` (Huy): chưa gõ lại 3 file của T2.4 (`MetricsCalculator`, `Program`, `MethodExperiment`) — để sau, khi cần cho T11.1. Huy commit + merge.
+- 2026-11-04 Huy commit `439e15d` + merge `--no-ff` vào `main` (`3f6d8ae`), đã push (lần đầu GitHub lỗi 500, push lại được). Build 0 warning, test 293/293 (Debug 3 phút 36 giây — vượt ngưỡng 3 phút, giảm seed test M4 khi cần). **G2 xong phần thư viện thuật toán** (T2.1–T2.6); còn báo cáo tuần G-2 cho T2.3, T2.4, T2.6 và phần báo cáo thuật toán trên Overleaf.
+- 2026-11-04 Overleaf: Huy đăng nhập lại MCP. Claude viết chương 5 `chapters/05-xep-lich-thuc-nghiem.tex` (mô hình + H1–H5 + f chuẩn hóa; tham lam + Hungarian; leo đồi Q1–Q3 + gán lại phòng; M3R, M4; ví dụ 6.5; xếp lại; thực nghiệm 8 bảng số từ `docs/experiments/T2.6/`, đã đối chiếu `summary.md`). Biên dịch Overleaf thành công, không lỗi. Viết báo cáo tuần G-2 phần 5 (T2.4), phần 6 (T2.6). Mục "Bài toán xếp lịch hội nghị" ở chương 2 còn `\chuaviet`.
+- 2026-11-05 Viết báo cáo tuần G-2 phần 3 (T2.3) → G-2 đủ 6 phần. Overleaf: viết chương 2 mục "Bài toán xếp lịch hội nghị" (phát biểu, NP-khó, bảng 5 công trình quy hoạch nguyên, lý do chọn heuristic, tô màu đồ thị và khoảng thời gian, Hungarian, leo đồi / khởi động lại / luyện kim, xáo trộn tối thiểu) + 12 tài liệu tham khảo (đã kiểm tra thông tin xuất bản qua tìm kiếm). Biên dịch thành công. Các mục kiến trúc / công nghệ của chương 2 viết khi xong nhóm tương ứng.
