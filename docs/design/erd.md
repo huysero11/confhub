@@ -9,7 +9,7 @@
 | Quy ước | Nội dung |
 |---|---|
 | Cột mặc định | Mọi bảng có `Id` (Guid) và `CreatedAt` — không liệt kê lại. Bảng nối N–N dùng khóa ghép, không có `Id` |
-| Song ngữ | Chỉ nội dung công khai do BTC nhập: tên/mô tả hội nghị, tên track, tiêu đề/tóm tắt phiên có cặp `_Vi` / `_En`. **`_Vi` bắt buộc, `_En` cho phép null** (D8, 2026-11-05): để trống thì giao diện EN hiện bản tiếng Việt |
+| Song ngữ | Chỉ nội dung công khai do BTC nhập: tên/mô tả hội nghị, tên track, tiêu đề/tóm tắt phiên có cặp `_Vi` / `_En`. **Tên / tiêu đề: cả `_Vi` và `_En` bắt buộc; mô tả / tóm tắt: tùy chọn nhưng đủ cặp** (Huy chốt 2026-11-06) |
 | Enum | Lưu dạng chuỗi |
 | Mã QR | Chuỗi ngẫu nhiên khó đoán, không dùng Id → chống làm giả |
 | Bí mật | Mật khẩu, token chỉ lưu bản băm |

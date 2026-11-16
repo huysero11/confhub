@@ -1,6 +1,7 @@
 using ConfHub.Api.Authentication;
 using ConfHub.Api.Authorization;
 using ConfHub.Api.ErrorHandling;
+using ConfHub.Api.Json;
 using ConfHub.Api.RateLimiting;
 using ConfHub.Application;
 using ConfHub.Infrastructure;
@@ -23,6 +24,9 @@ builder.Services.AddControllers(options =>
     // Không tự bắt buộc thuộc tính string không-null: để FluentValidation kiểm và trả lỗi
     // theo đúng 1 định dạng (mã lỗi từng trường) thay vì lỗi mặc định của ASP.NET Core.
     options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+}).AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new TimeOnlyHourMinuteJsonConverter());
 });
 builder.Services.AddAuthRateLimiting(builder.Configuration);
 builder.Services.AddJwtAuthentication();

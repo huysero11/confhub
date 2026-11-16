@@ -5,10 +5,10 @@
 
 ## 0. Đang ở đâu
 
-- **Vừa xong:** G2 (T2.1–T2.6, báo cáo tuần G-2, Overleaf chương 2 mục 2.4 + chương 5)
-- **Đang làm:** T3.1 (BE hội nghị, ngày, khung nghỉ, phòng, track) — `spec`, chờ Huy duyệt `plan/tasks/T3.1.md`
-- **Tiếp theo:** Huy commit D8 lên `main` → duyệt T3.1 → giao Codex; Huy điền thông tin bìa trên Overleaf
-- **Nhánh đang mở:** không (đang ở `main`; file D8 + T3.1.md chưa commit)
+- **Vừa xong:** D8 (thiết kế G3), T3.1 (BE hội nghị, ngày, khung nghỉ, phòng, track)
+- **Đang làm:** — (T3.1 done 2026-11-16)
+- **Tiếp theo:** đặc tả T3.2 (phiên, mời diễn giả, giờ rảnh); Huy điền thông tin bìa trên Overleaf
+- **Nhánh đang mở:** — (`task/T3.1-conferences` đã merge)
 
 ## 1. Quy trình một task
 
@@ -137,12 +137,12 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 
 #### G1 — Tài khoản (P1: UC01, UC02)
 
-| ID   | Việc                               | Phụ thuộc                | Trạng thái |
-|------|------------------------------------|--------------------------|------------|
-| T1.1 | BE: đăng ký, xác thực email        | D7, T0.2, T0.4, T0.5, D1 | done       |
-| T1.2 | FE: đăng ký / đăng nhập            | T1.3, T1.4               | done       |
-| T1.3 | FE: khung frontend                 | T0.1                     | done       |
-| T1.4 | BE: đăng nhập, JWT, phân quyền     | T1.1                     | done       |
+| ID   | Việc                           | Phụ thuộc                | Trạng thái |
+|------|--------------------------------|--------------------------|------------|
+| T1.1 | BE: đăng ký, xác thực email    | D7, T0.2, T0.4, T0.5, D1 | done       |
+| T1.2 | FE: đăng ký / đăng nhập        | T1.3, T1.4               | done       |
+| T1.3 | FE: khung frontend             | T0.1                     | done       |
+| T1.4 | BE: đăng nhập, JWT, phân quyền | T1.1                     | done       |
 
 **Chi tiết:**
 - **T1.1** — Tách 2026-09-29 (phần đăng nhập sang T1.4). Nền persistence nhận từ T0.5: IRepository/IReadRepository + Specification, SaveChangesInterceptor (audit), Guid tuần tự. User/Role/UserToken + migration + seed 5 vai trò, danh mục quyền là hằng số. Đăng ký (chọn Người tham dự / BTC / NCC), băm mật khẩu `PasswordHasher<T>`, xác thực email (token băm, hạn 24 giờ, gửi lại có giới hạn), quên mật khẩu. **Nhận từ T0.4 (phương án B):** smtp4dev vào compose + MailKit + consumer gửi email; domain event → publish qua outbox trước `SaveChanges`. Kiểm tra lại: tắt RabbitMQ thì `/health` phải báo `Unhealthy`. Rate limit cho endpoint đăng ký / gửi lại mail.
@@ -152,14 +152,14 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 
 #### G2 — Thuật toán bản console (làm sớm, độc lập)
 
-| ID   | Việc                                | Phụ thuộc | Trạng thái |
-|------|-------------------------------------|-----------|------------|
-| T2.1 | Mô hình dữ liệu + ràng buộc + hàm f | T0.2      | done       |
-| T2.2 | Giai đoạn 1 tham lam + Hungarian    | T2.1      | done       |
-| T2.3 | Giai đoạn 2 cải thiện cục bộ        | T2.2      | done       |
-| T2.4 | Chương trình thực nghiệm            | T2.3, T2.5 | done      |
-| T2.5 | Xếp lại hạn chế xáo trộn (thư viện) | T2.3      | done       |
-| T2.6 | M4 100 bước + gán lại phòng         | T2.4      | done       |
+| ID   | Việc                                | Phụ thuộc  | Trạng thái |
+|------|-------------------------------------|------------|------------|
+| T2.1 | Mô hình dữ liệu + ràng buộc + hàm f | T0.2       | done       |
+| T2.2 | Giai đoạn 1 tham lam + Hungarian    | T2.1       | done       |
+| T2.3 | Giai đoạn 2 cải thiện cục bộ        | T2.2       | done       |
+| T2.4 | Chương trình thực nghiệm            | T2.3, T2.5 | done       |
+| T2.5 | Xếp lại hạn chế xáo trộn (thư viện) | T2.3       | done       |
+| T2.6 | M4 100 bước + gán lại phòng         | T2.4       | done       |
 
 **Chi tiết:**
 - **T2.1** — Đặc tả: `plan/tasks/T2.1.md`. Mô hình dữ liệu, tập mốc T (nhiều ngày + khung nghỉ), ma trận W,
@@ -172,18 +172,20 @@ Task thiết kế nhóm (D7–D14) chạy trước code; code của nhóm bắt 
 
 #### G3 — Hội nghị, phòng, phiên, diễn giả (P1: UC03–UC08)
 
-| ID   | Việc                             | Phụ thuộc  | Trạng thái |
-|------|----------------------------------|------------|------------|
-| T3.1 | BE: hội nghị, ngày, phòng, track | D8, T1.4   | spec       |
-| T3.2 | BE: phiên, diễn giả, giờ rảnh    | T3.1       | todo       |
-| T3.3 | FE Shell A (BTC)                 | T3.2, T1.2 | todo       |
-| T3.4 | FE diễn giả                      | T3.2, T1.2 | todo       |
+| ID   | Việc                               | Phụ thuộc  | Trạng thái |
+|------|------------------------------------|------------|------------|
+| T3.1 | BE: hội nghị, ngày, phòng, track   | D8, T1.4   | done       |
+| T3.2 | BE: phiên, diễn giả, giờ rảnh      | T3.1       | todo       |
+| T3.3 | FE Shell A (BTC)                   | T3.2, T1.2 | todo       |
+| T3.4 | FE diễn giả                        | T3.2, T1.2 | todo       |
+| T3.5 | ~~BE: tự dịch tiếng Anh bằng LLM~~ | T3.2       | dropped    |
 
 **Chi tiết:**
 - **T3.1** — Conference, ConferenceDay, BreakSlot (chưa có cột dịch vụ), Room, Track; 4 quyền G3 seed cho `Organizer`; route `/api/manage/conferences`. RoomEquipment, ServiceItem dời sang T6.2 (D8). Đặc tả nhóm: `docs/specs/g3-conference.md`.
 - **T3.2** — Session (cảnh báo BR30), SessionSpeaker (mời / mời lại / gỡ, phản hồi, email mời qua outbox), SpeakerAvailability (khai theo ngày, BTC sửa thay); route `/api/me/speaking`.
 - **T3.3** — Hội nghị, ngày, khung nghỉ, phòng, phiên, mời diễn giả. **Kèm (dời từ T1.2):** chặn route cần đăng nhập (`/login?returnUrl=`) và cần quyền (`[MustHavePermission]` phía FE đọc `permissions` của người dùng), trang 403 (`docs/ui/g1-account.html` màn "Không đủ quyền"), mục "Trang quản lý" trong menu tài khoản, sửa `roleLandingPaths` cho BTC.
 - **T3.4** — Lời mời, khai giờ rảnh.
+- **T3.5** — dropped 2026-11-06: tự dịch tiếng Anh bằng LLM cần dịch vụ trả phí (Gemini miễn phí giới hạn quá thấp) → Huy chọn bắt buộc nhập tiếng Anh (BR17), sửa trong T3.1.
 
 #### G4 — Đăng ký (P1: UC09–UC14)
 
@@ -417,3 +419,14 @@ Chỉ chia task khi P1–P4 xong.
 - 2026-11-05 D8 → `review`: `docs/specs/g3-conference.md` (BR16–BR40, đặc tả UC03–UC08, 2 bảng trạng thái, 34 endpoint dưới `/api/manage/conferences` + `/api/me/speaking`, 18 mã lỗi, 4 quyền, email mời qua outbox) + 12 biểu đồ `g3-*.puml` (ERD, 2 trạng thái, 5 hoạt động, 4 tuần tự; render thử PlantUML 1.2025.4 không lỗi) + mockup `docs/ui/g3-conference.html` (7 màn Shell A + 2 màn Shell B, sáng / tối, vi / en, điện thoại; chạy thử Chromium không lỗi console). Claude chọn: tạo hội nghị bằng khoảng ngày + giờ mặc định; ≥ 1 ngày, ≤ 14 ngày; mọi giờ bội số 15 phút; tối đa 5 track, 5 diễn giả / phiên; BTC khác → 404; đã từ chối thì chỉ BTC mời lại; mọi ngày "Cả ngày" → xóa hết giờ rảnh, cấm mọi ngày "Không tham gia"; cảnh báo phiên khó xếp do BE tính; một múi giờ `Asia/Ho_Chi_Minh`. Chờ Huy duyệt.
 - 2026-11-05 D8 sửa theo Huy: trang Diễn giả mỗi dòng một cặp (diễn giả, phiên), thêm cột Lời mời, gộp ô bằng `rowSpan`; giờ rảnh mỗi ngày một dòng; "Mời lại", "Rút lui", "Nhận lời / Từ chối" là nút nhỏ (thao tác gắn trạng thái), Sửa / Xóa / Gỡ giữ dạng link; tag và chip dùng chung bo góc nhỏ, bo góc 3 mức theo token. Đặc tả mục 13 ghi 2 quy tắc này. Mã lỗi: `DayDateTaken` đổi 409 → 422 (bất biến trong aggregate), thêm `TooManyDays`, `DayInPast`, `RegistrationCloseInPast`; BR19 / kiểm `ConferenceNotDraft` để task tạo chuyển trạng thái (G4, G5) làm.
 - 2026-11-05 D8 → `done` (Huy duyệt, chuyển sang T3.1). T3.1 → `spec`: viết `plan/tasks/T3.1.md` (nhánh `task/T3.1-conferences`). Claude chọn: `Conference` là aggregate chứa ngày + khung nghỉ (sửa qua aggregate), `Room`, `Track` là aggregate riêng; value object `TimeRange` map bằng complex property EF (2 cột `StartTime`, `EndTime`); `VenueClock` (múi giờ `Venue:TimeZoneId`) đưa `today` / `nowUtc` vào aggregate nên validator không dùng đồng hồ; hội nghị người khác → 404 qua `ConferenceAccess.EnsureOwned`; route `/api/manage/conferences/...` với 4 controller; request record riêng cho body có id trong route; JSON giờ `"HH:mm"`; seed 3 quyền cho `Organizer` trong migration `T3_1_Conferences` (`Speaker.Manage` để T3.2). Chờ Huy duyệt.
+- 2026-11-05 Huy commit D8 + đặc tả T3.1 (`285fd20`), duyệt T3.1 → `codex`.
+- 2026-11-05 T3.1: Codex viết bản đầu (Domain, 19 use case, 4 controller, 5 bảng, migration `T3_1_Conferences`, test); log: build 0 warning, test Infrastructure 23/23, Api 61/61; lượt cuối Codex `failed` lúc viết báo cáo (code đủ trên đĩa, báo cáo ở `scratch/T3.1-report.md`). Từ đó mọi lượt giao Codex đều `failed` ngay (kể cả lệnh `git rev-parse`) → Huy chọn để Claude tự sửa. Claude sửa: comment constructor EF, comment riêng cho 5 configuration / 8 spec / 10 validator / `GetMyConferencesQueryHandler`; dòng trống chia vùng trong 19 handler và `Conference.Create`; `TimeRules.ConferenceDayEnd` gom 3 quy tắc giờ của ngày (không báo trùng `DayTooShort` khi đã `EndNotAfterStart`); query handler dùng `IReadRepository`; đổi tên `RoomConferenceIdsByOwnerSpec` → `RoomConferenceIdsSpec`. Có thử bỏ Guid v7 để EF sinh Id nhưng hoàn tác: aggregate cần tìm entity con theo Id trước khi lưu → giữ Guid v7 + `ValueGeneratedNever` (comment ghi lý do). Chưa build lại được (môi trường Claude không có .NET, Codex lỗi) → chờ Huy chạy build / test.
+- 2026-11-05 T3.1: Huy chạy lại trên máy: build lỗi 2 SA1515 (Claude chèn comment ngay sau dòng code ở `BreakSlotConfiguration`, `ConferenceDayConfiguration`) → Claude thêm dòng trống. Lần 2: build đạt; Application + Scheduling 424/424, Api 61/61; `has-pending-model-changes`: không đổi model. Claude viết mục 9 (nhóm 0 Domain → 1 tạo hội nghị → 2 xem / sửa / xóa → 3 ngày → 4 khung nghỉ → 5 phòng + danh sách của tôi → 6 track; 83 mục), gắn tag `ref/T3.1` (`5866943`, chạy git trong máy ảo vì Codex lỗi) rồi `reset --mixed`. T3.1 → `ui-test`.
+- 2026-11-06 T3.1 thử tay: CSDL dev `ConfHub` chưa áp migration `T3_1_Conferences` (token BTC không có quyền → 403) → Codex (đã chạy lại được) chạy `dotnet ef database update`; bổ sung bước này vào mục 7 `T3.1.md`. Claude chạy kịch bản mục 7 + ca lỗi bằng trình duyệt tích hợp (fetch trong trang Scalar): 35/35 bước đúng (201 / 204 / 400 `Validation` / 409 `RoomNameTaken`, `TrackNameTaken` / 422 `BreakOverlap`, `BreakOutsideDay`, `DayDateTaken`, `DayInPast`, `TooManyTracks` / 403 / 401 / 404); `roomCount = 3`, phòng sắp theo sức chứa, track theo thứ tự tạo, hạn đăng ký trả `2026-12-01T16:59:00Z`. Hội nghị thử đã xóa.
+- 2026-11-06 Quyết định (Huy): giao diện EN không được trống → `_En` vẫn cho nhập tay, **để trống thì tự dịch bằng LLM** (BR41). Ghi đặc tả G3 (BR17, BR41, mục 2, 11, 15), PROJECT.md mục 3, 5, 9, `erd.md`. Thêm task **T3.5** (phụ thuộc T3.2, vì cần cả tiêu đề / tóm tắt phiên); T3.3 đổi phụ thuộc T3.2 → T3.5. Code T3.1 không đổi (cờ + dịch thêm ở T3.5).
+- 2026-11-06 Huy đổi quyết định: không tự dịch (dịch vụ LLM không miễn phí; Claude so sánh OpenAI / Gemini / Claude API: Gemini miễn phí bị siết còn ~5 lượt / phút, Claude API không có embedding) → **bắt buộc nhập tiếng Anh**: tên hội nghị, tên track, tiêu đề phiên bắt buộc cả vi + en; mô tả, tóm tắt tùy chọn nhưng đủ cặp (`TranslationRequired`). T3.5 → `dropped`, T3.3 phụ thuộc lại T3.2. Sửa đặc tả G3 (BR17, bỏ BR41), PROJECT.md mục 3, 9, 12, `erd.md`, mockup. T3.1 sửa code theo (`NameEn` không null, migration sinh lại vì chưa merge).
+- 2026-11-06 T3.1 sửa theo BR17 mới (Codex, Claude review diff từng file): `Conference.NameEn`, `Track.NameEn` không null (Domain, command, request, response, configuration `IsRequired`); validator bắt buộc `NameEn`; thêm `Application/Conferences/BilingualRules.cs` (`TranslationOf` → `TranslationRequired`) cho cặp mô tả. CSDL dev lùi về `T1_1_Accounts`, sinh lại migration `20261106094218_T3_1_Conferences` (2 cột `NameEn` NOT NULL). Build 0 warning; test 550/550 (172 Application, 23 Infrastructure, 62 Api, 293 Scheduling); không còn thay đổi model. Cập nhật mục 7, 9 `T3.1.md` (#12 gồm `BilingualRules.cs`), gắn lại tag `ref/T3.1`.
+- 2026-11-06 Claude chạy lại mục 7 `T3.1.md` + ca lỗi song ngữ trên API thật (trình duyệt tích hợp): 42/42 bước đúng. Phát hiện 2 quy tắc trả mã mặc định của FluentValidation (FE chưa có câu dịch) → Claude tự sửa: `Capacity` (thêm / sửa phòng) → `CapacityRange`, `EndDate < StartDate` → `EndDateBeforeStart`; quy tắc chỉ "bắt buộc" giữ `NotEmptyValidator` (FE có từ G1). Build 0 warning, test Application + Api pass; gắn lại `ref/T3.1`.
+- 2026-11-11 Huy gõ lại T3.1 nhóm 0 (Domain). Claude so với `ref/T3.1`: 3 lỗi logic trong `Conference.cs` (`Create` mất `EnsureFutureDeadline`, `AddDay` dùng `>` thay `>=` → cho ngày thứ 15, `ConvertTime` thay `ConvertTimeToUtc` → lệch 7 giờ khi so hạn đăng ký), `Track.cs` thiếu `MaxPerConference`, `ConferenceDay` constructor `public`, `TimeRange` `set` thay `init`, `IReadOnlyList` làm test vướng CA1826 → Claude sửa theo yêu cầu của Huy. Build 0 warning, Application tests pass. Quyết định: bản gõ lại không bắt buộc comment (ghi CLAUDE.md). T3.1 → `retype`.
+- 2026-11-16 Huy xem hết T3.1, gõ lại 18 file. Claude so với `ref/T3.1`: `ManageConferencesController.CreateConference` thiếu `await` trước `sender.Send` (vẫn biên dịch vì `Task.Id` là int → trả `Location` sai, body là `Task`) → sửa; còn lại chỉ khác cách xuống dòng / tên biến. Quyết định (Huy): code CRUD / use case không comment hàm, chỉ giữ comment "vì sao" (ghi CLAUDE.md) → Claude xóa 82 dòng comment ở 51 file T3.1, giữ comment của Huy (sửa lại 2 comment mô tả sai trong `GetMyConferencesQueryHandler`, `RoomConferenceIdsSpec`).
+- 2026-11-16 T3.1 → `done`: Huy chạy build + test rồi commit, merge `task/T3.1-conferences` vào `main` (Codex lỗi khởi động 2 lần liên tiếp nên Claude không tự chạy được bước kiểm cuối).

@@ -52,7 +52,9 @@
 | SpeakerAvailability | ConferenceDayId, SpeakerId, StartTime, EndTime             | T3.2 |
 
 **Thay đổi so với `erd.md` (Huy chốt 2026-11-05):**
-- Cột `_En` cho phép null: bắt buộc tiếng Việt, tiếng Anh tùy chọn; giao diện EN để trống thì hiện bản tiếng Việt.
+- **Bắt buộc nhập tiếng Anh** (Huy chốt 2026-11-06, BR17): tên hội nghị, tên track, tiêu đề phiên có cả `_Vi` và `_En`
+  (không null); mô tả hội nghị, tóm tắt phiên tùy chọn nhưng phải đi đủ cặp. Không dịch tự động (dịch vụ LLM không
+  miễn phí).
 - `Session.TrackId` cho phép null: phiên không track hiện màu xám "Chưa phân track".
 - ServiceItem, RoomEquipment và 2 cột dịch vụ của BreakSlot dời sang G6 → P1 còn 17 bảng.
 
@@ -92,8 +94,11 @@
 **Chung**
 - **BR16 — Quyền và chủ sở hữu:** mọi thao tác quản lý cần quyền của UC (mục 11) **và** hội nghị phải do người
   đang đăng nhập làm BTC (`OwnerId`). Hội nghị của BTC khác → 404 `NotFound` (không lộ là có tồn tại).
-- **BR17 — Song ngữ:** trường `_Vi` bắt buộc, `_En` tùy chọn, cùng giới hạn độ dài; chuỗi rỗng / toàn khoảng trắng
-  coi như không nhập. Mọi chuỗi được cắt khoảng trắng hai đầu trước khi lưu.
+- **BR17 — Song ngữ:** giao diện vi và en đều không được trống, nên BTC nhập cả hai bản:
+  - Tên hội nghị, tên track, tiêu đề phiên: **bắt buộc cả tiếng Việt và tiếng Anh**.
+  - Mô tả hội nghị, tóm tắt phiên: tùy chọn, nhưng nhập bản này thì **phải nhập bản kia** (`TranslationRequired`).
+  - Hai bản cùng giới hạn độ dài; chuỗi rỗng / toàn khoảng trắng coi như không nhập; mọi chuỗi được cắt khoảng trắng
+    hai đầu trước khi lưu.
 - **BR18 — Bước 15 phút:** mọi giờ (ngày, khung nghỉ, giờ rảnh) và thời lượng phiên là bội số của 15 phút
   — khớp tập mốc T của thuật toán (PROJECT.md 6.1).
 - **BR19 — Hội nghị đã kết thúc** (`Finished`) chỉ còn xem, mọi thao tác sửa → 422 `ConferenceFinished`.
@@ -435,7 +440,8 @@ Gốc: `/api/manage/conferences` (viết tắt `…`).
 | `AvailabilityOverlap`         | 422  | Khoảng rảnh chồng nhau (BR38)                 |
 | `NoAvailability`              | 422  | Mọi ngày "Không tham gia" (BR38)              |
 
-- Lỗi vượt giới hạn độ dài, sai bước 15 phút, giờ ngoài ngày… đi qua FluentValidation → 400 `Validation`.
+- Lỗi vượt giới hạn độ dài, sai bước 15 phút, giờ ngoài ngày, thiếu bản dịch (`TranslationRequired`)… đi qua
+  FluentValidation → 400 `Validation`, mã từng trường.
 - Mã cảnh báo (không phải lỗi): `NoRoomBigEnough`, `NoSlotLongEnough`, `NoAcceptedSpeaker` (BR30), `NoRangeLongEnough`
   (BR40).
 
@@ -532,6 +538,7 @@ màn diễn giả thuộc **Shell B**.
 
 ## 15. Giới hạn chấp nhận
 
+- BTC phải tự nhập bản tiếng Anh (không dịch tự động — dịch vụ LLM không miễn phí).
 - Một múi giờ cho cả hệ thống (`Asia/Ho_Chi_Minh`): hội nghị tổ chức ở múi giờ khác hiện sai hạn đăng ký.
 - Diễn giả phải có tài khoản trước khi được mời (ERD mục 10); BTC nhập email chưa có tài khoản thì biết được email đó
   chưa đăng ký — chấp nhận vì BTC là người đã được QT duyệt.

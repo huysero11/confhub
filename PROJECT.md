@@ -71,7 +71,9 @@ Dùng kịch bản này làm chuẩn khi thiết kế màn hình và viết báo
 - Tài liệu nộp môn Dự án công nghệ: vẽ đủ 57 UC trên biểu đồ tổng quát; đặc tả chi tiết + biểu đồ hoạt động/tuần tự cho P1–P3.
 
 **Quyết định nhóm G3 — hội nghị, phòng, phiên, diễn giả (D8, chốt 2026-11-05).** Đặc tả đủ: `docs/specs/g3-conference.md`.
-- **Song ngữ:** cột `_Vi` bắt buộc, `_En` tùy chọn; giao diện EN để trống thì hiện bản tiếng Việt.
+- **Song ngữ:** giao diện vi / en không được trống → **bắt buộc nhập tiếng Anh**: tên hội nghị, tên track, tiêu đề phiên
+  bắt buộc cả 2 bản; mô tả, tóm tắt tùy chọn nhưng phải đủ cặp (Huy chốt 2026-11-06, BR17). Đã cân nhắc tự dịch bằng
+  LLM rồi bỏ vì không có dịch vụ miễn phí đủ dùng (mục 12).
 - **Track tùy chọn** (`Session.TrackId` null → màu xám); tối đa 5 track theo 5 màu track.
 - **Thiết bị sẵn có tại phòng + danh mục dịch vụ + suất trong khung nghỉ dời sang G6 (T6.2)** → P1 còn 17 bảng.
 - **BTC sửa được giờ rảnh thay diễn giả** (cần cho biến động trước hội nghị → UC19).
@@ -405,7 +407,7 @@ Dùng **design token của antd v5**, khai một chỗ:
 ### Song ngữ (vi/en)
 Hai lớp: **`ConfigProvider locale`** lo chữ có sẵn của antd (OK/Cancel, lịch, "Không có dữ liệu"); **`react-i18next`** lo chữ của mình, tách ra `vi.json` / `en.json`, **không hardcode chữ trong component**.
 
-> **Điểm quan trọng:** dữ liệu người dùng nhập (tên phiên, mô tả) không dịch tự động được → bảng `Sessions` cần `title_vi` và `title_en`. Ảnh hưởng tới thiết kế CSDL, phải nói trong báo cáo.
+> **Điểm quan trọng:** dữ liệu người dùng nhập (tên phiên, mô tả) không dịch được bằng i18n → bảng `Sessions` cần `title_vi` và `title_en`. BTC bắt buộc tự nhập bản tiếng Anh (BR17). Ảnh hưởng tới thiết kế CSDL, phải nói trong báo cáo.
 
 ### Màn hình đặc trưng: lưới xếp lịch
 Giờ theo hàng × phòng theo cột, mỗi track một màu, kéo thả chỉnh tay và hệ thống kiểm tra ràng buộc tức thời (viền đỏ nếu vi phạm). Dưới lưới là dải số liệu: lượt xung đột nguyện vọng, vi phạm ràng buộc, phiên đã xếp, tỷ lệ lấp đầy, thời gian chạy — **chính là các chỉ số của chương đánh giá, hiển thị luôn trên giao diện**.
@@ -469,6 +471,8 @@ Làm đến nhóm chức năng nào thì tài liệu (đặc tả, biểu đồ)
 - *Networking matching / gợi ý kết nối người tham dự* — thị trường (Whova, Brella, Bizzabo) đã làm tốt hơn từ lâu, không tính là đóng góp.
 - *Ba tính năng AI* ở mục 5.
 - *Vector database riêng* (Qdrant/pgvector) — quy mô vài trăm đoạn/hội nghị, lưu vector trong SQL Server và so sánh bằng vòng lặp C# là đủ; giữ trọng tâm ở web/backend.
+- *Tự dịch nội dung song ngữ sang tiếng Anh bằng LLM* (2026-11-06) — Huy chọn bắt buộc nhập tiếng Anh vì dịch vụ LLM
+  không miễn phí (Gemini miễn phí giới hạn quá thấp, OpenAI / Claude trả phí).
 - *Figma để thiết kế* — connector chỉ đọc được thiết kế và sinh code, không vẽ hộ được.
 - *Tailwind/Bootstrap* — xung đột với antd.
 - *Mapster / AutoMapper* (2026-10-05) — DTO map tay bằng hàm tĩnh (`CurrentUserResponse.FromUser`); truy vấn danh sách dùng `Specification<T, TResult>` + `Query.Select` của Ardalis (SQL vẫn chỉ lấy cột cần). Map tự động theo trùng tên tiết kiệm vài dòng nhưng thêm thư viện và khó giải thích khi bảo vệ.

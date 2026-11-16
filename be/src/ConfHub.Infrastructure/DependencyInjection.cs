@@ -2,6 +2,7 @@ using ConfHub.Infrastructure.Email;
 using ConfHub.Infrastructure.Messaging;
 using ConfHub.Infrastructure.Persistence;
 using ConfHub.Infrastructure.Security;
+using ConfHub.Infrastructure.Venue;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,6 +21,7 @@ public static class DependencyInjection
         services.AddMessaging(configuration);
         services.AddEmail(configuration);
         services.AddSecurity(configuration);
+        services.AddVenue(configuration);
 
         return services;
     }
