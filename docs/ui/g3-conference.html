@@ -314,14 +314,14 @@ table.list .nowrap{white-space:nowrap}
           <div class="grid2">
             <div class="field"><label><span class="req">*</span><span data-t="f.nameVi">Tên (tiếng Việt)</span></label>
               <div class="input">Công nghệ Xanh 2026</div></div>
-            <div class="field"><label data-t="f.nameEn">Tên (tiếng Anh, tùy chọn)</label>
+            <div class="field"><label><span class="req">*</span><span data-t="f.nameEn">Tên (tiếng Anh)</span></label>
               <div class="input">Green Tech 2026</div></div>
           </div>
           <div class="grid2">
-            <div class="field"><label data-t="f.descVi">Mô tả (tiếng Việt)</label>
+            <div class="field"><label data-t="f.descVi">Mô tả (tiếng Việt, tùy chọn)</label>
               <div class="input ta" data-t="cr.descPh">Hội nghị về công nghệ cho phát triển bền vững…</div></div>
             <div class="field"><label data-t="f.descEn">Mô tả (tiếng Anh)</label>
-              <div class="input ta"><span class="ph" data-t="cr.descEnPh">Để trống thì giao diện EN hiện bản tiếng Việt</span></div></div>
+              <div class="input ta"><span class="ph" data-t="cr.descEnPh">Bắt buộc khi đã nhập mô tả tiếng Việt</span></div></div>
           </div>
           <div class="field"><label><span class="req">*</span><span data-t="f.venue">Địa điểm</span></label>
             <div class="input">Hội trường A, ĐH Bách khoa Hà Nội</div></div>
@@ -364,7 +364,7 @@ table.list .nowrap{white-space:nowrap}
         <div class="card" style="max-width:820px"><div class="hd"><h3 data-t="ov.info">Thông tin hội nghị</h3></div><div class="bd">
           <div class="grid2">
             <div class="field"><label><span class="req">*</span><span data-t="f.nameVi">Tên (tiếng Việt)</span></label><div class="input">Công nghệ Xanh 2026</div></div>
-            <div class="field"><label data-t="f.nameEn">Tên (tiếng Anh, tùy chọn)</label><div class="input">Green Tech 2026</div></div>
+            <div class="field"><label><span class="req">*</span><span data-t="f.nameEn">Tên (tiếng Anh)</span></label><div class="input">Green Tech 2026</div></div>
           </div>
           <div class="field"><label><span class="req">*</span><span data-t="f.venue">Địa điểm</span></label><div class="input">Hội trường A, ĐH Bách khoa Hà Nội</div></div>
           <div class="grid2">
@@ -538,7 +538,7 @@ table.list .nowrap{white-space:nowrap}
             <div class="hd"><h3 data-t="dr.title">Sửa phiên</h3><span class="spacer"></span><span class="muted" style="cursor:pointer">✕</span></div>
             <div class="bd">
               <div class="field"><label><span class="req">*</span><span data-t="f.titleVi">Tiêu đề (tiếng Việt)</span></label><div class="input" data-t="ses.A">AI trong nông nghiệp</div></div>
-              <div class="field"><label data-t="f.titleEn">Tiêu đề (tiếng Anh)</label><div class="input">AI in agriculture</div></div>
+              <div class="field"><label><span class="req">*</span><span data-t="f.titleEn">Tiêu đề (tiếng Anh)</span></label><div class="input">AI in agriculture</div></div>
               <div class="field"><label data-t="f.absVi">Tóm tắt (tiếng Việt)</label><div class="input ta" data-t="dr.absVal">Ứng dụng thị giác máy tính để phát hiện sâu bệnh…</div></div>
               <div class="grid2">
                 <div class="field"><label data-t="f.track">Track</label><div class="input k1"><span class="sw kc" style="width:10px;height:10px;border-radius:3px;display:inline-block"></span><span data-t="trk.1">Công nghệ</span><span class="suf">▾</span></div></div>
@@ -748,8 +748,8 @@ const EN = {
  "st.inviteErr":"Invite error","st.availModal":"Edit availability on behalf","st.justAccepted":"Just accepted","st.noInvites":"No invitations","st.declared":"Declared","st.notDeclared":"Not declared",
  "list.title":"My conferences","list.new":"+ New conference","list.c1meta":"Dec 3–4, 2026 · Hall A, Hanoi Univ. of Science and Technology","list.c2meta":"Jan 15, 2027 · National Convention Center",
  "list.rooms":"rooms","list.sessions":"sessions","list.speakers":"speakers accepted","list.open":"Open","list.emptyT":"You have no conferences yet","list.emptyS":"Create your first conference, then add days, rooms and sessions.",
- "cr.title":"New conference","cr.info":"General information","f.nameVi":"Name (Vietnamese)","f.nameEn":"Name (English, optional)","f.descVi":"Description (Vietnamese)","f.descEn":"Description (English)",
- "cr.descPh":"Hội nghị về công nghệ cho phát triển bền vững…","cr.descEnPh":"Leave empty to show the Vietnamese text in English UI","f.venue":"Venue","cr.time":"Time",
+ "cr.title":"New conference","cr.info":"General information","f.nameVi":"Name (Vietnamese)","f.nameEn":"Name (English)","f.descVi":"Description (Vietnamese, optional)","f.descEn":"Description (English)",
+ "cr.descPh":"Hội nghị về công nghệ cho phát triển bền vững…","cr.descEnPh":"Required when a Vietnamese description is entered","f.venue":"Venue","cr.time":"Time",
  "f.dates":"Conference dates (from – to)","cr.datesHelp":"Up to 14 days. Edit each day's hours after creating.","v.dates":"Dates cannot be in the past","f.hours":"Default hours per day","v.step":"Times must be multiples of 15 minutes",
  "f.close":"Registration deadline","v.close":"Deadline must be before the first day starts","f.approval":"Organizer must approve registrations","cr.approvalHelp":"Off means registrations are approved automatically (configured in the Registration group).",
  "c.cancel":"Cancel","cr.submit":"Create conference","c.save":"Save","c.edit":"Edit","c.delete":"Delete","c.min":"min",

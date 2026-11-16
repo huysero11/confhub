@@ -1,8 +1,8 @@
 namespace ConfHub.Api.IntegrationTests.Support;
 
-// Đồng hồ giả: chạy theo giờ thật nhưng cộng thêm một khoảng "tua" → test hết hạn token
-// mà không phải chờ thật 24 giờ.
-public sealed class TestClock : TimeProvider
+// Đồng hồ giả: mặc định chạy theo giờ thật, có thể truyền mốc cố định cho test nghiệp vụ.
+// Cộng thêm khoảng "tua" để kiểm hết hạn token mà không chờ thật 24 giờ.
+public sealed class TestClock(DateTimeOffset? fixedUtcNow = null) : TimeProvider
 {
     private long _offsetTicks;
 
@@ -13,6 +13,7 @@ public sealed class TestClock : TimeProvider
 
     public override DateTimeOffset GetUtcNow()
     {
-        return base.GetUtcNow() + TimeSpan.FromTicks(Interlocked.Read(ref _offsetTicks));
+        var utcNow = fixedUtcNow ?? base.GetUtcNow();
+        return utcNow + TimeSpan.FromTicks(Interlocked.Read(ref _offsetTicks));
     }
 }
